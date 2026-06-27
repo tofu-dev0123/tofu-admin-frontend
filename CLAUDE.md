@@ -103,8 +103,13 @@ Prettier（`.prettierrc.json`）/ ESLint（`eslint.config.mjs`）が正。手書
 
 ## ブランチ・コミット規約
 
-- ベースブランチは **develop**。リリースは develop → release → main。
+- ベースブランチは **develop**（開発の最新版・統合ブランチ）。作業ブランチはここから切る。
+- 環境ブランチへの昇格でデプロイする（環境ブランチ運用 / デプロイ基盤は Vercel）。
+  - `develop → staging` の PR をマージ → **dev 環境**へデプロイ。
+  - `staging → production` の PR をマージ → **本番環境**へデプロイ。
+  - `production` への push をトリガーに Actions が `main` を fast-forward 同期する（**main = 本番ミラー**。GitHub デフォルトブランチ）。`.github/workflows/sync-main.yml`。
 - ブランチ命名は `feature/issue#<番号>`（Issue 起点）。
+- CI（`.github/workflows/ci.yml`）は **develop への PR** で lint / type / test / build を実行する。昇格 PR（staging / production 宛）は検証済みコードの移動なので CI は回さない。
 - コミットメッセージに `Co-Authored-By: Claude` は付けない。PR 本文に Claude のフッターを付けない。
 - コミットは明示的に依頼されたときのみ作成する。
 
