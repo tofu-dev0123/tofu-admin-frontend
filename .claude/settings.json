@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm build)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm format)",
+      "Bash(pnpm type)",
+      "Bash(pnpm exec:*)",
+      "Bash(nix develop:*)",
+      "Bash(direnv exec:*)",
+      "Bash(direnv allow:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git switch:*)",
+      "Bash(git branch:*)",
+      "Bash(gh issue:*)",
+      "Bash(gh pr:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r f; [ -z \"$f\" ] && exit 0; d=\"${CLAUDE_PROJECT_DIR:-.}\"; cd \"$d\" || exit 0; case \"$f\" in *.ts|*.tsx|*.js|*.jsx|*.mjs|*.json|*.css|*.md) direnv exec \"$d\" ./node_modules/.bin/prettier --write \"$f\" >/dev/null 2>&1 ;; esac; case \"$f\" in *.ts|*.tsx|*.js|*.jsx|*.mjs) direnv exec \"$d\" ./node_modules/.bin/eslint --fix \"$f\" >/dev/null 2>&1 ;; esac; exit 0; }"
+          }
+        ]
+      }
+    ]
+  }
+}

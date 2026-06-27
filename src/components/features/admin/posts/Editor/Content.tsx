@@ -29,7 +29,8 @@ function MDContent({ className }: { className?: string }) {
     state.isPreview
   );
 
-  // viewRef を Context に接続
+  // viewRef を Context（ref）に接続する。ref への代入は正当なエスケープハッチ
+  // eslint-disable-next-line react-hooks/immutability
   useEffect(() => {
     if (viewRef.current && ui.editorViewRef) {
       // eslint-disable-next-line react-hooks/immutability

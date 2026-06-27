@@ -7,6 +7,7 @@ import {
 } from '@/types/api/account';
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
+import { logger } from '@/lib/logger';
 
 interface UseEditUsernameProps {
   showError: (message: string[]) => void;
@@ -45,6 +46,7 @@ function useEditUsername({ showError }: UseEditUsernameProps) {
         ChangePasswordResponse,
         ChangePasswordRequest
       >(API_ENDPOINTS.account.password, request);
+      logger.info('[account] パスワードを更新しました');
       const message = response.message;
       useToastStore.getState().show({
         type: 'success',
