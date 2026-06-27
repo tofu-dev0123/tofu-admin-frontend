@@ -8,6 +8,7 @@ import { PostEditorState } from '@/types/admin/posts';
 import { ImagesDeleteResponse } from '@/types/api/imagesDelete';
 import { useToastStore } from '@/stores/toastStore';
 import { extractImageUrls } from '@/services/admin/posts/extractImageUrls';
+import { logger } from '@/lib/logger';
 
 interface UsePostEditSubmitProps {
   showError: (message: string[]) => void;
@@ -75,6 +76,7 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
       try {
         // 投稿を更新（編集画面用）
         await put<PostPutResponse>(API_ENDPOINTS.posts.put(postId), request);
+        logger.info('[posts] 投稿を更新しました', { postId, status });
 
         // トーストを表示
         const message =

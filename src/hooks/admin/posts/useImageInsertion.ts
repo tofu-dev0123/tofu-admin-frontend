@@ -9,6 +9,7 @@ import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { validate } from '@/lib/utils/validation';
 import { MESSAGES } from '@/constants/messages';
 import { THUMBNAIL_MAX_FILE_SIZE } from '@/constants/admin/fileFormats';
+import { logger } from '@/lib/logger';
 
 interface UseImageInsertionProps {
   editorViewRef: React.RefObject<EditorView | null>;
@@ -141,6 +142,9 @@ export function useImageInsertion({
 
         // 画像情報を追加
         addImage({ imageId: response.image_id, url: response.url });
+        logger.info('[images] 画像をアップロードしました', {
+          imageId: response.image_id,
+        });
 
         pendingFileRef.current = null;
 

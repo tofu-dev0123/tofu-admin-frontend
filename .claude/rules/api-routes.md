@@ -12,14 +12,29 @@
 
 ## プロキシ Route Handler の定型
 
-既存の `src/app/api/admin/posts/route.ts` に倣う。必須要素:
+**純粋なプロキシは自前で fetch せず、共通ヘルパー `proxyRequest`（`src/lib/api/proxyRequest.ts`）を使う。** cookie 転送・URL/クエリ構築・body 判定（JSON / multipart）・エラー整形・fetch 失敗の捕捉・ログ出力をまとめて行う。
 
-- `const cookieStore = await cookies();` で受け取ったクッキーを取得し、backend への `fetch` に `Cookie` ヘッダーとして転送する（認証はクッキーベース）。
-- `const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL;` を読み、未設定なら `throw new Error('Backend URL is not configured');`。
-- backend のパスは `${backendUrl}/admin/...`（`/api` は付かない。`/api/admin` は **フロント側の Route パス**）。
-- エラー時は **status を保ったまま** JSON で返す。backend のレスポンスが JSON でないこともあるので `try { JSON.parse } catch { { error: ... } }` でフォールバックする。
-- 成功時も `NextResponse.json(data, { status: response.status })` で status を維持する。
-- クエリ文字列は `req.nextUrl.searchParams` から組み立てる。POST/PUT/PATCH の body は `await req.text()` で素通しする。
+```ts
+import { NextRequest } from 'next/server';
+import { proxyRequest } from '@/lib/api/proxyRequest';
+
+export async function GET(req: NextRequest) {
+  return proxyRequest(req, '/admin/posts/', { label: '投稿一覧取得' });
+}
+```
+
+- 第2引数は **backend パス**（`/admin/...`。`/api` は付かない。`/api/admin` は **フロント側の Route パス**）。
+- `label` はログ用の操作名。省略時は `METHOD path` になる。
+- 動的ルートは `const { id } = await params;` してからパスに埋める。`proxyRequest` が method・query・body を自動で引き継ぐ。
+- multipart（画像アップロード）も content-type を見て自動対応する。特別な処理は不要。
+
+## ヘルパーを使わないケース
+
+`auth/login` `auth/logout` は **cookie の set/delete があり純粋プロキシではない**ので、`proxyRequest` を使わず個別実装する。その場合も:
+
+- `NEXT_PUBLIC_API_BASE_URL` 未設定チェック、`fetch` の try/catch（失敗時 502）、`!response.ok` 時の JSON フォールバックを必ず入れる。
+- ログは `logger`（[[logging]]）を使う（成功は `info`、4xx は `warn`、5xx・接続失敗は `error`）。
+- 成功・エラーとも **status を保ったまま** `NextResponse.json` で返す。
 
 ## 認証
 

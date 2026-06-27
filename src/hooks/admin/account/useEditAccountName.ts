@@ -7,6 +7,7 @@ import {
 } from '@/types/api/account';
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
+import { logger } from '@/lib/logger';
 
 interface UseEditAccountNameProps {
   showError: (message: string[]) => void;
@@ -30,6 +31,7 @@ function useEditAccountName({ showError }: UseEditAccountNameProps) {
         UpdateAccountNameResponse,
         UpdateAccountNameRequest
       >(API_ENDPOINTS.account.patch, request);
+      logger.info('[account] アカウント名を更新しました');
       const message = response.message;
       useToastStore.getState().show({
         type: 'success',

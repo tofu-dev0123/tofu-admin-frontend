@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from '@/lib/api/endpoint';
 import { ChangeEmailResponse, ChangeEmailRequest } from '@/types/api/account';
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
+import { logger } from '@/lib/logger';
 
 interface UseEditUsernameProps {
   showError: (message: string[]) => void;
@@ -31,6 +32,7 @@ function useEditUsername({ showError }: UseEditUsernameProps) {
           API_ENDPOINTS.account.email,
           request
         );
+        logger.info('[account] メールアドレスを更新しました');
         const message = response.message;
         useToastStore.getState().show({
           type: 'success',

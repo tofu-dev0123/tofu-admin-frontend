@@ -29,6 +29,15 @@
 - 本番（`NODE_ENV === 'production'`）では `debug` / `info` を抑制し、`warn` / `error` のみ出力する。
 - 将来 Sentry 等への外部送信が必要になったら `logger.ts` の `output` 関数を拡張する（呼び出し側は変更不要）。
 
+## 集約ポイント（二重ログを避ける）
+
+エラーログは既に以下へ集約済み。個別の catch で重ねて `logger.error` しない。
+
+- **クライアントの API エラー**: `exceptErrorHandling`（`src/lib/utils/exceptErrorHandling.ts`）が記録する。hook の catch は `exceptErrorHandling(error, showError)` を呼ぶだけでよい（[[error-handling]]）。
+- **サーバーのプロキシ Route**: `proxyRequest`（`src/lib/api/proxyRequest.ts`）が 4xx=warn / 5xx・接続失敗=error を記録する（[[api-routes]]）。
+
+`logger.info` で記録するのは**主要な業務フロー**（ログイン/ログアウト、投稿の作成・更新・削除・ステータス変更、画像アップロード、アカウント更新）の成功時など。
+
 ## 注意
 
 - ログに**機微情報**（パスワード・トークン・クッキー・個人情報）を出さない。
