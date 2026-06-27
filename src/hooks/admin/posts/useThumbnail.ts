@@ -10,6 +10,7 @@ import { validate } from '@/lib/utils/validation';
 import { MESSAGES } from '@/constants/messages';
 import { THUMBNAIL_MAX_FILE_SIZE } from '@/constants/admin/fileFormats';
 import { cropImageToBlob } from '@/lib/utils/imageCrop';
+import { logger } from '@/lib/logger';
 
 interface UseThumbnailProps {
   showError: (message: string[]) => void;
@@ -163,6 +164,9 @@ export function useThumbnail({ showError }: UseThumbnailProps) {
       setThumbnailUrl(response.url);
       setImageId(response.image_id);
       setAltText(response.alt_text);
+      logger.info('[images] サムネイルをアップロードしました', {
+        imageId: response.image_id,
+      });
       pendingFileRef.current = null;
 
       // プレビューURLを解放

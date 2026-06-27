@@ -6,6 +6,7 @@ import { API_ENDPOINTS } from '@/lib/api/endpoint';
 import { PostDeleteResponse } from '@/types/api/post';
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
+import { logger } from '@/lib/logger';
 
 interface UsePostDeleteAlertProps {
   showError: (message: string[]) => void;
@@ -31,6 +32,7 @@ function usePostDeleteAlert({ showError }: UsePostDeleteAlertProps) {
       const response = await del<PostDeleteResponse>(
         API_ENDPOINTS.posts.delete(postId)
       );
+      logger.info('[posts] 投稿を削除しました', { postId });
 
       const message = response.message;
       useToastStore.getState().show({
