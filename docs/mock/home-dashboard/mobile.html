@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ホーム画面 モック（スマホ）— ダッシュボードリニューアル案</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      body {
+        font-family:
+          ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+          'Hiragino Sans', 'Noto Sans JP', sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-neutral-100/60 text-neutral-900">
+    <!-- 上部ヘッダー（ロゴ） -->
+    <header class="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-neutral-200 bg-white/90 px-4 backdrop-blur">
+      <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-neutral-900 text-xs font-bold text-white">T</div>
+      <span class="text-base font-bold tracking-tight">Tofu Blog</span>
+    </header>
+
+    <main class="px-4 pb-24 pt-4">
+      <!-- ページタイトル -->
+      <h1 class="mb-4 border-b border-neutral-300 pb-2 text-xl font-bold">ホーム</h1>
+
+      <!-- アカウントカード -->
+      <div class="mb-3 flex items-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 shadow-sm">
+        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900 text-sm font-semibold text-white">T</div>
+        <div class="leading-tight">
+          <p class="text-sm font-semibold text-neutral-900">tofu 管理者</p>
+          <p class="text-xs text-neutral-500">@tofu_admin</p>
+        </div>
+      </div>
+
+      <!-- 導線ボタン（横並び・等幅） -->
+      <div class="mb-5 grid grid-cols-2 gap-2">
+        <button class="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm">
+          <i data-lucide="plus" class="h-4 w-4"></i> ブログを書く
+        </button>
+        <button class="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 shadow-sm">
+          <i data-lucide="list" class="h-4 w-4"></i> 投稿一覧
+        </button>
+      </div>
+
+      <!-- KPIカード（縦積み） -->
+      <section class="mb-5 grid grid-cols-1 gap-3">
+        <div class="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600"><i data-lucide="file-text" class="h-5 w-5"></i></div>
+            <div><p class="text-sm font-medium text-neutral-500">投稿数</p><p class="text-xs text-neutral-400">すべての記事</p></div>
+          </div>
+          <p class="text-2xl font-bold tracking-tight">12</p>
+        </div>
+        <div class="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-50 text-green-600"><i data-lucide="check-circle-2" class="h-5 w-5"></i></div>
+            <div><p class="text-sm font-medium text-neutral-500">公開中</p><p class="text-xs text-neutral-400">公開済みの記事</p></div>
+          </div>
+          <p class="text-2xl font-bold tracking-tight">8</p>
+        </div>
+        <div class="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600"><i data-lucide="file-pen-line" class="h-5 w-5"></i></div>
+            <div><p class="text-sm font-medium text-neutral-500">下書き</p><p class="text-xs text-neutral-400">未公開の記事</p></div>
+          </div>
+          <p class="text-2xl font-bold tracking-tight">4</p>
+        </div>
+      </section>
+
+      <!-- 最近の投稿 -->
+      <section class="mb-4 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="flex items-center gap-2 text-base font-bold"><i data-lucide="clock" class="h-4 w-4 text-neutral-400"></i> 最近の投稿</h2>
+          <a class="inline-flex items-center gap-1 text-xs font-medium text-neutral-500" href="#">すべて見る <i data-lucide="chevron-right" class="h-3.5 w-3.5"></i></a>
+        </div>
+        <ul class="flex flex-col gap-3">
+          <li class="flex items-center gap-3">
+            <div class="aspect-video w-20 shrink-0 overflow-hidden rounded-md bg-gradient-to-br from-neutral-200 to-neutral-300 shadow-sm"></div>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-sm font-medium">Next.js 16 で App Router を使いこなす</p>
+              <p class="mt-1 flex items-center gap-1 text-xs text-neutral-400"><i data-lucide="calendar" class="h-3 w-3"></i> 2026/06/20 14:30</p>
+            </div>
+          </li>
+          <li class="flex items-center gap-3">
+            <div class="aspect-video w-20 shrink-0 overflow-hidden rounded-md bg-gradient-to-br from-neutral-200 to-neutral-300 shadow-sm"></div>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-sm font-medium">Tailwind CSS 4 の新機能まとめ</p>
+              <p class="mt-1 flex items-center gap-1 text-xs text-neutral-400"><i data-lucide="calendar" class="h-3 w-3"></i> 2026/06/15 09:12</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 下書き -->
+      <section class="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="flex items-center gap-2 text-base font-bold"><i data-lucide="file-pen-line" class="h-4 w-4 text-neutral-400"></i> 下書き</h2>
+          <a class="inline-flex items-center gap-1 text-xs font-medium text-neutral-500" href="#">すべて見る <i data-lucide="chevron-right" class="h-3.5 w-3.5"></i></a>
+        </div>
+        <ul class="flex flex-col gap-3">
+          <li class="flex items-center gap-3">
+            <div class="aspect-video w-20 shrink-0 overflow-hidden rounded-md bg-gradient-to-br from-neutral-200 to-neutral-300 shadow-sm"></div>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-sm font-medium">zustand と Context の使い分けメモ</p>
+              <p class="mt-1 flex items-center gap-1 text-xs text-neutral-400"><i data-lucide="calendar" class="h-3 w-3"></i> 2026/06/22 11:05</p>
+            </div>
+          </li>
+          <li class="flex items-center gap-3">
+            <div class="aspect-video w-20 shrink-0 overflow-hidden rounded-md bg-gradient-to-br from-neutral-200 to-neutral-300 shadow-sm"></div>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-sm font-medium">CodeMirror エディタ拡張の調査</p>
+              <p class="mt-1 flex items-center gap-1 text-xs text-neutral-400"><i data-lucide="calendar" class="h-3 w-3"></i> 2026/06/18 16:40</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <!-- ===== 下部タブバー ===== -->
+    <nav class="fixed inset-x-0 bottom-0 z-50 border-t border-neutral-200 bg-white/95 backdrop-blur">
+      <div class="flex w-full items-center justify-around px-1 py-2">
+        <a href="#" class="flex min-w-0 flex-1 flex-col items-center gap-1 rounded-lg py-1.5 text-neutral-900">
+          <i data-lucide="home" class="h-5 w-5"></i>
+          <span class="text-[11px] font-medium">ホーム</span>
+        </a>
+        <a href="#" class="flex min-w-0 flex-1 flex-col items-center gap-1 rounded-lg py-1.5 text-neutral-400">
+          <i data-lucide="user" class="h-5 w-5"></i>
+          <span class="text-[11px] font-medium">アカウント</span>
+        </a>
+        <a href="#" class="flex min-w-0 flex-1 flex-col items-center gap-1 rounded-lg py-1.5 text-neutral-400">
+          <i data-lucide="file-text" class="h-5 w-5"></i>
+          <span class="text-[11px] font-medium">投稿一覧</span>
+        </a>
+        <a href="#" class="flex min-w-0 flex-1 flex-col items-center gap-1 rounded-lg py-1.5 text-neutral-400">
+          <i data-lucide="log-out" class="h-5 w-5"></i>
+          <span class="text-[11px] font-medium">ログアウト</span>
+        </a>
+      </div>
+    </nav>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
