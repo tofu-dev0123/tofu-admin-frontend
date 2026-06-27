@@ -1,25 +1,26 @@
-import homeGrayIcon from '@/assets/images/home-gray-icon.png';
-import listIcon from '@/assets/images/list-icon.png';
-import accountIcon from '@/assets/images/account-icon.png';
+import { Home, User, FileText, type LucideIcon } from 'lucide-react';
 
-export const NAVIGATION_ITEMS = [
+interface NavigationItem {
+  icon: LucideIcon;
+  label: string;
+  path: string;
+}
+
+export const NAVIGATION_ITEMS: NavigationItem[] = [
   {
-    icon: homeGrayIcon,
-    alt: 'home',
+    icon: Home,
+    label: 'ホーム',
     path: '/admin/home',
-    title: 'ホーム',
   },
   {
-    icon: accountIcon,
-    alt: 'add',
+    icon: User,
+    label: 'アカウント',
     path: '/admin/account',
-    title: '投稿作成',
   },
   {
-    icon: listIcon,
-    alt: 'list',
+    icon: FileText,
+    label: '投稿一覧',
     path: '/admin/posts',
-    title: '投稿一覧',
   },
 ];
 

@@ -7,7 +7,6 @@ import Navigation from '@/components/features/admin/common/Navigation';
 import Title from '@/components/features/admin/common/Title';
 import { usePathname } from 'next/navigation';
 import { getPageTitle } from '@/constants/admin/pageTitle';
-import Logo from '@/components/features/admin/common/Logo';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { handleClickLogout, errorModalHook } = useDashboard();
@@ -17,14 +16,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="w-full min-h-screen bg-gray-100/50">
-      {/* ロゴ */}
-      <Logo />
-
-      {/* ナビゲーション */}
+      {/* ナビゲーション（PC: 左サイドバー / スマホ: 上部ヘッダー + 下部タブ） */}
       <Navigation handleClickLogout={handleClickLogout} />
-      {/* メインコンテンツ */}
-      <div className="w-full h-full flex flex-col justify-center items-center">
-        <main className="flex-1 overflow-auto w-full">
+      {/* メインコンテンツ（サイドバー幅・モバイルバー分の余白を確保） */}
+      <div className="w-full lg:pl-60">
+        <main className="w-full overflow-auto pt-14 pb-24 lg:pt-0 lg:pb-0">
           <Title title={pageTitle} />
           {children}
         </main>
