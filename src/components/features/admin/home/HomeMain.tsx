@@ -6,9 +6,9 @@ import CreateArea from '@/components/features/admin/home/CreateArea';
 import RecentPostsArea from '@/components/features/admin/home/RecentPostsArea';
 import useHome from '@/hooks/admin/home/useHome';
 import ListArea from '@/components/features/admin/home/ListArea';
-import BaseArea from '@/components/features/admin/home/BaseArea';
 import DraftPostsArea from '@/components/features/admin/home/DraftPostsArea';
 import AccountArea from '@/components/features/admin/home/AccountArea';
+
 function HomeMain() {
   const {
     totalPosts,
@@ -25,66 +25,39 @@ function HomeMain() {
   } = useHome();
 
   return (
-    <div className="h-full w-full lg:w-6xl flex flex-col mx-auto">
-      <div className="flex-1 flex flex-col lg:grid lg:grid-cols-12 grid-cols-1 gap-4 py-4 lg:px-20 px-10">
-        {/* アカウント名 */}
-        <div className="lg:col-span-6 h-full">
-          <BaseArea title="アカウント名">
-            <AccountArea value={accountName} />
-          </BaseArea>
-        </div>
-
-        {/* ユーザー名 */}
-        <div className="lg:col-span-6 h-full">
-          <BaseArea title="ユーザー名">
-            <AccountArea value={username} />
-          </BaseArea>
-        </div>
-
-        {/* サマリ */}
-        <div className="lg:col-span-8 h-full">
-          <BaseArea title="投稿のサマリ">
-            <SummaryArea
-              totalPosts={totalPosts}
-              publishedPosts={publishedPosts}
-              draftPosts={draftPosts}
-            />
-          </BaseArea>
-        </div>
-
-        {/* 投稿一覧 */}
-        <div className="lg:col-span-2 h-full w-full">
-          <BaseArea title="投稿一覧">
-            <ListArea handleClickList={handleClickList} />
-          </BaseArea>
-        </div>
-
-        {/* ブログを書く */}
-        <div className="lg:col-span-2 h-full w-full">
-          <BaseArea title="ブログを書く">
-            <CreateArea handleClickCreate={handleClickCreate} />
-          </BaseArea>
-        </div>
-
-        {/* 最近の投稿 */}
-        <div className="lg:col-span-12 h-full w-full">
-          <BaseArea title="最近の投稿">
-            <RecentPostsArea
-              postList={postList}
-              handleClickPost={handleClickPost}
-            />
-          </BaseArea>
-        </div>
-        {/* 下書き */}
-        <div className="lg:col-span-12 h-full w-full">
-          <BaseArea title="下書き">
-            <DraftPostsArea
-              draftPostList={draftPostList}
-              handleClickPost={handleClickPost}
-            />
-          </BaseArea>
+    <div className="mx-auto w-full max-w-5xl px-4 py-4 lg:px-20">
+      {/* 上段: アカウントカード + 主要導線 */}
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <AccountArea accountName={accountName} username={username} />
+        <div className="flex items-center gap-2">
+          <CreateArea handleClickCreate={handleClickCreate} />
+          <ListArea handleClickList={handleClickList} />
         </div>
       </div>
+
+      {/* サマリ（KPIカード） */}
+      <div className="mb-6">
+        <SummaryArea
+          totalPosts={totalPosts}
+          publishedPosts={publishedPosts}
+          draftPosts={draftPosts}
+        />
+      </div>
+
+      {/* 最近の投稿 / 下書き（横2カラム） */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <RecentPostsArea
+          postList={postList}
+          handleClickPost={handleClickPost}
+          handleClickViewAll={handleClickList}
+        />
+        <DraftPostsArea
+          draftPostList={draftPostList}
+          handleClickPost={handleClickPost}
+          handleClickViewAll={handleClickList}
+        />
+      </div>
+
       <ErrorModal
         isOpen={errorModalHook.isOpen}
         errorMessage={errorModalHook.errorMessage}

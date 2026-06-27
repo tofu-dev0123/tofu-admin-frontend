@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import addIcon from '@/assets/images/add-icon.png';
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface CreateAreaProps {
   handleClickCreate: () => void;
@@ -7,14 +7,10 @@ interface CreateAreaProps {
 
 function CreateArea({ handleClickCreate }: CreateAreaProps) {
   return (
-    <div
-      className="flex items-center justify-center w-full h-full mb-4"
-      onClick={handleClickCreate}
-    >
-      <button className="hover:cursor-pointer hover:opacity-60 hover:scale-110 duration-200">
-        <Image src={addIcon} alt="追加" width={40} height={40} />
-      </button>
-    </div>
+    <Button size="lg" onClick={handleClickCreate}>
+      <Plus />
+      ブログを書く
+    </Button>
   );
 }
 
