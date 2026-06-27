@@ -31,14 +31,16 @@
 
 direnv allow 済みなら下記をそのまま、未使用なら `nix develop --command <cmd>` で実行する。
 
-| コマンド       | 用途                                  |
-| -------------- | ------------------------------------- |
-| `pnpm install` | 依存インストール                      |
-| `pnpm dev`     | 開発サーバー起動                      |
-| `pnpm build`   | 本番ビルド                            |
-| `pnpm lint`    | ESLint                                |
-| `pnpm format`  | Prettier 整形（`prettier --write .`） |
-| `pnpm type`    | 型チェック（`tsc --noEmit`）          |
+| コマンド          | 用途                                  |
+| ----------------- | ------------------------------------- |
+| `pnpm install`    | 依存インストール                      |
+| `pnpm dev`        | 開発サーバー起動                      |
+| `pnpm build`      | 本番ビルド                            |
+| `pnpm lint`       | ESLint                                |
+| `pnpm format`     | Prettier 整形（`prettier --write .`） |
+| `pnpm type`       | 型チェック（`tsc --noEmit`）          |
+| `pnpm test`       | テスト実行（Vitest、1回）             |
+| `pnpm test:watch` | テスト監視実行（Vitest）              |
 
 > ファイル編集後は PostToolUse フックで対象ファイルに `prettier --write` + `eslint --fix` が自動実行される（`.claude/settings.json`、`direnv exec` 経由でローカルバイナリを実行）。コミット前には `pnpm type` で型エラーがないことを確認する。
 
@@ -63,6 +65,20 @@ middleware.ts                /admin 配下の認証ガード（auth_token クッ
 ```
 
 新規ファイルは上記の所在ルールに従って配置する。機能を増やすときは `hooks/admin/<feature>/` 配下にフックを切り出すのが基本パターン。
+
+## 詳細ルール（`.claude/rules/`）
+
+下表の作業をするときは、**着手前に対応するルールファイルを読む**こと。CLAUDE.md には要点のみ、詳細は各ファイルにある。
+
+| 作業                                                    | 読むファイル                                  |
+| ------------------------------------------------------- | --------------------------------------------- |
+| API 呼び出し・Route Handler を追加/変更する             | `.claude/rules/api-routes.md`                 |
+| フック（`use*`）を書く・直す、lint(react-hooks)で詰まる | `.claude/rules/react-hooks.md`                |
+| 状態の置き場所（useState / Context / zustand）を決める  | `.claude/rules/state-management.md`           |
+| エラー処理・ユーザー通知を実装する                      | `.claude/rules/error-handling.md`             |
+| ログ出力を書く                                          | `.claude/rules/logging.md`                    |
+| コンポーネントを書く（ロジックの切り出し方）            | `.claude/rules/component-logic-separation.md` |
+| テストを書く・追加する                                  | `.claude/rules/testing.md`                    |
 
 ## コードスタイル
 
