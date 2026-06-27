@@ -34,6 +34,8 @@ function useAccountMe({ showError }: UseAccountMeProps) {
   }, [showError]);
 
   useEffect(() => {
+    // マウント時にアカウント情報を取得する（外部データの読み込み）
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     getAccount();
   }, [getAccount]);
 

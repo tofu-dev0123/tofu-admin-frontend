@@ -26,7 +26,9 @@ export function useImageInsertion({
   showError,
   initialImages,
 }: UseImageInsertionProps) {
-  const [images, setImages] = useState<ImageInsertionState[]>([]);
+  const [images, setImages] = useState<ImageInsertionState[]>(
+    initialImages ?? []
+  );
   // 編集画面で新たに追加された画像データ（編集画面のみ）
   const [newImages, setNewImages] = useState<ImageInsertionState[]>([]);
   const [isImageAlertOpen, setIsImageAlertOpen] = useState(false);
@@ -34,12 +36,15 @@ export function useImageInsertion({
   const imageInputRef = useRef<HTMLInputElement>(null);
   const pendingFileRef = useRef<File | null>(null);
 
-  // 初期画像データを設定
-  useEffect(() => {
+  // 初期画像データを prop の変化に追従して設定
+  // （effect ではなく render 中に前回値と比較して更新する React 推奨パターン）
+  const [prevInitialImages, setPrevInitialImages] = useState(initialImages);
+  if (initialImages !== prevInitialImages) {
+    setPrevInitialImages(initialImages);
     if (initialImages && initialImages.length > 0) {
       setImages(initialImages);
     }
-  }, [initialImages]);
+  }
 
   // CodeMirror のカーソル位置に Markdown を挿入
   const insertImageMarkdown = useCallback(
