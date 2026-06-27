@@ -1,0 +1,23 @@
+name: Sync main
+
+# production への push（staging → production のマージ）をトリガーに
+# main を production へ fast-forward 同期する（main = 本番ミラー）
+on:
+  push:
+    branches:
+      - production
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # production を main へ早送り。乖離して ff できない場合は失敗させる（手動確認）
+      - name: Fast-forward main to production
+        run: git push origin ${{ github.sha }}:refs/heads/main
