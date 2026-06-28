@@ -13,7 +13,7 @@ function useStatus() {
       const queryParams = new URLSearchParams();
       if (keyword) queryParams.append('keyword', keyword);
       if (newStatus !== 'ALL') queryParams.append('status', newStatus);
-      router.push(`/admin/posts?${queryParams.toString()}`);
+      router.push(`/posts?${queryParams.toString()}`);
     },
     [router, searchParams]
   );

@@ -10,17 +10,17 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   {
     icon: Home,
     label: 'ホーム',
-    path: '/admin/home',
+    path: '/',
   },
   {
     icon: User,
     label: 'アカウント',
-    path: '/admin/account',
+    path: '/account',
   },
   {
     icon: FileText,
     label: '投稿一覧',
-    path: '/admin/posts',
+    path: '/posts',
   },
 ];
 

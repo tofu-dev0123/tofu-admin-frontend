@@ -88,8 +88,8 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
           message: message,
         });
 
-        // 更新後、投稿一覧ページにリダイレクト
-        router.push('/admin/home');
+        // 更新後、ホームにリダイレクト
+        router.push('/');
       } catch (error) {
         exceptErrorHandling(error, showError);
       } finally {

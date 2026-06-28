@@ -44,7 +44,7 @@ function useSearchPost() {
 
   const handleSearch = useCallback(async () => {
     if (!keyword) return;
-    router.push(`/admin/posts?keyword=${encodeURIComponent(keyword)}`);
+    router.push(`/posts?keyword=${encodeURIComponent(keyword)}`);
   }, [router, keyword]);
 
   const handleReset = useCallback(() => {
@@ -52,7 +52,7 @@ function useSearchPost() {
     setPostList([]);
     setTotalCount(0);
     setTotalPages(0);
-    router.push('/admin/posts');
+    router.push('/posts');
   }, [router]);
 
   return {

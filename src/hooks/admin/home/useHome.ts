@@ -29,15 +29,15 @@ function useHome() {
   });
 
   const handleClickCreate = () => {
-    router.push('/admin/posts/new');
+    router.push('/posts/new');
   };
 
   const handleClickList = () => {
-    router.push('/admin/posts');
+    router.push('/posts');
   };
 
   const handleClickPost = (postId: number) => {
-    router.push(`/admin/posts/${postId}/edit`);
+    router.push(`/posts/${postId}/edit`);
   };
 
   useEffect(() => {
