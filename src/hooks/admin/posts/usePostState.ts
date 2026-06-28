@@ -75,7 +75,6 @@ export function usePostState() {
       // 埋め込みリンク情報
       inputUrl: embedLinkHooks.inputUrl,
       isEmbedLinkOpen: embedLinkHooks.open,
-      cursorPosition: embedLinkHooks.cursorPosition,
       // 確認モーダル情報
       isConfirmModalOpen: confirmModalHooks.isOpen,
       attachedImages: confirmModalHooks.attachedImages,
@@ -100,7 +99,6 @@ export function usePostState() {
       imageInsertionHooks.isImageAlertOpen,
       imageInsertionHooks.previewImageUrl,
       embedLinkHooks.open,
-      embedLinkHooks.cursorPosition,
       embedLinkHooks.inputUrl,
       confirmModalHooks.isOpen,
       confirmModalHooks.attachedImages,
@@ -149,8 +147,7 @@ export function usePostState() {
       handleImageAlertOpenChange:
         imageInsertionHooks.handleImageAlertOpenChange,
       // 埋め込みリンク関連
-      handleOpenEmbedLink: embedLinkHooks.handleOpen,
-      handleCloseEmbedLink: embedLinkHooks.handleClose,
+      handleEmbedLinkOpenChange: embedLinkHooks.handleOpenChange,
       handleInputChange: embedLinkHooks.handleInputChange,
       handleInsert: embedLinkHooks.handleInsert,
       // 確認モーダル関連
@@ -191,8 +188,7 @@ export function usePostState() {
       imageInsertionHooks.handleCancelImageInsert,
       imageInsertionHooks.handleImageAlertOpenChange,
       // 埋め込みリンク関連
-      embedLinkHooks.handleOpen,
-      embedLinkHooks.handleClose,
+      embedLinkHooks.handleOpenChange,
       embedLinkHooks.handleInputChange,
       embedLinkHooks.handleInsert,
       // 確認モーダル関連

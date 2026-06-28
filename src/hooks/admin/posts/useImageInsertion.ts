@@ -10,6 +10,8 @@ import { validate } from '@/lib/utils/validation';
 import { MESSAGES } from '@/constants/messages';
 import { THUMBNAIL_MAX_FILE_SIZE } from '@/constants/admin/fileFormats';
 import { logger } from '@/lib/logger';
+import { insertImage } from '@/lib/utils/markdown';
+import { dispatchMarkdownResult } from '@/hooks/admin/editor/dispatchMarkdownResult';
 
 interface UseImageInsertionProps {
   editorViewRef: React.RefObject<EditorView | null>;
@@ -47,32 +49,22 @@ export function useImageInsertion({
     }
   }
 
-  // CodeMirror のカーソル位置に Markdown を挿入
+  // CodeMirror のカーソル位置に画像 Markdown を挿入（純粋関数 + 共通 dispatch）
   const insertImageMarkdown = useCallback(
     (imageUrl: string) => {
       const view = editorViewRef.current;
       if (!view) return;
 
       const { from, to } = view.state.selection.main;
-      const doc = view.state.doc;
-
-      // カーソル位置の前の文字を確認
-      const charBefore = from > 0 ? doc.sliceString(from - 1, from) : '';
-      const needsLeadingNewline = charBefore !== '' && charBefore !== '\n';
-
-      // 改行を追加してから画像マークダウンを挿入
-      const leadingNewline = needsLeadingNewline ? '\n' : '';
-      const markdownText = `${leadingNewline}![](${imageUrl})\n`;
-
-      view.dispatch({
-        changes: { from, to, insert: markdownText },
-        selection: {
-          anchor: from + markdownText.length,
+      const result = insertImage(
+        {
+          text: view.state.doc.toString(),
+          selectionStart: from,
+          selectionEnd: to,
         },
-        scrollIntoView: true,
-      });
-
-      view.focus();
+        imageUrl
+      );
+      dispatchMarkdownResult(view, result);
     },
     [editorViewRef]
   );

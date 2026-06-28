@@ -39,7 +39,6 @@ export interface PostEditorState {
   // 埋め込みリンク情報
   inputUrl: string;
   isEmbedLinkOpen: boolean;
-  cursorPosition: { x: number; y: number };
 
   // 確認モーダル情報
   isConfirmModalOpen: boolean;
@@ -77,8 +76,7 @@ export interface PostEditorActions {
   handleCancelImageInsert: () => void;
   handleImageAlertOpenChange: (open: boolean) => void;
   // 埋め込みリンク関連
-  handleOpenEmbedLink: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  handleCloseEmbedLink: () => void;
+  handleEmbedLinkOpenChange: (open: boolean) => void;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleInsert: () => void;
   // 確認モーダル関連

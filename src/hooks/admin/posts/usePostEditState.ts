@@ -98,7 +98,6 @@ export function usePostEditState({
       // 埋め込みリンク情報
       inputUrl: embedLinkHooks.inputUrl,
       isEmbedLinkOpen: embedLinkHooks.open,
-      cursorPosition: embedLinkHooks.cursorPosition,
       // 確認モーダル情報
       isConfirmModalOpen: confirmModalHooks.isOpen,
       attachedImages: confirmModalHooks.attachedImages,
@@ -125,7 +124,6 @@ export function usePostEditState({
       imageInsertionHooks.isImageAlertOpen,
       imageInsertionHooks.previewImageUrl,
       embedLinkHooks.open,
-      embedLinkHooks.cursorPosition,
       embedLinkHooks.inputUrl,
       confirmModalHooks.isOpen,
       confirmModalHooks.attachedImages,
@@ -175,8 +173,7 @@ export function usePostEditState({
       handleImageAlertOpenChange:
         imageInsertionHooks.handleImageAlertOpenChange,
       // 埋め込みリンク関連
-      handleOpenEmbedLink: embedLinkHooks.handleOpen,
-      handleCloseEmbedLink: embedLinkHooks.handleClose,
+      handleEmbedLinkOpenChange: embedLinkHooks.handleOpenChange,
       handleInputChange: embedLinkHooks.handleInputChange,
       handleInsert: embedLinkHooks.handleInsert,
       // 確認モーダル関連
@@ -211,8 +208,7 @@ export function usePostEditState({
       imageInsertionHooks.handleConfirmNewImageInsert,
       imageInsertionHooks.handleCancelImageInsert,
       imageInsertionHooks.handleImageAlertOpenChange,
-      embedLinkHooks.handleOpen,
-      embedLinkHooks.handleClose,
+      embedLinkHooks.handleOpenChange,
       embedLinkHooks.handleInputChange,
       embedLinkHooks.handleInsert,
       confirmModalHooks.onOpen,
