@@ -6,7 +6,7 @@ function Logo() {
   const router = useRouter();
 
   const handleClickLogo = () => {
-    router.push('/admin/home');
+    router.push('/');
   };
 
   return (

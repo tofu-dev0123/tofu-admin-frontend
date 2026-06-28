@@ -20,7 +20,7 @@ function usePostList() {
   const router = useRouter();
 
   const handleClickEdit = (postId: number) => {
-    router.push(`/admin/posts/${postId}/edit`);
+    router.push(`/posts/${postId}/edit`);
   };
 
   useEffect(() => {
