@@ -1,6 +1,7 @@
 import type { RefObject } from 'react';
 import type { EditorView } from '@codemirror/view';
 import type { ImageInsertionState } from '@/hooks/admin/posts/useImageInsertion';
+import type { MarkdownFormat } from '@/hooks/admin/editor/useMarkdownToolbar';
 import type { PostStatus } from '@/types/api/post';
 
 export interface PostEditorState {
@@ -49,6 +50,8 @@ export interface PostEditorActions {
   // 基本情報関連
   setTitle: (title: string) => void;
   setContent: (content: string) => void;
+  // Markdown ツールバー（書式の付与/解除）
+  applyFormat: (format: MarkdownFormat) => void;
   setThumbnailUrl: (url: string | null) => void;
   setImageId: (id: number | null) => void;
   setAltText: (text: string | null) => void;

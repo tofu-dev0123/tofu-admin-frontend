@@ -17,6 +17,7 @@ import useErrorModal from '@/hooks/admin/common/useErrorModal';
 import useEmbedLink from './useEmbedLink';
 import useConfirmModal from './useConfirmModal';
 import usePostSubmit from './usePostSubmit';
+import useMarkdownToolbar from '@/hooks/admin/editor/useMarkdownToolbar';
 
 export function usePostState() {
   const errorModalHooks = useErrorModal();
@@ -36,6 +37,7 @@ export function usePostState() {
     editorViewRef,
     showError: errorModalHooks.showError,
   });
+  const markdownToolbarHooks = useMarkdownToolbar(editorViewRef);
   const confirmModalHooks = useConfirmModal({
     showError: errorModalHooks.showError,
   });
@@ -132,6 +134,7 @@ export function usePostState() {
       // 基本情報関連
       setTitle: postTitleHooks.setTitle,
       setContent: postContentHooks.setContent,
+      applyFormat: markdownToolbarHooks.applyFormat,
       togglePreview: onClickPreviewHooks.togglePreview,
       reset,
       // エラーモーダル関連
@@ -160,6 +163,7 @@ export function usePostState() {
       // 基本情報関連
       postTitleHooks.setTitle,
       postContentHooks.setContent,
+      markdownToolbarHooks.applyFormat,
       thumbnailHooks.setThumbnailUrl,
       thumbnailHooks.setImageId,
       thumbnailHooks.setAltText,
