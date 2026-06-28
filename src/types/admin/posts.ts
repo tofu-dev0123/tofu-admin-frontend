@@ -1,6 +1,7 @@
 import type { RefObject } from 'react';
 import type { EditorView } from '@codemirror/view';
 import type { ImageInsertionState } from '@/hooks/admin/posts/useImageInsertion';
+import type { MarkdownFormat } from '@/hooks/admin/editor/useMarkdownToolbar';
 import type { PostStatus } from '@/types/api/post';
 
 export interface PostEditorState {
@@ -38,7 +39,6 @@ export interface PostEditorState {
   // 埋め込みリンク情報
   inputUrl: string;
   isEmbedLinkOpen: boolean;
-  cursorPosition: { x: number; y: number };
 
   // 確認モーダル情報
   isConfirmModalOpen: boolean;
@@ -49,6 +49,8 @@ export interface PostEditorActions {
   // 基本情報関連
   setTitle: (title: string) => void;
   setContent: (content: string) => void;
+  // Markdown ツールバー（書式の付与/解除）
+  applyFormat: (format: MarkdownFormat) => void;
   setThumbnailUrl: (url: string | null) => void;
   setImageId: (id: number | null) => void;
   setAltText: (text: string | null) => void;
@@ -74,8 +76,7 @@ export interface PostEditorActions {
   handleCancelImageInsert: () => void;
   handleImageAlertOpenChange: (open: boolean) => void;
   // 埋め込みリンク関連
-  handleOpenEmbedLink: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  handleCloseEmbedLink: () => void;
+  handleEmbedLinkOpenChange: (open: boolean) => void;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleInsert: () => void;
   // 確認モーダル関連

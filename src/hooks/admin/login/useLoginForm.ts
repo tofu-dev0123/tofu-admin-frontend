@@ -32,7 +32,7 @@ function useLoginForm() {
     try {
       await postToNextApi<{ ok: boolean }>(API_ENDPOINTS.login.post, request);
 
-      router.push('/admin/home');
+      router.push('/');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         // APIからエラーレスポンスが返ってきた場合

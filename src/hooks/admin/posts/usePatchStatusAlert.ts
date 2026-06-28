@@ -10,6 +10,7 @@ import {
 } from '@/types/api/post';
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
+import { logger } from '@/lib/logger';
 
 interface UsePatchStatusAlertProps {
   showError: (message: string[]) => void;
@@ -42,6 +43,7 @@ function usePatchStatusAlert({ showError }: UsePatchStatusAlertProps) {
         API_ENDPOINTS.posts.patchStatus(postId),
         request
       );
+      logger.info('[posts] 投稿ステータスを変更しました', { postId, status });
 
       const message = response.message;
       useToastStore.getState().show({

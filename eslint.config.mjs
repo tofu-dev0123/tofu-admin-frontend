@@ -3,7 +3,6 @@ import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
-import importPlugin from 'eslint-plugin-import';
 
 export default defineConfig([
   ...nextVitals,
@@ -12,7 +11,6 @@ export default defineConfig([
   {
     plugins: {
       prettier,
-      import: importPlugin,
     },
     rules: {
       // ../ を禁止（alias はOK）
