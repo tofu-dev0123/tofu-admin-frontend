@@ -1,22 +1,22 @@
 export const PAGE_TITLES = [
   {
-    path: '/admin/home',
+    path: '/',
     title: 'ホーム',
   },
   {
-    path: '/admin/account',
+    path: '/account',
     title: 'アカウント管理',
   },
   {
-    path: '/admin/posts',
+    path: '/posts',
     title: '投稿一覧',
   },
   {
-    path: '/admin/posts/new',
+    path: '/posts/new',
     title: '投稿作成',
   },
   {
-    path: '/admin/posts/:id/edit',
+    path: '/posts/:id/edit',
     title: '投稿編集',
   },
 ];

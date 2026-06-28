@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { EditorView } from '@codemirror/view';
 import { validate } from '@/lib/utils/validation';
+import { insertLink } from '@/lib/utils/markdown';
+import { dispatchMarkdownResult } from '@/hooks/admin/editor/dispatchMarkdownResult';
 
 interface UseEmbedLinkProps {
   editorViewRef: React.RefObject<EditorView | null>;
@@ -9,81 +11,52 @@ interface UseEmbedLinkProps {
 
 function useEmbedLink({ editorViewRef, showError }: UseEmbedLinkProps) {
   const [open, setOpen] = useState(false);
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [inputUrl, setInputUrl] = useState('');
 
-  const handleOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setOpen(true);
-    setCursorPosition({ x: e.clientX, y: e.clientY });
-  };
+  const handleOpenChange = useCallback((next: boolean) => {
+    setOpen(next);
+    if (!next) setInputUrl('');
+  }, []);
 
-  const handleClose = () => {
-    setOpen(false);
-    setCursorPosition({ x: 0, y: 0 });
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputUrl(e.target.value);
-  };
-
-  // CodeMirror のカーソル位置に Markdown リンクを挿入
-  const insertLinkMarkdown = useCallback(
-    (url: string) => {
-      const view = editorViewRef.current;
-      if (!view) return;
-
-      const { from, to } = view.state.selection.main;
-      const doc = view.state.doc;
-
-      // カーソル位置の前の文字を確認
-      const charBefore = from > 0 ? doc.sliceString(from - 1, from) : '';
-      const needsLeadingNewline = charBefore !== '' && charBefore !== '\n';
-
-      // 改行を追加してからリンクマークダウンを挿入
-      const leadingNewline = needsLeadingNewline ? '\n' : '';
-      const markdownText = `${leadingNewline}[](${url})\n`;
-
-      view.dispatch({
-        changes: { from, to, insert: markdownText },
-        selection: {
-          anchor: from + markdownText.length,
-        },
-        scrollIntoView: true,
-      });
-
-      view.focus();
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputUrl(e.target.value);
     },
-    [editorViewRef]
+    []
   );
 
-  const handleInsert = () => {
-    // URLのバリデーション
+  const handleInsert = useCallback(() => {
+    // URL のバリデーション
     const urlError = validate(inputUrl, 'url');
-
     if (urlError) {
       showError([urlError]);
       return;
     }
 
-    // CodeMirror に Markdown リンクを挿入
-    insertLinkMarkdown(inputUrl);
+    const view = editorViewRef.current;
+    if (view) {
+      const { from, to } = view.state.selection.main;
+      const result = insertLink(
+        {
+          text: view.state.doc.toString(),
+          selectionStart: from,
+          selectionEnd: to,
+        },
+        inputUrl
+      );
+      dispatchMarkdownResult(view, result);
+    }
 
-    // 入力URLをクリア
     setInputUrl('');
-
-    // ダイアログを閉じる
     setOpen(false);
-    setCursorPosition({ x: 0, y: 0 });
-  };
+  }, [editorViewRef, inputUrl, showError]);
 
   return {
     open,
-    cursorPosition,
     inputUrl,
+    handleOpenChange,
     handleInputChange,
     handleInsert,
-    handleOpen,
-    handleClose,
   };
 }
 

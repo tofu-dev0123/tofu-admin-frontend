@@ -1,125 +1,227 @@
 'use client';
 
+import { useState } from 'react';
+import {
+  Pencil,
+  Eye,
+  Heading,
+  ChevronDown,
+  Link as LinkIcon,
+  Image as ImageIcon,
+  Save,
+  Send,
+} from 'lucide-react';
 import { CardContent } from '@/components/ui/card';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover';
 import { usePostEditorContext } from '@/hooks/admin/posts/usePostEditorContext';
-import previewIcon from '@/assets/images/preview-icon.png';
-import editIcon from '@/assets/images/edit-icon.png';
-import imageAddIcon from '@/assets/images/image-add-icon.png';
-import linkIcon from '@/assets/images/link-icon.png';
-import uploadIcon from '@/assets/images/upload-icon.png';
-import draftIcon from '@/assets/images/draft-icon.png';
-import Image from 'next/image';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { IMAGE_ACCEPT_FORMATS } from '@/constants/admin/fileFormats';
-import EmbedLink from '@/components/features/admin/posts/Editor/EmbedLink';
+import {
+  TOOLBAR_GROUPS,
+  HEADING_LEVELS,
+} from '@/components/features/admin/posts/Editor/markdownToolbarItems';
 import { PostStatus } from '@/types/api/post';
+import { cn } from '@/lib/utils';
+
+// ツールバーの書式ボタン共通スタイル
+const TOOL_BUTTON =
+  'flex h-8 w-8 items-center justify-center rounded-md text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:pointer-events-none disabled:opacity-40';
 
 function EditorHeader() {
   const { state, actions, ui } = usePostEditorContext();
+  const { applyFormat } = actions;
+  // 見出しドロップダウンの開閉（表示専用の状態）
+  const [isHeadingOpen, setIsHeadingOpen] = useState(false);
+
+  // プレビュー中はエディタが無く書式適用できないため無効化する
+  const disabled = state.isPreview;
 
   return (
-    <>
-      <CardContent className="w-full h-20 lg:p-4 p-2 flex items-center justify-between gap-4 border-b border-gray-200">
-        <div className="flex items-center justify-start lg:pl-10 pl-2 gap-2">
-          <div
-            className="relative w-18 h-8 rounded-full bg-gray-300 flex items-center justify-between mr-4"
-            onClick={actions.togglePreview}
-          >
-            <div
-              className={`absolute w-9 h-9 border border-gray-300 rounded-full bg-white transition-transform duration-300 ease-in-out ${
-                state.isPreview
-                  ? 'translate-x-[calc(100%+0.1rem)]'
-                  : 'translate-x-[-0.1rem]'
-              }`}
+    <CardContent className="flex w-full flex-wrap items-center justify-between gap-3 border-b border-neutral-200 px-2 py-3 lg:px-6">
+      {/* 左：Edit/Preview 切替 + 書式ツールバー */}
+      <div className="flex flex-wrap items-center gap-2">
+        {/* Edit / Preview トグル */}
+        <button
+          type="button"
+          onClick={actions.togglePreview}
+          className="relative flex h-9 w-20 items-center rounded-full bg-neutral-200"
+          aria-label="編集とプレビューの切り替え"
+        >
+          {/* つまみ: 各アイコン（幅 1/2 = 40px）の中心に揃う位置へ移動 */}
+          <span
+            className={cn(
+              'absolute top-[2px] left-0 h-8 w-8 rounded-full border border-neutral-300 bg-white shadow-sm transition-transform duration-300 ease-in-out',
+              state.isPreview ? 'translate-x-11' : 'translate-x-1'
+            )}
+          />
+          <span className="relative z-10 flex h-9 w-1/2 items-center justify-center">
+            <Pencil
+              className={cn(
+                'h-4 w-4',
+                state.isPreview ? 'text-neutral-400' : 'text-neutral-900'
+              )}
             />
-            <div className="relative w-8 h-8 rounded-full flex items-center justify-center z-10">
-              <Image
-                src={editIcon}
-                alt="edit"
-                width={18}
-                height={18}
-                className={`${
-                  state.isPreview
-                    ? 'opacity-40'
-                    : 'hover:cursor-pointer hover:opacity-60 duration-200'
-                }`}
-              />
-            </div>
-            <div className="relative w-8 h-8 rounded-full flex items-center justify-center z-10">
-              <Image
-                src={previewIcon}
-                alt="preview"
-                width={18}
-                height={18}
-                className={`${
-                  state.isPreview
-                    ? 'hover:cursor-pointer hover:opacity-60 duration-200'
-                    : 'opacity-40'
-                }`}
-              />
-            </div>
-          </div>
-          <div className="w-10 h-full rounded-full flex items-center justify-center">
+          </span>
+          <span className="relative z-10 flex h-9 w-1/2 items-center justify-center">
+            <Eye
+              className={cn(
+                'h-4 w-4',
+                state.isPreview ? 'text-neutral-900' : 'text-neutral-400'
+              )}
+            />
+          </span>
+        </button>
+
+        <span className="mx-1 h-6 w-px bg-neutral-200" />
+
+        {/* 見出しドロップダウン */}
+        <Popover open={isHeadingOpen} onOpenChange={setIsHeadingOpen}>
+          <PopoverTrigger asChild>
             <button
               type="button"
-              className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:cursor-pointer hover:opacity-60 duration-200"
-              onClick={actions.handleImageIconClick}
+              disabled={disabled}
+              className="flex h-8 items-center gap-0.5 rounded-md px-2 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:pointer-events-none disabled:opacity-40"
+              title="見出し"
             >
-              <Image
-                src={imageAddIcon}
-                alt="image add"
-                width={18}
-                height={18}
+              <Heading className="h-[18px] w-[18px]" />
+              <ChevronDown className="h-3 w-3 text-neutral-400" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-40 p-1">
+            {HEADING_LEVELS.map(({ level, label }) => (
+              <button
+                key={level}
+                type="button"
+                onClick={() => {
+                  applyFormat({ kind: 'heading', level });
+                  setIsHeadingOpen(false);
+                }}
+                className="flex w-full items-center rounded-sm px-2 py-1.5 text-left text-sm text-neutral-700 transition hover:bg-neutral-100"
+              >
+                {label}
+              </button>
+            ))}
+          </PopoverContent>
+        </Popover>
+
+        {/* 書式ボタン群（グループごとに区切り線） */}
+        {TOOLBAR_GROUPS.map((group) => (
+          <div key={group[0].id} className="flex items-center gap-0.5">
+            <span className="mx-1 h-5 w-px bg-neutral-200" />
+            {group.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => applyFormat(item.format)}
+                  className={TOOL_BUTTON}
+                  title={item.label}
+                  aria-label={item.label}
+                >
+                  <Icon className="h-[18px] w-[18px]" />
+                </button>
+              );
+            })}
+          </div>
+        ))}
+
+        <span className="mx-1 h-5 w-px bg-neutral-200" />
+
+        {/* リンク挿入（URL 入力ポップオーバー） */}
+        <Popover
+          open={state.isEmbedLinkOpen}
+          onOpenChange={actions.handleEmbedLinkOpenChange}
+        >
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              disabled={disabled}
+              className={TOOL_BUTTON}
+              title="リンク挿入"
+              aria-label="リンク挿入"
+            >
+              <LinkIcon className="h-[18px] w-[18px]" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-80 p-3">
+            <div className="flex items-center gap-2">
+              <Input
+                type="url"
+                placeholder="URLを入力してください"
+                className="h-9 flex-1"
+                value={state.inputUrl}
+                onChange={actions.handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    actions.handleInsert();
+                  }
+                }}
               />
-            </button>
-            <input
-              type="file"
-              accept={IMAGE_ACCEPT_FORMATS}
-              // eslint-disable-next-line react-hooks/refs
-              ref={ui.imageInputRef}
-              onChange={actions.handleImageFileChange}
-              className="hidden"
-            />
-          </div>
-          <div className="w-10 h-full rounded-full flex items-center justify-center">
-            <button
-              className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:cursor-pointer hover:opacity-60 duration-200"
-              onClick={actions.handleOpenEmbedLink}
-            >
-              <Image src={linkIcon} alt="link" width={18} height={18} />
-            </button>
-          </div>
-        </div>
-        <div className="flex items-center justify-end gap-2 lg:pr-10 pr-2">
-          <div className="w-10 h-full rounded-full flex items-center justify-center">
-            <button
-              className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:cursor-pointer hover:opacity-60 duration-200"
-              onClick={() => actions.handleSubmit(state, 'DRAFT' as PostStatus)}
-            >
-              <Image src={draftIcon} alt="draft" width={18} height={18} />
-            </button>
-          </div>
-          <div className="w-10 h-full rounded-full flex items-center justify-center">
-            <button
-              className="w-8 h-8 border border-gray-300 rounded-full flex items-center justify-center hover:cursor-pointer hover:opacity-60 duration-200"
-              onClick={() =>
-                actions.handleOpenConfirmModal(
-                  state.thumbnailUrl ?? '',
-                  state.title,
-                  state.tags,
-                  state.content
-                )
-              }
-            >
-              <Image src={uploadIcon} alt="upload" width={18} height={18} />
-            </button>
-          </div>
-        </div>
-      </CardContent>
-      <EmbedLink
-        open={state.isEmbedLinkOpen}
-        onClose={actions.handleCloseEmbedLink}
-      />
-    </>
+              <Button
+                type="button"
+                className="h-9"
+                onClick={actions.handleInsert}
+              >
+                挿入
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        {/* 画像挿入（既存機能） */}
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={actions.handleImageIconClick}
+          className={TOOL_BUTTON}
+          title="画像挿入"
+          aria-label="画像挿入"
+        >
+          <ImageIcon className="h-[18px] w-[18px]" />
+        </button>
+        <input
+          type="file"
+          accept={IMAGE_ACCEPT_FORMATS}
+          // eslint-disable-next-line react-hooks/refs
+          ref={ui.imageInputRef}
+          onChange={actions.handleImageFileChange}
+          className="hidden"
+        />
+      </div>
+
+      {/* 右：下書き保存 / 公開 */}
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => actions.handleSubmit(state, 'DRAFT' as PostStatus)}
+          className="flex h-9 items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-3 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50"
+        >
+          <Save className="h-4 w-4" /> 下書き保存
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            actions.handleOpenConfirmModal(
+              state.thumbnailUrl ?? '',
+              state.title,
+              state.tags,
+              state.content
+            )
+          }
+          className="flex h-9 items-center gap-1.5 rounded-md bg-neutral-900 px-3 text-sm font-medium text-white transition hover:bg-neutral-800"
+        >
+          <Send className="h-4 w-4" /> 公開
+        </button>
+      </div>
+    </CardContent>
   );
 }
 

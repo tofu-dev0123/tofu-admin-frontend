@@ -70,8 +70,8 @@ function usePostSubmit({ showError }: UsePostSubmitProps) {
           message: message,
         });
 
-        // 投稿を作成したら、投稿一覧ページにリダイレクト
-        router.push('/admin/home');
+        // 投稿を作成したら、ホームにリダイレクト
+        router.push('/');
       } catch (error) {
         exceptErrorHandling(error, showError);
       } finally {

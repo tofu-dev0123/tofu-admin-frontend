@@ -29,7 +29,7 @@ function useDashboard() {
       const result = await confirm('ログアウトしますか？');
       if (result) {
         await postToNextApi<{ ok: boolean }>(API_ENDPOINTS.logout.post);
-        router.push('/admin/login');
+        router.push('/login');
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {

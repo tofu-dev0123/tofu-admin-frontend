@@ -1,21 +1,25 @@
+'use client';
+
 import { useRouter } from 'next/navigation';
 
 function Logo() {
   const router = useRouter();
 
   const handleClickLogo = () => {
-    router.push('/admin/home');
+    router.push('/');
   };
 
   return (
-    <div className="w-full flex items-center cursor-pointer gap-4 p-2">
-      <h1
-        className="text-2xl font-bold cursor-pointer"
-        onClick={handleClickLogo}
-      >
-        Tofu Blog
-      </h1>
-    </div>
+    <button
+      type="button"
+      onClick={handleClickLogo}
+      className="flex items-center gap-2 cursor-pointer"
+    >
+      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">
+        T
+      </span>
+      <span className="text-lg font-bold tracking-tight">Tofu Blog</span>
+    </button>
   );
 }
 

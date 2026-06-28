@@ -17,6 +17,7 @@ import useErrorModal from '@/hooks/admin/common/useErrorModal';
 import useEmbedLink from './useEmbedLink';
 import useConfirmModal from './useConfirmModal';
 import usePostSubmit from './usePostSubmit';
+import useMarkdownToolbar from '@/hooks/admin/editor/useMarkdownToolbar';
 
 export function usePostState() {
   const errorModalHooks = useErrorModal();
@@ -36,6 +37,7 @@ export function usePostState() {
     editorViewRef,
     showError: errorModalHooks.showError,
   });
+  const markdownToolbarHooks = useMarkdownToolbar(editorViewRef);
   const confirmModalHooks = useConfirmModal({
     showError: errorModalHooks.showError,
   });
@@ -73,7 +75,6 @@ export function usePostState() {
       // 埋め込みリンク情報
       inputUrl: embedLinkHooks.inputUrl,
       isEmbedLinkOpen: embedLinkHooks.open,
-      cursorPosition: embedLinkHooks.cursorPosition,
       // 確認モーダル情報
       isConfirmModalOpen: confirmModalHooks.isOpen,
       attachedImages: confirmModalHooks.attachedImages,
@@ -98,7 +99,6 @@ export function usePostState() {
       imageInsertionHooks.isImageAlertOpen,
       imageInsertionHooks.previewImageUrl,
       embedLinkHooks.open,
-      embedLinkHooks.cursorPosition,
       embedLinkHooks.inputUrl,
       confirmModalHooks.isOpen,
       confirmModalHooks.attachedImages,
@@ -132,6 +132,7 @@ export function usePostState() {
       // 基本情報関連
       setTitle: postTitleHooks.setTitle,
       setContent: postContentHooks.setContent,
+      applyFormat: markdownToolbarHooks.applyFormat,
       togglePreview: onClickPreviewHooks.togglePreview,
       reset,
       // エラーモーダル関連
@@ -146,8 +147,7 @@ export function usePostState() {
       handleImageAlertOpenChange:
         imageInsertionHooks.handleImageAlertOpenChange,
       // 埋め込みリンク関連
-      handleOpenEmbedLink: embedLinkHooks.handleOpen,
-      handleCloseEmbedLink: embedLinkHooks.handleClose,
+      handleEmbedLinkOpenChange: embedLinkHooks.handleOpenChange,
       handleInputChange: embedLinkHooks.handleInputChange,
       handleInsert: embedLinkHooks.handleInsert,
       // 確認モーダル関連
@@ -160,6 +160,7 @@ export function usePostState() {
       // 基本情報関連
       postTitleHooks.setTitle,
       postContentHooks.setContent,
+      markdownToolbarHooks.applyFormat,
       thumbnailHooks.setThumbnailUrl,
       thumbnailHooks.setImageId,
       thumbnailHooks.setAltText,
@@ -187,8 +188,7 @@ export function usePostState() {
       imageInsertionHooks.handleCancelImageInsert,
       imageInsertionHooks.handleImageAlertOpenChange,
       // 埋め込みリンク関連
-      embedLinkHooks.handleOpen,
-      embedLinkHooks.handleClose,
+      embedLinkHooks.handleOpenChange,
       embedLinkHooks.handleInputChange,
       embedLinkHooks.handleInsert,
       // 確認モーダル関連
