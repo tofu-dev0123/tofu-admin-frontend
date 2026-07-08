@@ -4,7 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { get } from '@/lib/api/http';
 import { API_ENDPOINTS } from '@/lib/api/endpoint';
 import { PostResponse, Post, PostStatus } from '@/types/api/post';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface UseSearchPostProps {
   // サーバー（RSC）で取得済みの初期一覧。以降の検索はクライアントで行う
@@ -13,10 +13,34 @@ interface UseSearchPostProps {
 
 function useSearchPost({ initial }: UseSearchPostProps = {}) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [totalCount, setTotalCount] = useState(initial?.total_count ?? 0);
   const [totalPages, setTotalPages] = useState(initial?.total_pages ?? 0);
   const [postList, setPostList] = useState<Post[]>(initial?.posts ?? []);
-  const [keyword, setKeyword] = useState<string>('');
+
+  // 入力欄は URL のキーワードで初期化し、URL が変わったら同期する
+  // （effect ではなく render 中比較。戻る/クリア/検索に追従させるため）。
+  const urlKeyword = searchParams.get('keyword') ?? '';
+  const [keyword, setKeyword] = useState<string>(urlKeyword);
+  const [prevUrlKeyword, setPrevUrlKeyword] = useState<string>(urlKeyword);
+  if (urlKeyword !== prevUrlKeyword) {
+    setPrevUrlKeyword(urlKeyword);
+    setKeyword(urlKeyword);
+  }
+
+  // 現在のステータス条件を保ったまま遷移するための共通クエリ生成
+  const buildQuery = useCallback(
+    (nextKeyword: string) => {
+      const params = new URLSearchParams();
+      const trimmed = nextKeyword.trim();
+      if (trimmed) params.append('keyword', trimmed);
+      const status = searchParams.get('status');
+      if (status) params.append('status', status);
+      const qs = params.toString();
+      return qs ? `/posts?${qs}` : '/posts';
+    },
+    [searchParams]
+  );
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,17 +73,16 @@ function useSearchPost({ initial }: UseSearchPostProps = {}) {
     []
   );
 
-  const handleSearch = useCallback(async () => {
-    if (!keyword) return;
-    router.push(`/posts?keyword=${encodeURIComponent(keyword)}`);
-  }, [router, keyword]);
+  // Enter / 検索実行。空文字ならキーワードを外して全件に戻る（ステータスは保持）。
+  const handleSearch = useCallback(() => {
+    router.push(buildQuery(keyword));
+  }, [router, buildQuery, keyword]);
 
-  const handleReset = useCallback(() => {
-    // 入力だけクリアして /posts へ遷移する。リストの即時クリアはせず、
-    // 再取得（useTransition）が完了してから差し替えてちらつきを防ぐ。
+  // 入力欄の × クリア。入力を空にしてキーワードを外す（ステータスは保持）。
+  const handleClear = useCallback(() => {
     setKeyword('');
-    router.push('/posts');
-  }, [router]);
+    router.push(buildQuery(''));
+  }, [router, buildQuery]);
 
   return {
     totalCount,
@@ -68,12 +91,12 @@ function useSearchPost({ initial }: UseSearchPostProps = {}) {
     keyword,
     search,
     handleSearch,
+    handleClear,
     handleInputChange,
     setTotalCount,
     setTotalPages,
     setPostList,
     setKeyword,
-    handleReset,
   };
 }
 

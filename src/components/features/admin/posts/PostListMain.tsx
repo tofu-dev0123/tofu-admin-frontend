@@ -1,6 +1,6 @@
 'use client';
 
-import PostSearchInfo from '@/components/features/admin/posts/PostSearchInfo';
+import PostSearchBar from '@/components/features/admin/posts/PostSearchBar';
 import PostList from '@/components/features/admin/posts/PostList';
 import usePostList from '@/hooks/admin/posts/usePostList';
 import type { PostResponse } from '@/types/api/post';
@@ -22,13 +22,13 @@ function PostListMain({ initialData }: PostListMainProps) {
     isEmpty,
   } = usePostList({ initialData });
   return (
-    // PostListMain.tsx の17-18行目
     <div className="h-full w-full lg:w-6xl flex flex-col mx-auto p-4 lg:px-0">
       <div className="h-full lg:w-200 w-full lg:mx-auto flex flex-col">
-        <PostSearchInfo
-          totalPosts={searchPost.totalCount}
-          keyword={displayedKeyword}
+        <PostSearchBar
+          searchPost={searchPost}
           status={statusHook}
+          totalCount={searchPost.totalCount}
+          isRefetching={isRefetching}
         />
         <PostList
           searchPost={searchPost}
