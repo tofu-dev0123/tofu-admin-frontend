@@ -2,7 +2,7 @@
 
 import useSummary from '@/hooks/admin/home/useSummary';
 import usePostList from '@/hooks/admin/home/usePostList';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useErrorModal from '@/hooks/admin/common/useErrorModal';
 import { useRouter } from 'next/navigation';
 import { PostStatus } from '@/types/api/post';
@@ -28,6 +28,9 @@ function useHome() {
     showError: errorModalHook.showError,
   });
 
+  // 初期ローディング状態（初期値からの差し替えによるちらつきを防ぐ）
+  const [isLoading, setIsLoading] = useState(true);
+
   const handleClickCreate = () => {
     router.push('/posts/new');
   };
@@ -41,14 +44,23 @@ function useHome() {
   };
 
   useEffect(() => {
-    // 初期処理
-    getAccount();
-    getSummary();
-    getPostList({ limit: 3, status: 'PUBLISHED' as PostStatus });
-    getPostList({ limit: 3, status: 'DRAFT' as PostStatus });
+    // 初期処理（全取得を待って一括でローディング解除）
+    (async () => {
+      try {
+        await Promise.all([
+          getAccount(),
+          getSummary(),
+          getPostList({ limit: 3, status: 'PUBLISHED' as PostStatus }),
+          getPostList({ limit: 3, status: 'DRAFT' as PostStatus }),
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
   }, [getAccount, getSummary, getPostList]);
 
   return {
+    isLoading,
     accountName,
     username,
     totalPosts,

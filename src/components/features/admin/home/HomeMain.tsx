@@ -11,6 +11,7 @@ import AccountArea from '@/components/features/admin/home/AccountArea';
 
 function HomeMain() {
   const {
+    isLoading,
     totalPosts,
     publishedPosts,
     draftPosts,
@@ -28,7 +29,11 @@ function HomeMain() {
     <div className="mx-auto w-full max-w-5xl px-4 py-4 lg:px-20">
       {/* 上段: アカウントカード + 主要導線 */}
       <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <AccountArea accountName={accountName} username={username} />
+        <AccountArea
+          accountName={accountName}
+          username={username}
+          isLoading={isLoading}
+        />
         <div className="flex items-center gap-2">
           <CreateArea handleClickCreate={handleClickCreate} />
           <ListArea handleClickList={handleClickList} />
@@ -41,6 +46,7 @@ function HomeMain() {
           totalPosts={totalPosts}
           publishedPosts={publishedPosts}
           draftPosts={draftPosts}
+          isLoading={isLoading}
         />
       </div>
 
@@ -50,11 +56,13 @@ function HomeMain() {
           postList={postList}
           handleClickPost={handleClickPost}
           handleClickViewAll={handleClickList}
+          isLoading={isLoading}
         />
         <DraftPostsArea
           draftPostList={draftPostList}
           handleClickPost={handleClickPost}
           handleClickViewAll={handleClickList}
+          isLoading={isLoading}
         />
       </div>
 
