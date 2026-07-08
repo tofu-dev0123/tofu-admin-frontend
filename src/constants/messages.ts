@@ -21,6 +21,11 @@ export const MESSAGES = {
       maxFileSize: 'ファイルサイズは5MB以下にしてください',
     },
   },
+  posts: {
+    empty: '記事がありません',
+    emptySearch: (keyword: string) =>
+      `「${keyword}」に一致する記事はありません`,
+  },
   draft: {
     restore: {
       title: '下書きを復元しますか？',
