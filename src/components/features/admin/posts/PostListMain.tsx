@@ -1,10 +1,15 @@
 'use client';
 
-import PostSearchInfo from '@/components/features/admin/posts/PostSearchInfo';
+import PostSearchBar from '@/components/features/admin/posts/PostSearchBar';
 import PostList from '@/components/features/admin/posts/PostList';
 import usePostList from '@/hooks/admin/posts/usePostList';
+import type { PostResponse } from '@/types/api/post';
 
-function PostListMain() {
+interface PostListMainProps {
+  initialData: PostResponse;
+}
+
+function PostListMain({ initialData }: PostListMainProps) {
   const {
     searchPost,
     status: statusHook,
@@ -12,22 +17,32 @@ function PostListMain() {
     patchStatusAlert,
     displayedKeyword,
     handleClickEdit,
-  } = usePostList();
+    isRefetching,
+    isColdLoading,
+    isEmpty,
+  } = usePostList({ initialData });
   return (
-    // PostListMain.tsx の17-18行目
-    <div className="h-full w-full lg:w-6xl flex flex-col mx-auto p-4 lg:px-0">
-      <div className="h-full lg:w-200 w-full lg:mx-auto flex flex-col">
-        <PostSearchInfo
-          totalPosts={searchPost.totalCount}
-          keyword={displayedKeyword}
-          status={statusHook}
-        />
-        <PostList
-          searchPost={searchPost}
-          deleteAlert={deleteAlert}
-          patchStatusAlert={patchStatusAlert}
-          handleClickEdit={handleClickEdit}
-        />
+    <div className="w-full lg:w-6xl flex flex-col mx-auto p-4 lg:px-0 lg:py-8">
+      <div className="w-full lg:w-200 lg:mx-auto">
+        {/* 検索バー + リストを 1 枚のパネルにまとめる */}
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <PostSearchBar
+            searchPost={searchPost}
+            status={statusHook}
+            totalCount={searchPost.totalCount}
+            isRefetching={isRefetching}
+          />
+          <PostList
+            searchPost={searchPost}
+            deleteAlert={deleteAlert}
+            patchStatusAlert={patchStatusAlert}
+            handleClickEdit={handleClickEdit}
+            displayedKeyword={displayedKeyword}
+            isRefetching={isRefetching}
+            isColdLoading={isColdLoading}
+            isEmpty={isEmpty}
+          />
+        </div>
       </div>
     </div>
   );

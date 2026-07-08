@@ -4,15 +4,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import useAccountMain from '@/hooks/admin/account/useAccountMain';
 import AccountInfoColumn from '@/components/features/admin/account/AccountInfoColumn';
 import ErrorModal from '@/components/features/admin/common/ErrorModal';
+import { MeResponse } from '@/types/api/account';
 
-function AccountMain() {
+interface AccountMainProps {
+  initialAccount: MeResponse;
+}
+
+function AccountMain({ initialAccount }: AccountMainProps) {
   const {
     accountMeHooks,
     editAccountNameHooks,
     editUsernameHooks,
     editPasswordHooks,
     errorModalHooks,
-  } = useAccountMain();
+  } = useAccountMain({ initialAccount });
   return (
     <div className="h-full w-full lg:w-6xl flex flex-col mx-auto p-4 lg:px-0">
       <div className="h-full lg:w-200 w-full lg:mx-auto flex flex-col">

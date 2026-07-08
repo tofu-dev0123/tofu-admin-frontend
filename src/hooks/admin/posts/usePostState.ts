@@ -45,11 +45,19 @@ export function usePostState() {
     showError: errorModalHooks.showError,
   });
 
+  // 未保存の変更があるか（新規作成: いずれかが入力済みなら dirty）
+  const isDirty =
+    postTitleHooks.title.trim() !== '' ||
+    postContentHooks.content.trim() !== '' ||
+    tagsHooks.tags.length > 0 ||
+    thumbnailHooks.thumbnailUrl !== null;
+
   const state: PostEditorState = useMemo(
     () => ({
       // UI状態
       isPreview: onClickPreviewHooks.isPreview,
       isSubmitLoading: postSubmitHooks.isLoading,
+      isDirty,
       // 基本情報
       title: postTitleHooks.title,
       content: postContentHooks.content,
@@ -70,6 +78,7 @@ export function usePostState() {
       // 画像挿入情報
       images: imageInsertionHooks.images,
       isImageAlertOpen: imageInsertionHooks.isImageAlertOpen,
+      isUploadingImage: imageInsertionHooks.isUploadingImage,
       imagePreviewUrl: imageInsertionHooks.previewImageUrl,
 
       // 埋め込みリンク情報
@@ -82,6 +91,7 @@ export function usePostState() {
     [
       onClickPreviewHooks.isPreview,
       postSubmitHooks.isLoading,
+      isDirty,
       postTitleHooks.title,
       postContentHooks.content,
       thumbnailHooks.thumbnailUrl,
@@ -97,6 +107,7 @@ export function usePostState() {
       errorModalHooks.errorMessage,
       imageInsertionHooks.images,
       imageInsertionHooks.isImageAlertOpen,
+      imageInsertionHooks.isUploadingImage,
       imageInsertionHooks.previewImageUrl,
       embedLinkHooks.open,
       embedLinkHooks.inputUrl,
@@ -121,6 +132,7 @@ export function usePostState() {
       // タグ関連
       addTag: tagsHooks.addTag,
       removeTag: tagsHooks.removeTag,
+      setTags: tagsHooks.setTags,
       setInputValue: tagsHooks.setInputValue,
       // UI状態関連
       handleThumbnailClick: thumbnailHooks.handleThumbnailClick,
@@ -169,6 +181,7 @@ export function usePostState() {
       // タグ関連
       tagsHooks.addTag,
       tagsHooks.removeTag,
+      tagsHooks.setTags,
       tagsHooks.setInputValue,
       // UI状態関連
       thumbnailHooks.handleThumbnailClick,

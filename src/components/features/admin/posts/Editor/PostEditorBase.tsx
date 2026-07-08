@@ -7,6 +7,7 @@ import ErrorModal from '@/components/features/admin/common/ErrorModal';
 import Alert from '@/components/features/admin/common/Alert';
 import type { PostEditorContextValue } from '@/types/admin/posts';
 import ConfirmModal from '@/components/features/admin/posts/ConfirmModal';
+import useBeforeUnload from '@/hooks/admin/common/useBeforeUnload';
 
 interface PostEditorBaseProps {
   contextValue: PostEditorContextValue;
@@ -14,6 +15,9 @@ interface PostEditorBaseProps {
 
 function PostEditorBase({ contextValue }: PostEditorBaseProps) {
   const { state, actions } = contextValue;
+
+  // 未保存の変更がある間は離脱警告を出す（送信中は正当な離脱なので抑止）
+  useBeforeUnload(state.isDirty && !state.isSubmitLoading);
 
   return (
     <div className="w-full min-h-screen lg:p-10 p-4 flex items-center justify-center gap-0">
@@ -36,6 +40,7 @@ function PostEditorBase({ contextValue }: PostEditorBaseProps) {
         onCancel={actions.handleCancelImageInsert}
         onAction={actions.handleConfirmImageInsert}
         previewImageUrl={state.imagePreviewUrl}
+        isActionLoading={state.isUploadingImage}
       />
       <ConfirmModal
         isOpen={state.isConfirmModalOpen}

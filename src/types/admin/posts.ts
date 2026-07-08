@@ -8,6 +8,8 @@ export interface PostEditorState {
   // UI状態
   isPreview: boolean;
   isSubmitLoading: boolean;
+  // 未保存の変更があるか（離脱警告に使用）
+  isDirty: boolean;
   // 基本情報
   title: string;
   content: string;
@@ -34,6 +36,7 @@ export interface PostEditorState {
   images: ImageInsertionState[];
   newImages?: ImageInsertionState[];
   isImageAlertOpen: boolean;
+  isUploadingImage: boolean;
   imagePreviewUrl: string | null;
 
   // 埋め込みリンク情報
@@ -56,6 +59,7 @@ export interface PostEditorActions {
   setAltText: (text: string | null) => void;
   addTag: () => void;
   removeTag: (tag: string) => void;
+  setTags: (tags: string[]) => void;
   setInputValue: (value: string) => void;
   togglePreview: () => void;
   reset: () => void;

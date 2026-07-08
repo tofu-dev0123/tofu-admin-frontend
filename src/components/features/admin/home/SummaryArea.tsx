@@ -1,10 +1,12 @@
 import { FileText, CheckCircle2, FilePenLine } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface SummaryAreaProps {
   totalPosts?: number;
   publishedPosts?: number;
   draftPosts?: number;
+  isLoading?: boolean;
 }
 
 interface SummaryCard {
@@ -19,6 +21,7 @@ function SummaryArea({
   totalPosts = 0,
   publishedPosts = 0,
   draftPosts = 0,
+  isLoading,
 }: SummaryAreaProps) {
   const cards: SummaryCard[] = [
     {
@@ -63,9 +66,13 @@ function SummaryArea({
                 <Icon className="h-5 w-5" />
               </span>
             </div>
-            <p className="mt-3 text-3xl font-bold tracking-tight text-foreground">
-              {card.value}
-            </p>
+            {isLoading ? (
+              <Skeleton className="mt-3 h-9 w-12" />
+            ) : (
+              <p className="mt-3 text-3xl font-bold tracking-tight text-foreground">
+                {card.value}
+              </p>
+            )}
             <p className="mt-1 text-xs text-muted-foreground">
               {card.description}
             </p>
