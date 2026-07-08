@@ -35,6 +35,7 @@ export function useImageInsertion({
   // 編集画面で新たに追加された画像データ（編集画面のみ）
   const [newImages, setNewImages] = useState<ImageInsertionState[]>([]);
   const [isImageAlertOpen, setIsImageAlertOpen] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const pendingFileRef = useRef<File | null>(null);
@@ -117,7 +118,7 @@ export function useImageInsertion({
         return;
       }
 
-      setIsImageAlertOpen(false);
+      setIsUploadingImage(true);
 
       try {
         const formData = new FormData();
@@ -155,6 +156,9 @@ export function useImageInsertion({
           setPreviewImageUrl(null);
         }
       } finally {
+        // アップロード完了（成功・失敗どちらでも）でダイアログを閉じる
+        setIsUploadingImage(false);
+        setIsImageAlertOpen(false);
         // ファイル入力をリセット
         if (imageInputRef.current) {
           imageInputRef.current.value = '';
@@ -226,6 +230,7 @@ export function useImageInsertion({
     images,
     newImages,
     isImageAlertOpen,
+    isUploadingImage,
     previewImageUrl,
     imageInputRef,
     setImages,

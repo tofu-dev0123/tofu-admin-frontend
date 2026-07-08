@@ -1,53 +1,74 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useTransition } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import useErrorModal from '@/hooks/admin/common/useErrorModal';
 import useSearchPost from '@/hooks/admin/posts/useSearchPost';
 import useStatus from '@/hooks/admin/posts/useStatus';
-import { PostStatus } from '@/types/api/post';
+import { PostResponse, PostStatus } from '@/types/api/post';
 import usePostDeleteAlert from './usePostDeleteAlert';
 import usePatchStatusAlert from './usePatchStatusAlert';
 
-function usePostList() {
+interface UsePostListProps {
+  // サーバー（RSC）で取得済みの初期一覧
+  initialData: PostResponse;
+}
+
+function usePostList({ initialData }: UsePostListProps) {
   const searchParams = useSearchParams();
   const { showError } = useErrorModal();
-  const searchPostHook = useSearchPost();
+  const searchPostHook = useSearchPost({ initial: initialData });
   const statusHook = useStatus();
   const deleteAlertHook = usePostDeleteAlert({ showError });
   const patchStatusAlertHook = usePatchStatusAlert({ showError });
-  const [displayedKeyword, setDisplayedKeyword] = useState<string>('');
   const router = useRouter();
+
+  // 再取得中フラグ。前のリストを保持したまま裏で差し替えるため、
+  // useTransition で「保留中（pending）」を判定する。
+  const [isPending, startTransition] = useTransition();
+
+  // 検索済みキーワードは URL から導出する（表示用）
+  const displayedKeyword = searchParams.get('keyword') ?? '';
+
+  // 初回はサーバー取得済みの初期データを使うため、クライアント再取得はしない。
+  // 以降 searchParams が変わったとき（検索・絞り込み・リセット）だけクライアントで再取得する。
+  const isInitialRender = useRef(true);
 
   const handleClickEdit = (postId: number) => {
     router.push(`/posts/${postId}/edit`);
   };
 
   useEffect(() => {
-    // 初期処理
-    const init = async () => {
-      const page = searchParams.get('page');
-      const keyword = searchParams.get('keyword');
-      const status = searchParams.get('status') as PostStatus | undefined;
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
 
-      let offset = 0;
-      const limit = 10;
-      if (page) {
-        offset = (parseInt(page) - 1) * limit;
-      }
+    const page = searchParams.get('page');
+    const keyword = searchParams.get('keyword');
+    const status = searchParams.get('status') as PostStatus | null;
 
-      searchPostHook.search(
+    const limit = 10;
+    const offset = page ? (parseInt(page) - 1) * limit : 0;
+
+    // 再取得を transition にすることで、取得完了まで前のリストを保持し
+    // isPending だけが立つ（リストが消えてちらつくのを防ぐ）。
+    startTransition(async () => {
+      await searchPostHook.search(
         offset,
         limit,
         keyword || undefined,
         status || undefined
       );
-      setDisplayedKeyword(keyword || '');
-    };
-
-    init();
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  // 表示状態の判定はここに寄せる（コンポーネントは分岐を持たない）。
+  const hasPosts = searchPostHook.postList.length > 0;
+  const isRefetching = isPending && hasPosts; // warm: 前のリストを保持しつつ再取得中
+  const isColdLoading = isPending && !hasPosts; // cold: 表示できる内容が無い
+  const isEmpty = !isPending && !hasPosts; // 結果ゼロ
 
   return {
     searchPost: searchPostHook,
@@ -56,6 +77,9 @@ function usePostList() {
     patchStatusAlert: patchStatusAlertHook,
     displayedKeyword,
     handleClickEdit,
+    isRefetching,
+    isColdLoading,
+    isEmpty,
   };
 }
 

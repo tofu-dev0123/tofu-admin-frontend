@@ -1,19 +1,17 @@
 import { Suspense } from 'react';
-import PostListMain from '@/components/features/admin/posts/PostListMain';
-import { Spinner } from '@/components/ui/spinner';
+import PostsSection from '@/components/features/admin/posts/PostsSection';
+import PostListSkeleton from '@/components/features/admin/posts/PostListSkeleton';
 
-export default function Page() {
+type SearchParams = { [key: string]: string | string[] | undefined };
+
+export default function Page({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
   return (
-    <div className="h-full flex flex-col justify-center items-center">
-      <Suspense
-        fallback={
-          <div className="flex items-center justify-center h-full w-full">
-            <Spinner className="size-8" />
-          </div>
-        }
-      >
-        <PostListMain />
-      </Suspense>
-    </div>
+    <Suspense fallback={<PostListSkeleton />}>
+      <PostsSection searchParamsPromise={searchParams} />
+    </Suspense>
   );
 }

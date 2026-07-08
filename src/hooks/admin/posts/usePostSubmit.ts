@@ -8,6 +8,7 @@ import { PostEditorState } from '@/types/admin/posts';
 import { ImagesDeleteResponse } from '@/types/api/imagesDelete';
 import { useToastStore } from '@/stores/toastStore';
 import { extractImageUrls } from '@/services/admin/posts/extractImageUrls';
+import { clearDraft } from '@/lib/utils/postDraft';
 import { logger } from '@/lib/logger';
 
 interface UsePostSubmitProps {
@@ -38,11 +39,13 @@ function usePostSubmit({ showError }: UsePostSubmitProps) {
         .filter((image) => !attachedImages.includes(image.url))
         .map((image) => image.imageId);
 
-      // 削除する画像IDがある場合、削除する
+      // 削除する画像IDがある場合、並列で削除する
       if (deleteImages.length > 0) {
-        for (const id of deleteImages) {
-          await del<ImagesDeleteResponse>(API_ENDPOINTS.images.delete(id));
-        }
+        await Promise.all(
+          deleteImages.map((id) =>
+            del<ImagesDeleteResponse>(API_ENDPOINTS.images.delete(id))
+          )
+        );
       }
 
       // リクエストデータを作成
@@ -59,6 +62,9 @@ function usePostSubmit({ showError }: UsePostSubmitProps) {
         // 投稿を作成
         await post<PostResponse>(API_ENDPOINTS.posts.post, request);
         logger.info('[posts] 投稿を作成しました', { status });
+
+        // 保存済みの下書きをクリア
+        clearDraft();
 
         // トーストを表示
         const message =

@@ -9,6 +9,7 @@ import {
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 import Image from 'next/image';
+import { Spinner } from '@/components/ui/spinner';
 
 interface AlertProps {
   open: boolean;
@@ -20,6 +21,8 @@ interface AlertProps {
   onCancel?: () => void;
   onAction?: () => void;
   previewImageUrl?: string | null;
+  // 非同期アクションの実行中フラグ。渡された場合、閉じるタイミングは親が open で制御する。
+  isActionLoading?: boolean;
 }
 
 function Alert({
@@ -32,6 +35,7 @@ function Alert({
   onCancel,
   onAction,
   previewImageUrl,
+  isActionLoading,
 }: AlertProps) {
   const handleCancel = () => {
     onCancel?.();
@@ -40,11 +44,19 @@ function Alert({
 
   const handleAction = () => {
     onAction?.();
-    onOpenChange(false);
+    // 非同期制御を親に委ねる場合（isActionLoading を渡す）は親の open で閉じる
+    if (isActionLoading === undefined) onOpenChange(false);
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog
+      open={open}
+      onOpenChange={(next) => {
+        // アクション実行中はバックドロップ／ESC での閉じを抑止
+        if (isActionLoading && !next) return;
+        onOpenChange(next);
+      }}
+    >
       <AlertDialogContent className="lg:max-w-2xl w-11/12 rounded-lg">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -66,11 +78,24 @@ function Alert({
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleCancel}>
+          <AlertDialogCancel
+            onClick={handleCancel}
+            disabled={!!isActionLoading}
+          >
             {cancelText}
           </AlertDialogCancel>
-          <AlertDialogAction onClick={handleAction}>
-            {actionText}
+          <AlertDialogAction
+            onClick={handleAction}
+            disabled={!!isActionLoading}
+          >
+            {isActionLoading ? (
+              <>
+                <Spinner />
+                アップロード中...
+              </>
+            ) : (
+              actionText
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
