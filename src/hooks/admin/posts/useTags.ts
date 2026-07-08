@@ -22,5 +22,9 @@ export function useTags({ initialTags }: UseTagsProps = {}) {
     setTagsState((prev) => prev.filter((t) => t !== tag));
   }, []);
 
-  return { tags, addTag, removeTag, inputValue, setInputValue };
+  const setTags = useCallback((newTags: string[]) => {
+    setTagsState(newTags);
+  }, []);
+
+  return { tags, addTag, removeTag, setTags, inputValue, setInputValue };
 }
