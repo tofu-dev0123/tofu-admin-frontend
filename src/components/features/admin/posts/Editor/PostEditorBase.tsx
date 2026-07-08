@@ -40,6 +40,7 @@ function PostEditorBase({ contextValue }: PostEditorBaseProps) {
         onCancel={actions.handleCancelImageInsert}
         onAction={actions.handleConfirmImageInsert}
         previewImageUrl={state.imagePreviewUrl}
+        isActionLoading={state.isUploadingImage}
       />
       <ConfirmModal
         isOpen={state.isConfirmModalOpen}
