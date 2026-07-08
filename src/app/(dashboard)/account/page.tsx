@@ -1,9 +1,11 @@
-import AccountMain from '@/components/features/admin/account/AccountMain';
+import { Suspense } from 'react';
+import AccountSection from '@/components/features/admin/account/AccountSection';
+import AccountMainSkeleton from '@/components/features/admin/account/AccountMainSkeleton';
 
 export default function Page() {
   return (
-    <>
-      <AccountMain />
-    </>
+    <Suspense fallback={<AccountMainSkeleton />}>
+      <AccountSection />
+    </Suspense>
   );
 }

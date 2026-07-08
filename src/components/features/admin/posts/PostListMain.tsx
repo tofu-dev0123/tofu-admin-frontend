@@ -3,8 +3,13 @@
 import PostSearchInfo from '@/components/features/admin/posts/PostSearchInfo';
 import PostList from '@/components/features/admin/posts/PostList';
 import usePostList from '@/hooks/admin/posts/usePostList';
+import type { PostResponse } from '@/types/api/post';
 
-function PostListMain() {
+interface PostListMainProps {
+  initialData: PostResponse;
+}
+
+function PostListMain({ initialData }: PostListMainProps) {
   const {
     searchPost,
     status: statusHook,
@@ -12,7 +17,7 @@ function PostListMain() {
     patchStatusAlert,
     displayedKeyword,
     handleClickEdit,
-  } = usePostList();
+  } = usePostList({ initialData });
   return (
     // PostListMain.tsx の17-18行目
     <div className="h-full w-full lg:w-6xl flex flex-col mx-auto p-4 lg:px-0">

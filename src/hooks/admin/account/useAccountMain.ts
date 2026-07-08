@@ -5,10 +5,15 @@ import useAccountMe from '@/hooks/admin/account/useAccountMe';
 import useEditAccountName from '@/hooks/admin/account/useEditAccountName';
 import useEditUsername from '@/hooks/admin/account/useEditUsername';
 import useEditPassword from '@/hooks/admin/account/useEditPassword';
+import { MeResponse } from '@/types/api/account';
 
-function useAccountMain() {
+interface UseAccountMainProps {
+  initialAccount: MeResponse;
+}
+
+function useAccountMain({ initialAccount }: UseAccountMainProps) {
   const errorModalHooks = useErrorModal();
-  const accountMeHooks = useAccountMe({ showError: errorModalHooks.showError });
+  const accountMeHooks = useAccountMe({ initial: initialAccount });
   const editAccountNameHooks = useEditAccountName({
     showError: errorModalHooks.showError,
   });
