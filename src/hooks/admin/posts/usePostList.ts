@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useTransition } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import useErrorModal from '@/hooks/admin/common/useErrorModal';
 import useSearchPost from '@/hooks/admin/posts/useSearchPost';
@@ -22,6 +22,10 @@ function usePostList({ initialData }: UsePostListProps) {
   const deleteAlertHook = usePostDeleteAlert({ showError });
   const patchStatusAlertHook = usePatchStatusAlert({ showError });
   const router = useRouter();
+
+  // 再取得中フラグ。前のリストを保持したまま裏で差し替えるため、
+  // useTransition で「保留中（pending）」を判定する。
+  const [isPending, startTransition] = useTransition();
 
   // 検索済みキーワードは URL から導出する（表示用）
   const displayedKeyword = searchParams.get('keyword') ?? '';
@@ -47,14 +51,24 @@ function usePostList({ initialData }: UsePostListProps) {
     const limit = 10;
     const offset = page ? (parseInt(page) - 1) * limit : 0;
 
-    searchPostHook.search(
-      offset,
-      limit,
-      keyword || undefined,
-      status || undefined
-    );
+    // 再取得を transition にすることで、取得完了まで前のリストを保持し
+    // isPending だけが立つ（リストが消えてちらつくのを防ぐ）。
+    startTransition(async () => {
+      await searchPostHook.search(
+        offset,
+        limit,
+        keyword || undefined,
+        status || undefined
+      );
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  // 表示状態の判定はここに寄せる（コンポーネントは分岐を持たない）。
+  const hasPosts = searchPostHook.postList.length > 0;
+  const isRefetching = isPending && hasPosts; // warm: 前のリストを保持しつつ再取得中
+  const isColdLoading = isPending && !hasPosts; // cold: 表示できる内容が無い
+  const isEmpty = !isPending && !hasPosts; // 結果ゼロ
 
   return {
     searchPost: searchPostHook,
@@ -63,6 +77,9 @@ function usePostList({ initialData }: UsePostListProps) {
     patchStatusAlert: patchStatusAlertHook,
     displayedKeyword,
     handleClickEdit,
+    isRefetching,
+    isColdLoading,
+    isEmpty,
   };
 }
 
