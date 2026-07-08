@@ -78,6 +78,7 @@ export function usePostState() {
       // 画像挿入情報
       images: imageInsertionHooks.images,
       isImageAlertOpen: imageInsertionHooks.isImageAlertOpen,
+      isUploadingImage: imageInsertionHooks.isUploadingImage,
       imagePreviewUrl: imageInsertionHooks.previewImageUrl,
 
       // 埋め込みリンク情報
@@ -106,6 +107,7 @@ export function usePostState() {
       errorModalHooks.errorMessage,
       imageInsertionHooks.images,
       imageInsertionHooks.isImageAlertOpen,
+      imageInsertionHooks.isUploadingImage,
       imageInsertionHooks.previewImageUrl,
       embedLinkHooks.open,
       embedLinkHooks.inputUrl,

@@ -36,6 +36,7 @@ export interface PostEditorState {
   images: ImageInsertionState[];
   newImages?: ImageInsertionState[];
   isImageAlertOpen: boolean;
+  isUploadingImage: boolean;
   imagePreviewUrl: string | null;
 
   // 埋め込みリンク情報

@@ -107,6 +107,7 @@ export function usePostEditState({
       images: imageInsertionHooks.images,
       newImages: imageInsertionHooks.newImages,
       isImageAlertOpen: imageInsertionHooks.isImageAlertOpen,
+      isUploadingImage: imageInsertionHooks.isUploadingImage,
       imagePreviewUrl: imageInsertionHooks.previewImageUrl,
       // 埋め込みリンク情報
       inputUrl: embedLinkHooks.inputUrl,
@@ -136,6 +137,7 @@ export function usePostEditState({
       imageInsertionHooks.images,
       imageInsertionHooks.newImages,
       imageInsertionHooks.isImageAlertOpen,
+      imageInsertionHooks.isUploadingImage,
       imageInsertionHooks.previewImageUrl,
       embedLinkHooks.open,
       embedLinkHooks.inputUrl,
