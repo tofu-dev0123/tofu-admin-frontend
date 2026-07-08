@@ -6,13 +6,18 @@ import { API_ENDPOINTS } from '@/lib/api/endpoint';
 import { PostResponse, Post, PostStatus } from '@/types/api/post';
 import { useRouter } from 'next/navigation';
 
-function useSearchPost() {
+interface UseSearchPostProps {
+  // サーバー（RSC）で取得済みの初期一覧。以降の検索はクライアントで行う
+  initial?: PostResponse;
+}
+
+function useSearchPost({ initial }: UseSearchPostProps = {}) {
   const router = useRouter();
-  const [totalCount, setTotalCount] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [postList, setPostList] = useState<Post[]>([]);
+  const [totalCount, setTotalCount] = useState(initial?.total_count ?? 0);
+  const [totalPages, setTotalPages] = useState(initial?.total_pages ?? 0);
+  const [postList, setPostList] = useState<Post[]>(initial?.posts ?? []);
   const [keyword, setKeyword] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(!initial);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
