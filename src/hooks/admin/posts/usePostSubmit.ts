@@ -39,11 +39,13 @@ function usePostSubmit({ showError }: UsePostSubmitProps) {
         .filter((image) => !attachedImages.includes(image.url))
         .map((image) => image.imageId);
 
-      // 削除する画像IDがある場合、削除する
+      // 削除する画像IDがある場合、並列で削除する
       if (deleteImages.length > 0) {
-        for (const id of deleteImages) {
-          await del<ImagesDeleteResponse>(API_ENDPOINTS.images.delete(id));
-        }
+        await Promise.all(
+          deleteImages.map((id) =>
+            del<ImagesDeleteResponse>(API_ENDPOINTS.images.delete(id))
+          )
+        );
       }
 
       // リクエストデータを作成
