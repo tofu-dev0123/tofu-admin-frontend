@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import Post from '@/components/features/admin/common/Post';
 import type { Post as PostType } from '@/types/api/post';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface PostListCardProps {
   title: string;
@@ -9,6 +10,7 @@ interface PostListCardProps {
   postList: PostType[];
   handleClickPost: (postId: number) => void;
   handleClickViewAll: () => void;
+  isLoading?: boolean;
 }
 
 function PostListCard({
@@ -17,6 +19,7 @@ function PostListCard({
   postList,
   handleClickPost,
   handleClickViewAll,
+  isLoading,
 }: PostListCardProps) {
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
@@ -36,7 +39,19 @@ function PostListCard({
           </button>
         )}
       </div>
-      {postList.length === 0 ? (
+      {isLoading ? (
+        <ul className="flex flex-col gap-2">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <li key={index} className="flex items-center gap-3 py-2">
+              <Skeleton className="h-12 w-12 rounded-md" />
+              <div className="flex flex-1 flex-col gap-1.5">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/3" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : postList.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted-foreground">
           投稿がありません
         </p>

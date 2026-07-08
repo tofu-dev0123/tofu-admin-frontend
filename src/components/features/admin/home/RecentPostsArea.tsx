@@ -6,12 +6,14 @@ interface RecentPostsAreaProps {
   postList: PostType[];
   handleClickPost: (postId: number) => void;
   handleClickViewAll: () => void;
+  isLoading?: boolean;
 }
 
 function RecentPostsArea({
   postList,
   handleClickPost,
   handleClickViewAll,
+  isLoading,
 }: RecentPostsAreaProps) {
   return (
     <PostListCard
@@ -20,6 +22,7 @@ function RecentPostsArea({
       postList={postList}
       handleClickPost={handleClickPost}
       handleClickViewAll={handleClickViewAll}
+      isLoading={isLoading}
     />
   );
 }

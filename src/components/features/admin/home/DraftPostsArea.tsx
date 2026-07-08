@@ -6,12 +6,14 @@ interface DraftPostsAreaProps {
   draftPostList: PostType[];
   handleClickPost: (postId: number) => void;
   handleClickViewAll: () => void;
+  isLoading?: boolean;
 }
 
 function DraftPostsArea({
   draftPostList,
   handleClickPost,
   handleClickViewAll,
+  isLoading,
 }: DraftPostsAreaProps) {
   return (
     <PostListCard
@@ -20,6 +22,7 @@ function DraftPostsArea({
       postList={draftPostList}
       handleClickPost={handleClickPost}
       handleClickViewAll={handleClickViewAll}
+      isLoading={isLoading}
     />
   );
 }
