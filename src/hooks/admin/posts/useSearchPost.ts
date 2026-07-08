@@ -17,7 +17,6 @@ function useSearchPost({ initial }: UseSearchPostProps = {}) {
   const [totalPages, setTotalPages] = useState(initial?.total_pages ?? 0);
   const [postList, setPostList] = useState<Post[]>(initial?.posts ?? []);
   const [keyword, setKeyword] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(!initial);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,22 +32,19 @@ function useSearchPost({ initial }: UseSearchPostProps = {}) {
       keyword?: string,
       status?: PostStatus
     ) => {
-      setIsLoading(true);
-      try {
-        const queryParams = new URLSearchParams();
-        if (offset) queryParams.append('offset', offset.toString());
-        if (limit) queryParams.append('limit', limit.toString());
-        if (keyword) queryParams.append('keyword', keyword);
-        if (status) queryParams.append('status', status);
-        const response = await get<PostResponse>(
-          `${API_ENDPOINTS.posts.get}?${queryParams.toString()}`
-        );
-        setPostList(response.posts);
-        setTotalCount(response.total_count);
-        setTotalPages(response.total_pages);
-      } finally {
-        setIsLoading(false);
-      }
+      // 取得完了時にまとめて差し替える。取得中は前のリストを保持し、
+      // pending 表示は呼び出し側の useTransition(isPending) が担う（ちらつき防止）。
+      const queryParams = new URLSearchParams();
+      if (offset) queryParams.append('offset', offset.toString());
+      if (limit) queryParams.append('limit', limit.toString());
+      if (keyword) queryParams.append('keyword', keyword);
+      if (status) queryParams.append('status', status);
+      const response = await get<PostResponse>(
+        `${API_ENDPOINTS.posts.get}?${queryParams.toString()}`
+      );
+      setPostList(response.posts);
+      setTotalCount(response.total_count);
+      setTotalPages(response.total_pages);
     },
     []
   );
@@ -59,11 +55,9 @@ function useSearchPost({ initial }: UseSearchPostProps = {}) {
   }, [router, keyword]);
 
   const handleReset = useCallback(() => {
+    // 入力だけクリアして /posts へ遷移する。リストの即時クリアはせず、
+    // 再取得（useTransition）が完了してから差し替えてちらつきを防ぐ。
     setKeyword('');
-    setPostList([]);
-    setTotalCount(0);
-    setTotalPages(0);
-    setIsLoading(true);
     router.push('/posts');
   }, [router]);
 
@@ -72,7 +66,6 @@ function useSearchPost({ initial }: UseSearchPostProps = {}) {
     totalPages,
     postList,
     keyword,
-    isLoading,
     search,
     handleSearch,
     handleInputChange,

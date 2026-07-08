@@ -17,6 +17,9 @@ function PostListMain({ initialData }: PostListMainProps) {
     patchStatusAlert,
     displayedKeyword,
     handleClickEdit,
+    isRefetching,
+    isColdLoading,
+    isEmpty,
   } = usePostList({ initialData });
   return (
     // PostListMain.tsx の17-18行目
@@ -33,6 +36,9 @@ function PostListMain({ initialData }: PostListMainProps) {
           patchStatusAlert={patchStatusAlert}
           handleClickEdit={handleClickEdit}
           displayedKeyword={displayedKeyword}
+          isRefetching={isRefetching}
+          isColdLoading={isColdLoading}
+          isEmpty={isEmpty}
         />
       </div>
     </div>

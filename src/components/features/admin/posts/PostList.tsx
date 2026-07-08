@@ -6,7 +6,8 @@ import {
   InputGroupInput,
   InputGroupAddon,
 } from '@/components/ui/input-group';
-import { SearchIcon } from 'lucide-react';
+import { SearchIcon, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import PostInfo from '@/components/features/admin/posts/PostInfo';
 import Alert from '@/components/features/admin/common/Alert';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -23,6 +24,12 @@ interface PostListProps {
   patchStatusAlert: ReturnType<typeof usePatchStatusAlert>;
   handleClickEdit: (postId: number) => void;
   displayedKeyword: string;
+  // 前のリストを保持したまま再取得中（薄化 + pending 表示）
+  isRefetching: boolean;
+  // 表示できる内容が無く取得中（スケルトン）
+  isColdLoading: boolean;
+  // 結果ゼロ
+  isEmpty: boolean;
 }
 
 function PostList({
@@ -31,8 +38,10 @@ function PostList({
   patchStatusAlert,
   handleClickEdit,
   displayedKeyword,
+  isRefetching,
+  isColdLoading,
+  isEmpty,
 }: PostListProps) {
-  const isEmpty = !searchPost.isLoading && searchPost.postList.length === 0;
   return (
     <Card className="min-h-screen w-full flex flex-col gap-4 justify-start border-none shadow-none">
       <CardContent className="flex flex-col lg:flex-row items-end lg:items-center justify-between lg:p-4 p-2 lg:gap-4 gap-2">
@@ -62,11 +71,21 @@ function PostList({
               className="w-4 h-4"
             />
           </button>
+          {/* 再取得中の小さな pending スピナー */}
+          {isRefetching && (
+            <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+          )}
         </div>
       </CardContent>
-      <CardContent className="px-4 lg:px-0">
+      <CardContent className="relative px-4 lg:px-0">
+        {/* 再取得中の上部 indeterminate バー */}
+        {isRefetching && (
+          <div className="absolute inset-x-0 top-0 h-0.5 overflow-hidden">
+            <div className="absolute h-0.5 rounded-full bg-gray-700 animate-indeterminate" />
+          </div>
+        )}
         <hr className="w-full border-gray-200" />
-        {searchPost.isLoading ? (
+        {isColdLoading ? (
           Array.from({ length: 5 }).map((_, index) => (
             <div key={index} className="w-full min-h-25">
               <div className="lg:w-150 w-full min-h-25 lg:mx-auto flex justify-between items-center lg:gap-4 gap-2">
@@ -87,20 +106,27 @@ function PostList({
               : MESSAGES.posts.empty}
           </div>
         ) : (
-          searchPost.postList.map((post) => (
-            <div
-              key={post.post_id}
-              className="w-full min-h-25 hover:bg-gray-100/50 duration-200 cursor-pointer"
-            >
-              <PostInfo
+          <div
+            className={cn(
+              'transition-opacity duration-200',
+              isRefetching && 'opacity-[0.85] pointer-events-none'
+            )}
+          >
+            {searchPost.postList.map((post) => (
+              <div
                 key={post.post_id}
-                post={post}
-                handleOpenDeleteAlert={deleteAlert.handleOpen}
-                handleOpenPatchStatusAlert={patchStatusAlert.handleOpen}
-                handleClickEdit={handleClickEdit}
-              />
-            </div>
-          ))
+                className="w-full min-h-25 hover:bg-gray-100/50 duration-200 cursor-pointer"
+              >
+                <PostInfo
+                  key={post.post_id}
+                  post={post}
+                  handleOpenDeleteAlert={deleteAlert.handleOpen}
+                  handleOpenPatchStatusAlert={patchStatusAlert.handleOpen}
+                  handleClickEdit={handleClickEdit}
+                />
+              </div>
+            ))}
+          </div>
         )}
       </CardContent>
       <Alert
