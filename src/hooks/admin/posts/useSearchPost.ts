@@ -12,6 +12,7 @@ function useSearchPost() {
   const [totalPages, setTotalPages] = useState(0);
   const [postList, setPostList] = useState<Post[]>([]);
   const [keyword, setKeyword] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,17 +28,22 @@ function useSearchPost() {
       keyword?: string,
       status?: PostStatus
     ) => {
-      const queryParams = new URLSearchParams();
-      if (offset) queryParams.append('offset', offset.toString());
-      if (limit) queryParams.append('limit', limit.toString());
-      if (keyword) queryParams.append('keyword', keyword);
-      if (status) queryParams.append('status', status);
-      const response = await get<PostResponse>(
-        `${API_ENDPOINTS.posts.get}?${queryParams.toString()}`
-      );
-      setPostList(response.posts);
-      setTotalCount(response.total_count);
-      setTotalPages(response.total_pages);
+      setIsLoading(true);
+      try {
+        const queryParams = new URLSearchParams();
+        if (offset) queryParams.append('offset', offset.toString());
+        if (limit) queryParams.append('limit', limit.toString());
+        if (keyword) queryParams.append('keyword', keyword);
+        if (status) queryParams.append('status', status);
+        const response = await get<PostResponse>(
+          `${API_ENDPOINTS.posts.get}?${queryParams.toString()}`
+        );
+        setPostList(response.posts);
+        setTotalCount(response.total_count);
+        setTotalPages(response.total_pages);
+      } finally {
+        setIsLoading(false);
+      }
     },
     []
   );
@@ -52,6 +58,7 @@ function useSearchPost() {
     setPostList([]);
     setTotalCount(0);
     setTotalPages(0);
+    setIsLoading(true);
     router.push('/posts');
   }, [router]);
 
@@ -60,6 +67,7 @@ function useSearchPost() {
     totalPages,
     postList,
     keyword,
+    isLoading,
     search,
     handleSearch,
     handleInputChange,

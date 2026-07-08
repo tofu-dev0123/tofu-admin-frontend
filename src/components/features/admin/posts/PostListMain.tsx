@@ -27,6 +27,7 @@ function PostListMain() {
           deleteAlert={deleteAlert}
           patchStatusAlert={patchStatusAlert}
           handleClickEdit={handleClickEdit}
+          displayedKeyword={displayedKeyword}
         />
       </div>
     </div>
