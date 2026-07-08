@@ -8,6 +8,7 @@ import { PostEditorState } from '@/types/admin/posts';
 import { ImagesDeleteResponse } from '@/types/api/imagesDelete';
 import { useToastStore } from '@/stores/toastStore';
 import { extractImageUrls } from '@/services/admin/posts/extractImageUrls';
+import { clearDraft } from '@/lib/utils/postDraft';
 import { logger } from '@/lib/logger';
 
 interface UsePostSubmitProps {
@@ -59,6 +60,9 @@ function usePostSubmit({ showError }: UsePostSubmitProps) {
         // 投稿を作成
         await post<PostResponse>(API_ENDPOINTS.posts.post, request);
         logger.info('[posts] 投稿を作成しました', { status });
+
+        // 保存済みの下書きをクリア
+        clearDraft();
 
         // トーストを表示
         const message =

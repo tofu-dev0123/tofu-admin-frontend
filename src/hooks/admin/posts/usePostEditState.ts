@@ -67,11 +67,24 @@ export function usePostEditState({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // 初回のみ実行
 
+  // 未保存の変更があるか（編集: 初期データとの差分で判定）
+  const tagsChanged =
+    tagsHooks.tags.length !== initialData.tags.length ||
+    tagsHooks.tags.some((tag, i) => tag !== initialData.tags[i]);
+  const isDirty =
+    postTitleHooks.title !== initialData.title ||
+    postContentHooks.content !== initialData.content ||
+    thumbnailHooks.thumbnailUrl !== initialData.thumbnailUrl ||
+    thumbnailHooks.thumbnailDeleteFlag ||
+    tagsChanged ||
+    (imageInsertionHooks.newImages?.length ?? 0) > 0;
+
   const state: PostEditorState = useMemo(
     () => ({
       // UI状態
       isPreview: onClickPreviewHooks.isPreview,
       isSubmitLoading: postSubmitHooks.isLoading,
+      isDirty,
       // 基本情報
       title: postTitleHooks.title,
       content: postContentHooks.content,
@@ -105,6 +118,7 @@ export function usePostEditState({
     [
       onClickPreviewHooks.isPreview,
       postSubmitHooks.isLoading,
+      isDirty,
       postTitleHooks.title,
       postContentHooks.content,
       thumbnailHooks.thumbnailUrl,
@@ -147,6 +161,7 @@ export function usePostEditState({
       // タグ関連
       addTag: tagsHooks.addTag,
       removeTag: tagsHooks.removeTag,
+      setTags: tagsHooks.setTags,
       setInputValue: tagsHooks.setInputValue,
       // UI状態関連
       handleThumbnailClick: thumbnailHooks.handleThumbnailClick,
@@ -188,6 +203,7 @@ export function usePostEditState({
       thumbnailHooks.setAltText,
       tagsHooks.addTag,
       tagsHooks.removeTag,
+      tagsHooks.setTags,
       tagsHooks.setInputValue,
       thumbnailHooks.handleThumbnailClick,
       thumbnailHooks.handleFileChange,
