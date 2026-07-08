@@ -29,7 +29,7 @@ function PostSearchBar({
 }: PostSearchBarProps) {
   const hasKeyword = searchPost.keyword.length > 0;
   return (
-    <div className="w-full flex flex-col gap-3 p-4">
+    <div className="w-full flex flex-col gap-3 border-b border-gray-100 bg-white p-4">
       {/* 検索入力（主役・全幅）。Enter で検索、× でクリア */}
       <div className="flex h-11 items-center gap-2 rounded-md border border-gray-200 bg-white px-3 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-300 transition-shadow">
         <SearchIcon className="h-4 w-4 shrink-0 text-gray-400" />
