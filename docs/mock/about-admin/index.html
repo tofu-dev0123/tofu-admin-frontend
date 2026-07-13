@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About 設定 モック — 管理画面リニューアル案</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      body {
+        font-family:
+          ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+          'Hiragino Sans', 'Noto Sans JP', sans-serif;
+      }
+      /* トグルスイッチ */
+      .switch { position: relative; display: inline-flex; height: 20px; width: 36px; flex-shrink: 0; align-items: center; border-radius: 9999px; transition: background-color .2s; }
+      .switch > span { display: inline-block; height: 16px; width: 16px; transform: translateX(2px); border-radius: 9999px; background: #fff; transition: transform .2s; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+      .switch.on { background: #18181b; }
+      .switch.on > span { transform: translateX(18px); }
+      .switch.off { background: #d4d4d8; }
+    </style>
+  </head>
+  <body class="bg-zinc-50 text-zinc-900">
+    <!-- ===== 左固定サイドバー（ダーク・モダン） ===== -->
+    <aside
+      class="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-zinc-950 text-zinc-300"
+    >
+      <!-- ロゴ -->
+      <div class="flex h-16 items-center gap-2.5 px-5">
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-sm font-bold text-zinc-950">T</div>
+        <span class="text-[15px] font-semibold tracking-tight text-white">Tofu Admin</span>
+      </div>
+
+      <!-- メニュー -->
+      <nav class="flex flex-1 flex-col gap-0.5 px-3 py-3">
+        <p class="px-3 pb-1.5 pt-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Menu</p>
+        <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition hover:bg-zinc-900 hover:text-white">
+          <i data-lucide="layout-dashboard" class="h-[18px] w-[18px]"></i> ダッシュボード
+        </a>
+        <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition hover:bg-zinc-900 hover:text-white">
+          <i data-lucide="file-text" class="h-[18px] w-[18px]"></i> 投稿
+        </a>
+
+        <p class="px-3 pb-1.5 pt-4 text-[11px] font-semibold uppercase tracking-wider text-zinc-600">公開サイト</p>
+        <a href="#" class="flex items-center gap-3 rounded-lg bg-white px-3 py-2 text-sm font-medium text-zinc-950 shadow-sm">
+          <i data-lucide="user-round" class="h-[18px] w-[18px]"></i> About
+        </a>
+        <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition hover:bg-zinc-900 hover:text-white">
+          <i data-lucide="package" class="h-[18px] w-[18px]"></i> Products
+        </a>
+
+        <p class="px-3 pb-1.5 pt-4 text-[11px] font-semibold uppercase tracking-wider text-zinc-600">設定</p>
+        <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition hover:bg-zinc-900 hover:text-white">
+          <i data-lucide="circle-user" class="h-[18px] w-[18px]"></i> アカウント
+        </a>
+      </nav>
+
+      <!-- ユーザー + ログアウト -->
+      <div class="border-t border-zinc-800 p-3">
+        <div class="flex items-center gap-3 rounded-lg px-2 py-2">
+          <div class="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-800 text-sm font-semibold text-white">T</div>
+          <div class="min-w-0 flex-1 leading-tight">
+            <p class="truncate text-sm font-medium text-white">tofu 管理者</p>
+            <p class="truncate text-xs text-zinc-500">@tofu_admin</p>
+          </div>
+          <button class="rounded-md p-1.5 text-zinc-500 transition hover:bg-zinc-900 hover:text-white" title="ログアウト">
+            <i data-lucide="log-out" class="h-[18px] w-[18px]"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== メインコンテンツ ===== -->
+    <div class="pl-64">
+      <!-- トップバー -->
+      <header class="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-zinc-200 bg-zinc-50/80 px-8 backdrop-blur">
+        <div class="flex items-center gap-2 text-sm text-zinc-500">
+          <span>公開サイト</span>
+          <i data-lucide="chevron-right" class="h-4 w-4"></i>
+          <span class="font-medium text-zinc-900">About</span>
+        </div>
+        <a href="#" class="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50">
+          <i data-lucide="external-link" class="h-4 w-4"></i> 公開ページを表示
+        </a>
+      </header>
+
+      <main class="mx-auto w-full max-w-4xl px-8 py-8">
+        <!-- ページヘッダー -->
+        <div class="mb-8">
+          <h1 class="text-2xl font-bold tracking-tight text-zinc-900">About 設定</h1>
+          <p class="mt-1 text-sm text-zinc-500">公開サイトの About（自己紹介）ページに表示される情報を編集します。</p>
+        </div>
+
+        <!-- ===== プロフィールカード ===== -->
+        <section class="mb-6 rounded-xl border border-zinc-200 bg-white shadow-sm">
+          <div class="flex items-center justify-between border-b border-zinc-100 px-6 py-4">
+            <div class="flex items-center gap-2.5">
+              <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600"><i data-lucide="id-card" class="h-[18px] w-[18px]"></i></div>
+              <div>
+                <h2 class="text-[15px] font-semibold text-zinc-900">プロフィール</h2>
+                <p class="text-xs text-zinc-500">肩書き・自己紹介・サイト説明</p>
+              </div>
+            </div>
+            <button class="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-zinc-700">
+              <i data-lucide="check" class="h-4 w-4"></i> 保存
+            </button>
+          </div>
+          <div class="flex flex-col gap-5 px-6 py-6">
+            <!-- headline -->
+            <div>
+              <div class="mb-1.5 flex items-center justify-between">
+                <label class="text-sm font-medium text-zinc-800">肩書き<span class="ml-1 text-zinc-400">headline</span></label>
+                <span class="text-xs text-zinc-400">14 / 255</span>
+              </div>
+              <input type="text" value="ソフトウェアエンジニア / Web 開発"
+                class="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10" />
+            </div>
+            <!-- bio -->
+            <div>
+              <div class="mb-1.5 flex items-center justify-between">
+                <label class="text-sm font-medium text-zinc-800">自己紹介<span class="ml-1 text-zinc-400">bio</span></label>
+                <span class="text-xs text-zinc-400">92 / 2000</span>
+              </div>
+              <textarea rows="4"
+                class="w-full resize-y rounded-md border border-zinc-200 bg-white px-3 py-2.5 text-sm leading-relaxed text-zinc-900 shadow-sm outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10">個人開発でブログや Web アプリを作っています。フロントエンドからインフラまで、モダンな技術スタックで手を動かすのが好きです。最近は Next.js と FastAPI を触っています。</textarea>
+            </div>
+            <!-- site_description -->
+            <div>
+              <div class="mb-1.5 flex items-center justify-between">
+                <label class="text-sm font-medium text-zinc-800">サイト説明<span class="ml-1 text-zinc-400">site_description</span></label>
+                <span class="text-xs text-zinc-400">31 / 1000</span>
+              </div>
+              <textarea rows="2"
+                class="w-full resize-y rounded-md border border-zinc-200 bg-white px-3 py-2.5 text-sm leading-relaxed text-zinc-900 shadow-sm outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10">技術メモと個人開発の記録を残すサイトです。</textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 年表カード ===== -->
+        <section class="rounded-xl border border-zinc-200 bg-white shadow-sm">
+          <div class="flex items-center justify-between border-b border-zinc-100 px-6 py-4">
+            <div class="flex items-center gap-2.5">
+              <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600"><i data-lucide="milestone" class="h-[18px] w-[18px]"></i></div>
+              <div>
+                <h2 class="text-[15px] font-semibold text-zinc-900">年表 <span class="ml-1 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-500">4</span></h2>
+                <p class="text-xs text-zinc-500">経歴・出来事をドラッグで並び替え</p>
+              </div>
+            </div>
+            <button class="inline-flex h-9 items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50">
+              <i data-lucide="plus" class="h-4 w-4"></i> 年表を追加
+            </button>
+          </div>
+
+          <ul class="divide-y divide-zinc-100">
+            <!-- 通常行 -->
+            <li class="group flex items-start gap-3 px-4 py-4 transition hover:bg-zinc-50/70">
+              <button class="mt-1 cursor-grab text-zinc-300 transition group-hover:text-zinc-400"><i data-lucide="grip-vertical" class="h-5 w-5"></i></button>
+              <span class="mt-0.5 inline-flex h-7 items-center rounded-md bg-zinc-900 px-2.5 text-xs font-semibold tabular-nums text-white">2024</span>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium text-zinc-900">個人サイトをフルリニューアル</p>
+                <p class="mt-0.5 text-sm text-zinc-500">Next.js 16 + FastAPI 構成に移行し、管理画面を新規開発。</p>
+              </div>
+              <div class="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                <button class="rounded-md p-1.5 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700" title="編集"><i data-lucide="pencil" class="h-4 w-4"></i></button>
+                <button class="rounded-md p-1.5 text-zinc-400 transition hover:bg-red-50 hover:text-red-600" title="削除"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+              </div>
+            </li>
+
+            <!-- 編集中の行（インライン編集フォーム例） -->
+            <li class="bg-zinc-50/80 px-4 py-4 ring-1 ring-inset ring-zinc-900/5">
+              <div class="flex items-center gap-2 pb-3 text-xs font-semibold text-zinc-500"><i data-lucide="pencil" class="h-3.5 w-3.5"></i> 編集中</div>
+              <div class="grid grid-cols-[110px_1fr] gap-3">
+                <div>
+                  <label class="mb-1 block text-xs font-medium text-zinc-500">年 (year)</label>
+                  <input type="number" value="2022" class="h-9 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-sm shadow-sm outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10" />
+                </div>
+                <div>
+                  <label class="mb-1 block text-xs font-medium text-zinc-500">タイトル (title)</label>
+                  <input type="text" value="Web エンジニアとして働き始める" class="h-9 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-sm shadow-sm outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10" />
+                </div>
+                <div class="col-span-2">
+                  <label class="mb-1 block text-xs font-medium text-zinc-500">本文 (body)</label>
+                  <textarea rows="2" class="w-full resize-y rounded-md border border-zinc-200 bg-white px-2.5 py-2 text-sm shadow-sm outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10">受託開発の会社に入社。フロントエンドを中心に経験を積む。</textarea>
+                </div>
+              </div>
+              <div class="mt-3 flex items-center justify-end gap-2">
+                <button class="inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-zinc-600 transition hover:bg-zinc-100">キャンセル</button>
+                <button class="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-zinc-700"><i data-lucide="check" class="h-4 w-4"></i> 保存</button>
+              </div>
+            </li>
+
+            <li class="group flex items-start gap-3 px-4 py-4 transition hover:bg-zinc-50/70">
+              <button class="mt-1 cursor-grab text-zinc-300 transition group-hover:text-zinc-400"><i data-lucide="grip-vertical" class="h-5 w-5"></i></button>
+              <span class="mt-0.5 inline-flex h-7 items-center rounded-md bg-zinc-900 px-2.5 text-xs font-semibold tabular-nums text-white">2020</span>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium text-zinc-900">プログラミング学習を開始</p>
+                <p class="mt-0.5 text-sm text-zinc-500">独学で HTML / CSS / JavaScript から学び始める。</p>
+              </div>
+              <div class="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                <button class="rounded-md p-1.5 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700" title="編集"><i data-lucide="pencil" class="h-4 w-4"></i></button>
+                <button class="rounded-md p-1.5 text-zinc-400 transition hover:bg-red-50 hover:text-red-600" title="削除"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+              </div>
+            </li>
+
+            <li class="group flex items-start gap-3 px-4 py-4 transition hover:bg-zinc-50/70">
+              <button class="mt-1 cursor-grab text-zinc-300 transition group-hover:text-zinc-400"><i data-lucide="grip-vertical" class="h-5 w-5"></i></button>
+              <span class="mt-0.5 inline-flex h-7 items-center rounded-md bg-zinc-900 px-2.5 text-xs font-semibold tabular-nums text-white">2018</span>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium text-zinc-900">大学入学（情報系）</p>
+                <p class="mt-0.5 text-sm text-zinc-500">情報工学を専攻。基礎から学ぶ。</p>
+              </div>
+              <div class="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                <button class="rounded-md p-1.5 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700" title="編集"><i data-lucide="pencil" class="h-4 w-4"></i></button>
+                <button class="rounded-md p-1.5 text-zinc-400 transition hover:bg-red-50 hover:text-red-600" title="削除"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
