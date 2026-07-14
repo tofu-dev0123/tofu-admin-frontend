@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* メインコンテンツ（サイドバー幅・モバイルバー分の余白を確保） */}
       <div className="w-full pt-14 lg:pl-64 lg:pt-0">
         <Topbar />
-        <main className="w-full pb-24 lg:pb-0">{children}</main>
+        <main className="w-full">{children}</main>
       </div>
       <ErrorModal
         isOpen={errorModalHook.isOpen}

@@ -40,11 +40,6 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
   },
 ];
 
-// モバイル下部タブ用のフラットな一覧
-export const NAVIGATION_ITEMS: NavigationItem[] = NAVIGATION_GROUPS.flatMap(
-  (group) => group.items
-);
-
 // パスがナビゲーション項目に対応するか（配下パスも対象。ルート '/' は完全一致のみ）
 export const isNavItemActive = (
   itemPath: string,
