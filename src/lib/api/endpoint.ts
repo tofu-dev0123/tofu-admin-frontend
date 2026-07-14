@@ -26,4 +26,21 @@ export const API_ENDPOINTS = {
     post: '/api/admin/images/upload',
     delete: (id: number) => `/api/admin/images/${id}`,
   },
+  profile: {
+    get: '/api/admin/profile',
+    put: '/api/admin/profile',
+  },
+  timelines: {
+    get: '/api/admin/timelines',
+    post: '/api/admin/timelines',
+    put: (id: number) => `/api/admin/timelines/${id}`,
+    delete: (id: number) => `/api/admin/timelines/${id}`,
+  },
+  products: {
+    get: '/api/admin/products',
+    post: '/api/admin/products',
+    detail: (id: number) => `/api/admin/products/${id}`,
+    put: (id: number) => `/api/admin/products/${id}`,
+    delete: (id: number) => `/api/admin/products/${id}`,
+  },
 };

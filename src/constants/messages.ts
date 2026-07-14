@@ -20,11 +20,35 @@ export const MESSAGES = {
     thumbnail: {
       maxFileSize: 'ファイルサイズは5MB以下にしてください',
     },
+    timeline: {
+      year: '年（西暦）を入力してください',
+    },
+    product: {
+      titleRequired: 'タイトルの入力は必須です',
+    },
   },
   posts: {
     empty: '記事がありません',
     emptySearch: (keyword: string) =>
       `「${keyword}」に一致する記事はありません`,
+  },
+  about: {
+    timeline: {
+      empty: '年表がまだありません',
+    },
+  },
+  products: {
+    empty: 'プロダクトがまだありません',
+  },
+  confirm: {
+    deleteTimeline: {
+      title: '年表を削除しますか？',
+      description: 'この操作は取り消せません。',
+    },
+    deleteProduct: {
+      title: 'プロダクトを削除しますか？',
+      description: 'この操作は取り消せません。',
+    },
   },
   draft: {
     restore: {
