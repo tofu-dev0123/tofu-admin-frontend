@@ -3,7 +3,7 @@
 import { Plus } from 'lucide-react';
 import useProductsMain from '@/hooks/admin/products/useProductsMain';
 import ProductsStats from '@/components/features/admin/products/ProductsStats';
-import ProductsTable from '@/components/features/admin/products/ProductsTable';
+import ProductsList from '@/components/features/admin/products/ProductsList';
 import ProductDrawer from '@/components/features/admin/products/ProductDrawer';
 import ErrorModal from '@/components/features/admin/common/ErrorModal';
 import Alert from '@/components/features/admin/common/Alert';
@@ -45,7 +45,7 @@ function ProductsMain({ initialProducts }: ProductsMainProps) {
         />
       </div>
 
-      <ProductsTable listHooks={listHooks} onEdit={formHooks.openEdit} />
+      <ProductsList listHooks={listHooks} onEdit={formHooks.openEdit} />
 
       <ProductDrawer formHooks={formHooks} />
 
