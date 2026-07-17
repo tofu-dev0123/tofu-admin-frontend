@@ -1,6 +1,6 @@
 'use client';
 
-import { X, Check, Link as LinkIcon } from 'lucide-react';
+import { X, Check, Link as LinkIcon, Github } from 'lucide-react';
 import type useProductForm from '@/hooks/admin/products/useProductForm';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,6 +25,7 @@ function ProductDrawer({ formHooks }: ProductDrawerProps) {
     handleTitleChange,
     handleDescriptionChange,
     handleLinkUrlChange,
+    handleGithubUrlChange,
     handleSortOrderChange,
     togglePublished,
     handleTagInputChange,
@@ -117,6 +118,26 @@ function ProductDrawer({ formHooks }: ProductDrawerProps) {
                 value={form.linkUrl}
                 onChange={handleLinkUrlChange}
                 placeholder="https://example.com"
+                className="h-9 w-full bg-transparent px-2.5 text-sm outline-none placeholder:text-muted-foreground"
+              />
+            </div>
+          </div>
+
+          {/* github_url */}
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
+              GitHub URL
+            </label>
+            <div className="flex items-center rounded-md border border-input bg-transparent shadow-sm focus-within:ring-1 focus-within:ring-ring">
+              <span className="pl-3 text-muted-foreground">
+                <Github className="h-4 w-4" />
+              </span>
+              <input
+                type="text"
+                maxLength={500}
+                value={form.githubUrl}
+                onChange={handleGithubUrlChange}
+                placeholder="https://github.com/owner/repo"
                 className="h-9 w-full bg-transparent px-2.5 text-sm outline-none placeholder:text-muted-foreground"
               />
             </div>

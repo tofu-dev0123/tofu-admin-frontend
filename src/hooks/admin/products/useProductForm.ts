@@ -16,6 +16,7 @@ interface ProductFormState {
   title: string;
   description: string;
   linkUrl: string;
+  githubUrl: string;
   published: boolean;
   sortOrder: string;
   tags: string[];
@@ -25,6 +26,7 @@ const EMPTY_FORM: ProductFormState = {
   title: '',
   description: '',
   linkUrl: '',
+  githubUrl: '',
   published: false,
   sortOrder: '0',
   tags: [],
@@ -62,6 +64,7 @@ function useProductForm({ showError, onSaved }: UseProductFormProps) {
       title: product.title,
       description: product.description ?? '',
       linkUrl: product.link_url ?? '',
+      githubUrl: product.github_url ?? '',
       published: product.published,
       sortOrder: String(product.sort_order),
       tags: product.tags.map((tag) => tag.name),
@@ -85,6 +88,9 @@ function useProductForm({ showError, onSaved }: UseProductFormProps) {
   };
   const handleLinkUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, linkUrl: e.target.value }));
+  };
+  const handleGithubUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, githubUrl: e.target.value }));
   };
   const handleSortOrderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, sortOrder: e.target.value }));
@@ -138,6 +144,7 @@ function useProductForm({ showError, onSaved }: UseProductFormProps) {
         title: form.title,
         description: form.description.trim() ? form.description : null,
         link_url: form.linkUrl.trim() ? form.linkUrl : null,
+        github_url: form.githubUrl.trim() ? form.githubUrl : null,
         published: form.published,
         sort_order: Number(form.sortOrder) || 0,
         tags: form.tags,
@@ -186,6 +193,7 @@ function useProductForm({ showError, onSaved }: UseProductFormProps) {
     handleTitleChange,
     handleDescriptionChange,
     handleLinkUrlChange,
+    handleGithubUrlChange,
     handleSortOrderChange,
     togglePublished,
     handleTagInputChange,
