@@ -12,6 +12,7 @@ export type Product = {
   title: string;
   description: string | null;
   link_url: string | null;
+  github_url: string | null;
   published: boolean;
   sort_order: number;
   tags: Tag[];
@@ -23,11 +24,12 @@ export type ProductListResponse = {
 
 // 作成・更新の入力。
 // 注意: レスポンスの tags は Tag[] だが、リクエストの tags はタグ名の string[]。
-// description / link_url は空文字を送るとバックエンドで null に正規化される。
+// description / link_url / github_url は空文字を送るとバックエンドで null に正規化される。
 export type ProductRequest = {
   title: string;
   description: string | null;
   link_url: string | null;
+  github_url: string | null;
   published: boolean;
   sort_order: number;
   tags: string[];

@@ -1,6 +1,12 @@
 'use client';
 
-import { GripVertical, Pencil, Trash2, Link as LinkIcon } from 'lucide-react';
+import {
+  GripVertical,
+  Pencil,
+  Trash2,
+  Link as LinkIcon,
+  Github,
+} from 'lucide-react';
 import Toggle from '@/components/features/admin/common/Toggle';
 import { Product } from '@/types/api/product';
 
@@ -55,15 +61,29 @@ function ProductRow({
         </div>
       </td>
       <td className="py-3 pr-4 align-middle">
-        {product.link_url ? (
-          <a
-            href={product.link_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
-          >
-            <LinkIcon className="h-3.5 w-3.5" /> 開く
-          </a>
+        {product.link_url || product.github_url ? (
+          <div className="flex items-center gap-3">
+            {product.link_url && (
+              <a
+                href={product.link_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+              >
+                <LinkIcon className="h-3.5 w-3.5" /> 開く
+              </a>
+            )}
+            {product.github_url && (
+              <a
+                href={product.github_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+              >
+                <Github className="h-3.5 w-3.5" /> GitHub
+              </a>
+            )}
+          </div>
         ) : (
           <span className="text-xs text-border">—</span>
         )}
