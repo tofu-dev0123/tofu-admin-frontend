@@ -10,6 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 
 interface PostInfoProps {
   post: Post;
@@ -82,35 +83,43 @@ function PostInfo({
       {/* 操作メニュー */}
       <Popover>
         <PopoverTrigger asChild>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-sm"
             aria-label="操作メニュー"
-            className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-md text-gray-400 duration-200 hover:bg-gray-200/70 hover:text-gray-600"
+            className="shrink-0 text-gray-400"
           >
-            <MoreHorizontal className="h-4 w-4" />
-          </button>
+            <MoreHorizontal />
+          </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-30 p-0 flex flex-col justify-start items-start border border-gray-200 rounded-md">
-          <p
-            className="w-full py-2 px-4 text-start text-sm text-gray-700 hover:cursor-pointer hover:bg-gray-100/50 duration-200"
+        <PopoverContent className="w-30 p-1 flex flex-col justify-start items-start border border-gray-200 rounded-md">
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full justify-start"
             onClick={() => handleClickEdit(post.post_id)}
           >
             編集
-          </p>
+          </Button>
           {isPublished && (
-            <p
-              className="w-full py-2 px-4 text-start text-sm text-gray-700 hover:cursor-pointer hover:bg-gray-100/50 duration-200"
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full justify-start"
               onClick={() => handleOpenPatchStatusAlert(post.post_id, 'DRAFT')}
             >
               公開を解除
-            </p>
+            </Button>
           )}
-          <p
-            className="w-full py-2 px-4 text-start text-sm text-red-700 hover:cursor-pointer hover:bg-gray-100/50 duration-200"
+          <Button
+            type="button"
+            variant="ghost-destructive"
+            className="w-full justify-start text-red-700"
             onClick={() => handleOpenDeleteAlert(post.post_id)}
           >
             削除
-          </p>
+          </Button>
         </PopoverContent>
       </Popover>
     </div>
