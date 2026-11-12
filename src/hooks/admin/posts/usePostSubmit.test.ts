@@ -8,6 +8,7 @@ import { POST_SAVE_TIMEOUT_MS } from '@/constants/admin/apiTimeout';
 import { queryKeys } from '@/lib/api/queryKeys';
 import { createQueryWrapper } from '@/test/queryWrapper';
 import type { PostEditorState } from '@/types/admin/posts';
+import { MESSAGES } from '@/constants/messages';
 
 const push = vi.fn();
 vi.mock('next/navigation', () => ({
@@ -26,6 +27,7 @@ vi.mock('@/lib/utils/postDraft', () => ({
 
 const state = {
   title: 'タイトル',
+  slug: '',
   content: '本文',
   thumbnailUrl: null,
   tags: ['tag'],
@@ -137,6 +139,42 @@ describe('usePostSubmit', () => {
     expect(invalidate).not.toHaveBeenCalled();
     expect(push).not.toHaveBeenCalled();
     expect(result.current.isLoading).toBe(false);
+    expect(result.current.submittingStatus).toBeNull();
+  });
+
+  it('slug が入力されていればリクエストに含める', async () => {
+    vi.mocked(post).mockResolvedValue({});
+    const { result } = setup();
+
+    await act(() =>
+      result.current.onSubmit({ ...state, slug: 'my-post' }, 'DRAFT')
+    );
+
+    expect(post).toHaveBeenCalledWith(
+      '/api/admin/posts/',
+      expect.objectContaining({ slug: 'my-post' }),
+      expect.anything()
+    );
+  });
+
+  it('slug が未入力ならリクエストに含めない', async () => {
+    vi.mocked(post).mockResolvedValue({});
+    const { result } = setup();
+
+    await act(() => result.current.onSubmit(state, 'DRAFT'));
+
+    expect(vi.mocked(post).mock.calls[0][1]).not.toHaveProperty('slug');
+  });
+
+  it('slug の形式が不正ならエラーを通知し、送信しない', async () => {
+    const { result, showError } = setup();
+
+    await act(() =>
+      result.current.onSubmit({ ...state, slug: 'Bad' }, 'DRAFT')
+    );
+
+    expect(showError).toHaveBeenCalledWith([MESSAGES.validation.slug.format]);
+    expect(post).not.toHaveBeenCalled();
     expect(result.current.submittingStatus).toBeNull();
   });
 });

@@ -56,6 +56,7 @@ export function usePostEditState({
   const postSubmitHooks = usePostEditSubmit({
     showError: errorModalHooks.showError,
     postId,
+    initialSlug: initialData.slug,
   });
 
   // 編集画面用の初期データ設定（初回のみ実行）

@@ -95,7 +95,8 @@ export interface PostEditorActions {
     thumbnailUrl: string,
     title: string,
     tags: string[],
-    content: string
+    content: string,
+    slug: string
   ) => void;
   handleCloseConfirmModal: () => void;
   // 投稿送信関連

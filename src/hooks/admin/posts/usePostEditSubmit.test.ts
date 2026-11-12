@@ -8,6 +8,7 @@ import { POST_SAVE_TIMEOUT_MS } from '@/constants/admin/apiTimeout';
 import { queryKeys } from '@/lib/api/queryKeys';
 import { createQueryWrapper } from '@/test/queryWrapper';
 import type { PostEditorState } from '@/types/admin/posts';
+import { MESSAGES } from '@/constants/messages';
 
 const push = vi.fn();
 vi.mock('next/navigation', () => ({
@@ -23,6 +24,7 @@ vi.mock('@/lib/utils/exceptErrorHandling', () => ({
 
 const state = {
   title: 'タイトル',
+  slug: 'current-slug',
   content: '本文',
   thumbnailUrl: null,
   thumbnailDeleteFlag: false,
@@ -37,7 +39,8 @@ const setup = (showError = vi.fn()) => {
   const { wrapper, queryClient } = createQueryWrapper();
   const invalidate = vi.spyOn(queryClient, 'invalidateQueries');
   const { result } = renderHook(
-    () => usePostEditSubmit({ showError, postId: 1 }),
+    () =>
+      usePostEditSubmit({ showError, postId: 1, initialSlug: 'current-slug' }),
     { wrapper }
   );
   return { result, showError, invalidate };
@@ -136,5 +139,54 @@ describe('usePostEditSubmit', () => {
     expect(invalidate).not.toHaveBeenCalled();
     expect(push).not.toHaveBeenCalled();
     expect(result.current.isLoading).toBe(false);
+  });
+
+  it('slug が変更されていなければリクエストから省略する', async () => {
+    vi.mocked(put).mockResolvedValue({});
+    const { result } = setup();
+
+    await act(() => result.current.onSubmit(state, 'DRAFT'));
+
+    expect(vi.mocked(put).mock.calls[0][1]).not.toHaveProperty('slug');
+  });
+
+  it('slug が変更されていれば変更後の値を送る', async () => {
+    vi.mocked(put).mockResolvedValue({});
+    const { result } = setup();
+
+    await act(() =>
+      result.current.onSubmit({ ...state, slug: 'new-slug' }, 'DRAFT')
+    );
+
+    expect(put).toHaveBeenCalledWith(
+      '/api/admin/posts/1',
+      expect.objectContaining({ slug: 'new-slug' }),
+      expect.anything()
+    );
+  });
+
+  it('slug を空にしたら空文字を送り、再生成させる', async () => {
+    vi.mocked(put).mockResolvedValue({});
+    const { result } = setup();
+
+    await act(() => result.current.onSubmit({ ...state, slug: '' }, 'DRAFT'));
+
+    expect(put).toHaveBeenCalledWith(
+      '/api/admin/posts/1',
+      expect.objectContaining({ slug: '' }),
+      expect.anything()
+    );
+  });
+
+  it('slug の形式が不正ならエラーを通知し、送信しない', async () => {
+    const { result, showError } = setup();
+
+    await act(() =>
+      result.current.onSubmit({ ...state, slug: 'Bad' }, 'DRAFT')
+    );
+
+    expect(showError).toHaveBeenCalledWith([MESSAGES.validation.slug.format]);
+    expect(put).not.toHaveBeenCalled();
+    expect(result.current.submittingStatus).toBeNull();
   });
 });

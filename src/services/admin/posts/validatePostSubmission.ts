@@ -1,17 +1,20 @@
 import { validate } from '@/lib/utils/validation';
 import { POST_MAX_CHARACTERS } from '@/constants/admin/fileFormats';
+import { validateSlug } from '@/services/admin/posts/validateSlug';
 
 /**
  * 投稿送信時のバリデーション処理
  * @param title - 投稿のタイトル
  * @param tags - 投稿のタグ配列
+ * @param slug - 投稿の slug（任意。入力時のみ形式をチェック）
  * @returns エラーメッセージの配列（エラーがない場合は空配列）
  */
 export function validatePostSubmission(
   thumbnailUrl: string,
   title: string,
   tags: string[],
-  content: string
+  content: string,
+  slug: string
 ): string[] {
   const errorMessage: string[] = [];
 
@@ -50,6 +53,8 @@ export function validatePostSubmission(
   if (tagsError) {
     errorMessage.push(tagsError);
   }
+
+  errorMessage.push(...validateSlug(slug));
 
   return errorMessage;
 }

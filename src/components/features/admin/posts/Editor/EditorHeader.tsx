@@ -225,7 +225,8 @@ function EditorHeader() {
               state.thumbnailUrl ?? '',
               state.title,
               state.tags,
-              state.content
+              state.content,
+              state.slug
             )
           }
         >
