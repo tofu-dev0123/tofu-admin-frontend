@@ -79,6 +79,7 @@ middleware.ts                /admin 配下の認証ガード（auth_token クッ
 | ログ出力を書く                                          | `.claude/rules/logging.md`                    |
 | コンポーネントを書く（ロジックの切り出し方）            | `.claude/rules/component-logic-separation.md` |
 | テストを書く・追加する                                  | `.claude/rules/testing.md`                    |
+| Issue 起票・実装・PR・後片付け（開発フロー全般）        | `.claude/rules/dev-flow.md`                   |
 
 ## コードスタイル
 
@@ -115,6 +116,7 @@ Prettier（`.prettierrc.json`）/ ESLint（`eslint.config.mjs`）が正。手書
 
 ## プロジェクト固有スキル
 
+- `feature` / `bugfix` / `implement` / `cleanup`: Issue 駆動の開発フロー（起票 → 実装・レビュー・PR → マージ後処理）。詳細は `.claude/rules/dev-flow.md`。
 - `create-ui-component`: shadcn/ui 規約に沿った UI コンポーネント雛形を生成。
 - `create-mock`: 画面モックを HTML で作成し、Playwright MCP でスクショを撮って `docs/mock/` に保存。
 
