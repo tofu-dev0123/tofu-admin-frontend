@@ -23,11 +23,12 @@ function PostSlug() {
           readOnly={state.isPreview}
           autoComplete="off"
           spellCheck={false}
+          aria-describedby={state.isPublished ? 'post-slug-note' : undefined}
           onChange={(e) => actions.setSlug(e.target.value)}
         />
       </div>
       {state.isPublished && (
-        <p className="text-xs text-amber-600">
+        <p id="post-slug-note" className="text-xs text-amber-600">
           変更すると公開 URL が変わります
         </p>
       )}
