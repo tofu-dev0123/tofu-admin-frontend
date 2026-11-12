@@ -19,6 +19,8 @@
 
 1. **純粋なユーティリティ・ロジック** — `src/lib/utils/*`、整形・変換・バリデーション。入出力が決まり最も費用対効果が高い。実例: `src/lib/utils/getErrorMessage.test.ts`。
 2. **カスタムフック** — 状態遷移・分岐。RTL の `renderHook` を使う。API はモックする（`vi.mock` で `@/lib/api/http` を差し替え）。
+   - `useQuery` / `useQueryClient` を使うフックは `createQueryWrapper()`（`src/test/queryWrapper.tsx`、リトライ無効）の `wrapper` を `renderHook` に渡す。取得完了は `waitFor` で待つ。
+   - 更新後の無効化は `vi.spyOn(queryClient, 'invalidateQueries')` で、期待するクエリキー（`queryKeys.*`）で呼ばれることを検証する。
 3. **コンポーネント** — ロール・テキストでクエリし、ユーザー視点の挙動を検証する。実装詳細（クラス名の網羅等）に依存しすぎない。実例: `src/components/ui/button.test.tsx`。
 
 ## テスト設計（`/implement` の計画に含める形式）
