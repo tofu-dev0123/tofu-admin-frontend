@@ -9,6 +9,7 @@ import type {
 } from '@/types/admin/posts';
 import { useOnClickPreview } from './useOnClickPreview';
 import { usePostTitle } from './usePostTitle';
+import { usePostSlug } from './usePostSlug';
 import { usePostContent } from './usePostContent';
 import { useThumbnail } from './useThumbnail';
 import { useTags } from './useTags';
@@ -32,6 +33,7 @@ export function usePostEditState({
   const errorModalHooks = useErrorModal();
   const onClickPreviewHooks = useOnClickPreview();
   const postTitleHooks = usePostTitle();
+  const postSlugHooks = usePostSlug();
   const postContentHooks = usePostContent();
   const thumbnailHooks = useThumbnail({
     showError: errorModalHooks.showError,
@@ -59,6 +61,7 @@ export function usePostEditState({
   // 編集画面用の初期データ設定（初回のみ実行）
   useEffect(() => {
     postTitleHooks.setTitle(initialData.title);
+    postSlugHooks.setSlug(initialData.slug);
     postContentHooks.setContent(initialData.content);
     thumbnailHooks.setImageId(initialData.thumbnailId);
     thumbnailHooks.setThumbnailUrl(initialData.thumbnailUrl);
@@ -73,11 +76,15 @@ export function usePostEditState({
     tagsHooks.tags.some((tag, i) => tag !== initialData.tags[i]);
   const isDirty =
     postTitleHooks.title !== initialData.title ||
+    postSlugHooks.slug !== initialData.slug ||
     postContentHooks.content !== initialData.content ||
     thumbnailHooks.thumbnailUrl !== initialData.thumbnailUrl ||
     thumbnailHooks.thumbnailDeleteFlag ||
     tagsChanged ||
     (imageInsertionHooks.newImages?.length ?? 0) > 0;
+
+  // 公開済み記事の編集か（編集開始時のステータスで判定）
+  const isPublished = initialData.status === 'PUBLISHED';
 
   const state: PostEditorState = useMemo(
     () => ({
@@ -88,7 +95,9 @@ export function usePostEditState({
       isDirty,
       // 基本情報
       title: postTitleHooks.title,
+      slug: postSlugHooks.slug,
       content: postContentHooks.content,
+      isPublished,
       // サムネイル情報
       thumbnailUrl: thumbnailHooks.thumbnailUrl,
       imageId: thumbnailHooks.imageId,
@@ -123,7 +132,9 @@ export function usePostEditState({
       postSubmitHooks.submittingStatus,
       isDirty,
       postTitleHooks.title,
+      postSlugHooks.slug,
       postContentHooks.content,
+      isPublished,
       thumbnailHooks.thumbnailUrl,
       thumbnailHooks.imageId,
       thumbnailHooks.altText,
@@ -151,10 +162,17 @@ export function usePostEditState({
   // 編集画面用のリセット処理（初期データに戻す）
   const reset = useCallback(() => {
     postTitleHooks.setTitle(initialData.title);
+    postSlugHooks.setSlug(initialData.slug);
     postContentHooks.setContent(initialData.content);
     thumbnailHooks.setThumbnailUrl(initialData.thumbnailUrl);
     // tagsとisPreviewのリセットは、必要に応じて各フックにリセット機能を追加
-  }, [initialData, postTitleHooks, postContentHooks, thumbnailHooks]);
+  }, [
+    initialData,
+    postTitleHooks,
+    postSlugHooks,
+    postContentHooks,
+    thumbnailHooks,
+  ]);
 
   const actions: PostEditorActions = useMemo(
     () => ({
@@ -176,6 +194,7 @@ export function usePostEditState({
       handleAlertOpenChange: thumbnailHooks.handleAlertOpenChange,
       // 基本情報関連
       setTitle: postTitleHooks.setTitle,
+      setSlug: postSlugHooks.setSlug,
       setContent: postContentHooks.setContent,
       applyFormat: markdownToolbarHooks.applyFormat,
       togglePreview: onClickPreviewHooks.togglePreview,
@@ -216,6 +235,7 @@ export function usePostEditState({
       thumbnailHooks.handleCancelUpload,
       thumbnailHooks.handleAlertOpenChange,
       postTitleHooks.setTitle,
+      postSlugHooks.setSlug,
       postContentHooks.setContent,
       markdownToolbarHooks.applyFormat,
       onClickPreviewHooks.togglePreview,

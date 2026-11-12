@@ -4,6 +4,7 @@ import React, { createContext, useContext } from 'react';
 import type { PostEditorContextValue } from '@/types/admin/posts';
 import { usePostEditState } from '@/hooks/admin/posts/usePostEditState';
 import type { ImageInsertionState } from '@/hooks/admin/posts/useImageInsertion';
+import type { PostStatus } from '@/types/api/post';
 
 export const PostEditContext = createContext<
   PostEditorContextValue | undefined
@@ -11,6 +12,8 @@ export const PostEditContext = createContext<
 
 export interface PostEditInitialData {
   title: string;
+  slug: string;
+  status: PostStatus;
   content: string;
   thumbnailId: number | null;
   thumbnailUrl: string | null;

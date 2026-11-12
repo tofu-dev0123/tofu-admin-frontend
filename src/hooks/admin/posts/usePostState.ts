@@ -9,6 +9,7 @@ import type {
 } from '@/types/admin/posts';
 import { useOnClickPreview } from './useOnClickPreview';
 import { usePostTitle } from './usePostTitle';
+import { usePostSlug } from './usePostSlug';
 import { usePostContent } from './usePostContent';
 import { useThumbnail } from './useThumbnail';
 import { useTags } from './useTags';
@@ -23,6 +24,7 @@ export function usePostState() {
   const errorModalHooks = useErrorModal();
   const onClickPreviewHooks = useOnClickPreview();
   const postTitleHooks = usePostTitle();
+  const postSlugHooks = usePostSlug();
   const postContentHooks = usePostContent();
   const thumbnailHooks = useThumbnail({
     showError: errorModalHooks.showError,
@@ -48,9 +50,13 @@ export function usePostState() {
   // 未保存の変更があるか（新規作成: いずれかが入力済みなら dirty）
   const isDirty =
     postTitleHooks.title.trim() !== '' ||
+    postSlugHooks.slug.trim() !== '' ||
     postContentHooks.content.trim() !== '' ||
     tagsHooks.tags.length > 0 ||
     thumbnailHooks.thumbnailUrl !== null;
+
+  // 新規作成は常に未公開
+  const isPublished = false;
 
   const state: PostEditorState = useMemo(
     () => ({
@@ -61,7 +67,9 @@ export function usePostState() {
       isDirty,
       // 基本情報
       title: postTitleHooks.title,
+      slug: postSlugHooks.slug,
       content: postContentHooks.content,
+      isPublished,
       // サムネイル情報
       thumbnailUrl: thumbnailHooks.thumbnailUrl,
       imageId: thumbnailHooks.imageId,
@@ -95,7 +103,9 @@ export function usePostState() {
       postSubmitHooks.submittingStatus,
       isDirty,
       postTitleHooks.title,
+      postSlugHooks.slug,
       postContentHooks.content,
+      isPublished,
       thumbnailHooks.thumbnailUrl,
       thumbnailHooks.imageId,
       thumbnailHooks.altText,
@@ -120,10 +130,11 @@ export function usePostState() {
 
   const reset = useCallback(() => {
     postTitleHooks.setTitle('');
+    postSlugHooks.setSlug('');
     postContentHooks.setContent('');
     thumbnailHooks.setThumbnailUrl(null);
     // tagsとisPreviewのリセットは、必要に応じて各フックにリセット機能を追加
-  }, [postTitleHooks, postContentHooks, thumbnailHooks]);
+  }, [postTitleHooks, postSlugHooks, postContentHooks, thumbnailHooks]);
 
   const actions: PostEditorActions = useMemo(
     () => ({
@@ -145,6 +156,7 @@ export function usePostState() {
       handleAlertOpenChange: thumbnailHooks.handleAlertOpenChange,
       // 基本情報関連
       setTitle: postTitleHooks.setTitle,
+      setSlug: postSlugHooks.setSlug,
       setContent: postContentHooks.setContent,
       applyFormat: markdownToolbarHooks.applyFormat,
       togglePreview: onClickPreviewHooks.togglePreview,
@@ -173,6 +185,7 @@ export function usePostState() {
     [
       // 基本情報関連
       postTitleHooks.setTitle,
+      postSlugHooks.setSlug,
       postContentHooks.setContent,
       markdownToolbarHooks.applyFormat,
       thumbnailHooks.setThumbnailUrl,

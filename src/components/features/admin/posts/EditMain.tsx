@@ -31,6 +31,8 @@ function EditMain() {
         postId={postId}
         initialData={{
           title: postData.title,
+          slug: postData.slug,
+          status: postData.status,
           content: postData.content_md,
           thumbnailId: postData.thumbnail_id,
           thumbnailAltText: postData.thumbnail_alt_text,
