@@ -1,20 +1,17 @@
+'use client';
+
 import AccountMain from '@/components/features/admin/account/AccountMain';
+import AccountMainSkeleton from '@/components/features/admin/account/AccountMainSkeleton';
 import SectionError from '@/components/features/admin/common/SectionError';
-import { serverFetch } from '@/lib/api/server';
-import type { MeResponse } from '@/types/api/account';
+import useMeQuery from '@/hooks/admin/account/useMeQuery';
 
-async function AccountSection() {
-  let me: MeResponse;
-  try {
-    me = await serverFetch<MeResponse>('/admin/auth/me', {
-      method: 'POST',
-      label: 'アカウント情報取得',
-    });
-  } catch {
-    return <SectionError className="m-4" />;
-  }
+function AccountSection() {
+  const { data, isPending, isError } = useMeQuery();
 
-  return <AccountMain initialAccount={me} />;
+  if (isPending) return <AccountMainSkeleton />;
+  if (isError) return <SectionError className="m-4" />;
+
+  return <AccountMain account={data} />;
 }
 
 export default AccountSection;

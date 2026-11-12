@@ -1,28 +1,21 @@
 'use client';
 
-import { useState } from 'react';
 import { MeResponse } from '@/types/api/account';
 
 interface UseAccountMeProps {
-  // サーバー（RSC）で取得済みの初期アカウント情報
-  initial: MeResponse;
+  // クエリ（useMeQuery）で取得済みのアカウント情報。更新後は無効化で最新に差し替わる
+  account: MeResponse;
 }
 
 /**
- * アカウント情報を保持するフック。
- * 初期データはサーバー側（AccountSection）で取得して props で渡す。
- * 更新は各編集フックが window.location.reload() で反映するため、
- * ここではクライアント側の再取得は行わない。
+ * 表示用のアカウント情報を返すフック。
+ * 値はクエリのデータから導出し、手元に state として複製しない。
  */
-function useAccountMe({ initial }: UseAccountMeProps) {
-  const [userId] = useState<number>(initial.user_id);
-  const [accountName] = useState<string>(initial.account_name);
-  const [username] = useState<string>(initial.username);
-
+function useAccountMe({ account }: UseAccountMeProps) {
   return {
-    userId,
-    accountName,
-    username,
+    userId: account.user_id,
+    accountName: account.account_name,
+    username: account.username,
   };
 }
 

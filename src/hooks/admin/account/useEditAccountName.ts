@@ -8,6 +8,8 @@ import {
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
 import { logger } from '@/lib/logger';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/api/queryKeys';
 
 interface UseEditAccountNameProps {
   showError: (message: string[]) => void;
@@ -17,6 +19,7 @@ function useEditAccountName({ showError }: UseEditAccountNameProps) {
   const [editFlag, setEditFlag] = useState(false);
   const [editAccountName, setEditAccountName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   /**
    * アカウント名を変更する
@@ -37,13 +40,16 @@ function useEditAccountName({ showError }: UseEditAccountNameProps) {
         type: 'success',
         message: message,
       });
-      window.location.reload();
+      // アカウント情報を再取得して表示に反映し、編集欄を閉じる
+      await queryClient.invalidateQueries({ queryKey: queryKeys.me });
+      setEditAccountName('');
+      setEditFlag(false);
     } catch (error) {
       exceptErrorHandling(error, showError);
     } finally {
       setIsLoading(false);
     }
-  }, [showError, editAccountName]);
+  }, [showError, editAccountName, queryClient]);
 
   const handleAccountNameEdit = () => {
     if (editFlag) {

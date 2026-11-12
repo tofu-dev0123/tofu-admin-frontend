@@ -1,20 +1,18 @@
+'use client';
+
 import AccountArea from '@/components/features/admin/home/AccountArea';
 import SectionError from '@/components/features/admin/common/SectionError';
-import { serverFetch } from '@/lib/api/server';
-import type { MeResponse } from '@/types/api/account';
+import useMeQuery from '@/hooks/admin/account/useMeQuery';
 
-async function AccountSection() {
-  let me: MeResponse;
-  try {
-    me = await serverFetch<MeResponse>('/admin/auth/me', {
-      method: 'POST',
-      label: 'アカウント情報取得',
-    });
-  } catch {
-    return <SectionError />;
-  }
+function AccountSection() {
+  const { data, isPending, isError } = useMeQuery();
 
-  return <AccountArea accountName={me.account_name} username={me.username} />;
+  if (isPending) return <AccountArea accountName="" username="" isLoading />;
+  if (isError) return <SectionError />;
+
+  return (
+    <AccountArea accountName={data.account_name} username={data.username} />
+  );
 }
 
 export default AccountSection;

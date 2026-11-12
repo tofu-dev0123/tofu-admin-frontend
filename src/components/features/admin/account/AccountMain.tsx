@@ -7,17 +7,17 @@ import ErrorModal from '@/components/features/admin/common/ErrorModal';
 import { MeResponse } from '@/types/api/account';
 
 interface AccountMainProps {
-  initialAccount: MeResponse;
+  account: MeResponse;
 }
 
-function AccountMain({ initialAccount }: AccountMainProps) {
+function AccountMain({ account }: AccountMainProps) {
   const {
     accountMeHooks,
     editAccountNameHooks,
     editUsernameHooks,
     editPasswordHooks,
     errorModalHooks,
-  } = useAccountMain({ initialAccount });
+  } = useAccountMain({ account });
   return (
     <div className="h-full w-full lg:w-6xl flex flex-col mx-auto p-4 lg:px-0">
       <div className="h-full lg:w-200 w-full lg:mx-auto flex flex-col">
