@@ -1,11 +1,6 @@
-import { Suspense } from 'react';
 import ProductsSection from '@/components/features/admin/products/ProductsSection';
-import ProductsMainSkeleton from '@/components/features/admin/products/ProductsMainSkeleton';
 
+// 取得はクライアントで行う（TanStack Query）。取得中のスケルトンは ProductsSection が出す
 export default function Page() {
-  return (
-    <Suspense fallback={<ProductsMainSkeleton />}>
-      <ProductsSection />
-    </Suspense>
-  );
+  return <ProductsSection />;
 }

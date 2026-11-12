@@ -5,6 +5,8 @@ import { ChangeEmailResponse, ChangeEmailRequest } from '@/types/api/account';
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
 import { logger } from '@/lib/logger';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/api/queryKeys';
 
 interface UseEditUsernameProps {
   showError: (message: string[]) => void;
@@ -15,6 +17,7 @@ function useEditUsername({ showError }: UseEditUsernameProps) {
   const [editUsername, setEditUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   /**
    * メールアドレスを変更する
@@ -38,14 +41,18 @@ function useEditUsername({ showError }: UseEditUsernameProps) {
           type: 'success',
           message: message,
         });
-        window.location.reload();
+        // アカウント情報を再取得して表示に反映し、編集欄を閉じる
+        await queryClient.invalidateQueries({ queryKey: queryKeys.me });
+        setEditUsername('');
+        setPassword('');
+        setEditFlag(false);
       } catch (error) {
         exceptErrorHandling(error, showError);
       } finally {
         setIsLoading(false);
       }
     },
-    [showError, editUsername, password]
+    [showError, editUsername, password, queryClient]
   );
 
   const handleUsernameEdit = () => {

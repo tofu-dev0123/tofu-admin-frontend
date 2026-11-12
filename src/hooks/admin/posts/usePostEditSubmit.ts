@@ -9,6 +9,8 @@ import { ImagesDeleteResponse } from '@/types/api/imagesDelete';
 import { useToastStore } from '@/stores/toastStore';
 import { extractImageUrls } from '@/services/admin/posts/extractImageUrls';
 import { logger } from '@/lib/logger';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/api/queryKeys';
 import { POST_SAVE_TIMEOUT_MS } from '@/constants/admin/apiTimeout';
 
 interface UsePostEditSubmitProps {
@@ -18,6 +20,7 @@ interface UsePostEditSubmitProps {
 
 function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   // 送信中のステータス（どのボタンが押されたかを表示側で判別するため保持）
   const [submittingStatus, setSubmittingStatus] = useState<PostStatus | null>(
     null
@@ -93,6 +96,9 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
         });
         logger.info('[posts] 投稿を更新しました', { postId, status });
 
+        // 一覧・サマリ・詳細のキャッシュを無効化し、遷移先で最新を取得させる
+        void queryClient.invalidateQueries({ queryKey: queryKeys.posts.all });
+
         // トーストを表示
         const message =
           status === 'PUBLISHED'
@@ -111,7 +117,7 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
         setSubmittingStatus(null);
       }
     },
-    [router, showError, postId]
+    [router, showError, postId, queryClient]
   );
 
   return {

@@ -6,12 +6,13 @@ import PostInfo from '@/components/features/admin/posts/PostInfo';
 import Alert from '@/components/features/admin/common/Alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MESSAGES } from '@/constants/messages';
-import useSearchPost from '@/hooks/admin/posts/useSearchPost';
+import SectionError from '@/components/features/admin/common/SectionError';
+import type { Post } from '@/types/api/post';
 import usePostDeleteAlert from '@/hooks/admin/posts/usePostDeleteAlert';
 import usePatchStatusAlert from '@/hooks/admin/posts/usePatchStatusAlert';
 
 interface PostListProps {
-  searchPost: ReturnType<typeof useSearchPost>;
+  postList: Post[];
   deleteAlert: ReturnType<typeof usePostDeleteAlert>;
   patchStatusAlert: ReturnType<typeof usePatchStatusAlert>;
   handleClickEdit: (postId: number) => void;
@@ -20,18 +21,21 @@ interface PostListProps {
   isRefetching: boolean;
   // 表示できる内容が無く取得中（スケルトン）
   isColdLoading: boolean;
+  // 取得失敗（表示できる一覧が無い）
+  isError: boolean;
   // 結果ゼロ
   isEmpty: boolean;
 }
 
 function PostList({
-  searchPost,
+  postList,
   deleteAlert,
   patchStatusAlert,
   handleClickEdit,
   displayedKeyword,
   isRefetching,
   isColdLoading,
+  isError,
   isEmpty,
 }: PostListProps) {
   return (
@@ -42,7 +46,9 @@ function PostList({
           <div className="absolute h-0.5 rounded-full bg-gray-700 animate-indeterminate" />
         </div>
       )}
-      {isColdLoading ? (
+      {isError ? (
+        <SectionError className="m-2" />
+      ) : isColdLoading ? (
         Array.from({ length: 5 }).map((_, index) => (
           <div key={index}>
             {index > 0 && <div className="mx-3 border-b border-gray-100" />}
@@ -72,7 +78,7 @@ function PostList({
             isRefetching && 'opacity-[0.85] pointer-events-none'
           )}
         >
-          {searchPost.postList.map((post, index) => (
+          {postList.map((post, index) => (
             <div key={post.post_id}>
               {index > 0 && <div className="mx-3 border-b border-gray-100" />}
               <PostInfo

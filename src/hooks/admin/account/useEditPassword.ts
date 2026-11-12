@@ -52,7 +52,11 @@ function useEditUsername({ showError }: UseEditUsernameProps) {
         type: 'success',
         message: message,
       });
-      window.location.reload();
+      // 表示するアカウント情報は変わらないため、入力を消して編集欄を閉じる
+      setEditPassword('');
+      setConfirmPassword('');
+      setCurrentPassword('');
+      setEditFlag(false);
     } catch (error) {
       exceptErrorHandling(error, showError);
     } finally {

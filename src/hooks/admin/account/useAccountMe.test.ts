@@ -3,10 +3,10 @@ import { renderHook } from '@testing-library/react';
 import useAccountMe from '@/hooks/admin/account/useAccountMe';
 
 describe('useAccountMe', () => {
-  it('サーバーから渡された初期アカウント情報を state に反映する', () => {
+  it('クエリで取得したアカウント情報を表示用に返す', () => {
     const { result } = renderHook(() =>
       useAccountMe({
-        initial: {
+        account: {
           user_id: 1,
           account_name: 'たろう',
           username: 'taro@example.com',

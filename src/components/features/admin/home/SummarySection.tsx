@@ -1,25 +1,20 @@
+'use client';
+
 import SummaryArea from '@/components/features/admin/home/SummaryArea';
 import SectionError from '@/components/features/admin/common/SectionError';
-import { serverGet } from '@/lib/api/server';
-import type { SummaryResponse } from '@/types/api/summary';
+import usePostSummaryQuery from '@/hooks/admin/posts/usePostSummaryQuery';
 
-async function SummarySection() {
-  let summary: SummaryResponse;
-  try {
-    summary = await serverGet<SummaryResponse>(
-      '/admin/posts/summary',
-      undefined,
-      '投稿サマリ取得'
-    );
-  } catch {
-    return <SectionError />;
-  }
+function SummarySection() {
+  const { data, isError } = usePostSummaryQuery();
+
+  // 表示できるデータが無いときだけスケルトン / エラーにする（再取得失敗では取得済みデータを表示し続ける）
+  if (!data) return isError ? <SectionError /> : <SummaryArea isLoading />;
 
   return (
     <SummaryArea
-      totalPosts={summary.total_count}
-      publishedPosts={summary.published_count}
-      draftPosts={summary.draft_count}
+      totalPosts={data.total_count}
+      publishedPosts={data.published_count}
+      draftPosts={data.draft_count}
     />
   );
 }
