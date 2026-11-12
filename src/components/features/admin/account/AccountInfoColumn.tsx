@@ -2,6 +2,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { MESSAGES } from '@/constants/messages';
 
 interface AccountInfoColumnProps {
   label: string;
@@ -18,6 +19,8 @@ interface AccountInfoColumnProps {
   requiredPassword?: boolean;
   passwordValue?: string;
   onPasswordChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  // 変更の送信中フラグ
+  isSubmitting?: boolean;
 }
 
 function AccountInfoColumn({
@@ -35,6 +38,7 @@ function AccountInfoColumn({
   requiredPassword = false,
   passwordValue,
   onPasswordChange,
+  isSubmitting = false,
 }: AccountInfoColumnProps) {
   return (
     <>
@@ -44,9 +48,10 @@ function AccountInfoColumn({
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm text-gray-500">{value}</p>
             <Button
-              className="h-8 w-25 py-0 cursor-pointer shadow-none"
+              className="h-8 w-25 py-0 shadow-none"
               variant="outline"
               onClick={onEdit}
+              disabled={isSubmitting}
             >
               {editFlag ? 'キャンセル' : '編集'}
             </Button>
@@ -96,10 +101,11 @@ function AccountInfoColumn({
                   )}
                 </div>
                 <Button
-                  className="h-8 w-25 py-0 cursor-pointer shadow-none"
+                  className="h-8 min-w-25 py-0 shadow-none"
                   onClick={onSubmit}
+                  loading={isSubmitting}
                 >
-                  変更
+                  {isSubmitting ? MESSAGES.loading.changing : '変更'}
                 </Button>
               </div>
             </motion.div>

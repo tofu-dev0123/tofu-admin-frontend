@@ -9,19 +9,43 @@ import { ImagesDeleteResponse } from '@/types/api/imagesDelete';
 import { useToastStore } from '@/stores/toastStore';
 import { extractImageUrls } from '@/services/admin/posts/extractImageUrls';
 import { logger } from '@/lib/logger';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/api/queryKeys';
+import { POST_SAVE_TIMEOUT_MS } from '@/constants/admin/apiTimeout';
+import { validateSlug } from '@/services/admin/posts/validateSlug';
 
 interface UsePostEditSubmitProps {
   showError: (message: string[]) => void;
   postId: number;
+  // 編集開始時の slug（変更有無の判定に使用）
+  initialSlug: string;
 }
 
-function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
+function usePostEditSubmit({
+  showError,
+  postId,
+  initialSlug,
+}: UsePostEditSubmitProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
+  // 送信中のステータス（どのボタンが押されたかを表示側で判別するため保持）
+  const [submittingStatus, setSubmittingStatus] = useState<PostStatus | null>(
+    null
+  );
+  const isLoading = submittingStatus !== null;
 
   const onSubmit = useCallback(
     async (state: PostEditorState, status: PostStatus) => {
-      setIsLoading(true);
+      // 下書き保存でも slug の形式はチェックする（公開時は確認モーダルでも検証済み）
+      // 未変更の slug は送らないため検証しない（既存データが現行形式に合わなくても保存できる）
+      const isSlugChanged = state.slug !== initialSlug;
+      const slugErrors = isSlugChanged ? validateSlug(state.slug) : [];
+      if (slugErrors.length > 0) {
+        showError(slugErrors);
+        return;
+      }
+
+      setSubmittingStatus(status);
       // 画像URLを抽出（下書き送信時のみ実行、公開時は確認モーダルで既に設定済み）
       const attachedImages =
         state.attachedImages.length > 0
@@ -51,8 +75,15 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
 
       // 削除する画像IDがある場合、削除する
       if (deleteImages.length > 0) {
-        for (const id of deleteImages) {
-          await del<ImagesDeleteResponse>(API_ENDPOINTS.images.delete(id));
+        try {
+          for (const id of deleteImages) {
+            await del<ImagesDeleteResponse>(API_ENDPOINTS.images.delete(id));
+          }
+        } catch (error) {
+          // 失敗時も送信中表示を解除し、ボタンが押せないまま固まらないようにする
+          exceptErrorHandling(error, showError);
+          setSubmittingStatus(null);
+          return;
         }
       }
 
@@ -64,6 +95,9 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
       // リクエストデータを作成
       const request: PostPutRequest = {
         title: state.title,
+        // 変更時のみ送る。省略すると現状維持（draft slug は公開時に振り直される）、
+        // 空文字はタイトルから再生成になる
+        ...(isSlugChanged && { slug: state.slug }),
         content_md: state.content,
         thumbnail_url: state.thumbnailUrl,
         thumbnail_delete_flag: state.thumbnailDeleteFlag,
@@ -75,8 +109,14 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
 
       try {
         // 投稿を更新（編集画面用）
-        await put<PostPutResponse>(API_ENDPOINTS.posts.put(postId), request);
+        // slug 生成でバックエンドの応答が遅くなるため、タイムアウトを延長する
+        await put<PostPutResponse>(API_ENDPOINTS.posts.put(postId), request, {
+          timeout: POST_SAVE_TIMEOUT_MS,
+        });
         logger.info('[posts] 投稿を更新しました', { postId, status });
+
+        // 一覧・サマリ・詳細のキャッシュを無効化し、遷移先で最新を取得させる
+        void queryClient.invalidateQueries({ queryKey: queryKeys.posts.all });
 
         // トーストを表示
         const message =
@@ -89,18 +129,19 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
         });
 
         // 更新後、ホームにリダイレクト
+        // 成功時は遷移完了まで送信中表示を維持する（遷移中の再送信を防ぐ）
         router.push('/');
       } catch (error) {
         exceptErrorHandling(error, showError);
-      } finally {
-        setIsLoading(false);
+        setSubmittingStatus(null);
       }
     },
-    [router, showError, postId]
+    [router, showError, postId, initialSlug, queryClient]
   );
 
   return {
     isLoading,
+    submittingStatus,
     onSubmit,
   };
 }

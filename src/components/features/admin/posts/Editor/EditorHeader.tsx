@@ -27,10 +27,7 @@ import {
 } from '@/components/features/admin/posts/Editor/markdownToolbarItems';
 import { PostStatus } from '@/types/api/post';
 import { cn } from '@/lib/utils';
-
-// ツールバーの書式ボタン共通スタイル
-const TOOL_BUTTON =
-  'flex h-8 w-8 items-center justify-center rounded-md text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:pointer-events-none disabled:opacity-40';
+import { MESSAGES } from '@/constants/messages';
 
 function EditorHeader() {
   const { state, actions, ui } = usePostEditorContext();
@@ -38,8 +35,8 @@ function EditorHeader() {
   // 見出しドロップダウンの開閉（表示専用の状態）
   const [isHeadingOpen, setIsHeadingOpen] = useState(false);
 
-  // プレビュー中はエディタが無く書式適用できないため無効化する
-  const disabled = state.isPreview;
+  // プレビュー中はエディタが無く書式適用できないため、送信中は内容を変えさせないため無効化する
+  const disabled = state.isPreview || state.isSubmitLoading;
 
   return (
     <CardContent className="flex w-full flex-wrap items-center justify-between gap-3 border-b border-neutral-200 px-2 py-3 lg:px-6">
@@ -82,29 +79,33 @@ function EditorHeader() {
         {/* 見出しドロップダウン */}
         <Popover open={isHeadingOpen} onOpenChange={setIsHeadingOpen}>
           <PopoverTrigger asChild>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               disabled={disabled}
-              className="flex h-8 items-center gap-0.5 rounded-md px-2 text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:pointer-events-none disabled:opacity-40"
+              className="gap-0.5 px-2"
               title="見出し"
             >
-              <Heading className="h-[18px] w-[18px]" />
-              <ChevronDown className="h-3 w-3 text-neutral-400" />
-            </button>
+              <Heading className="h-[18px]! w-[18px]!" />
+              <ChevronDown className="h-3! w-3! text-neutral-400" />
+            </Button>
           </PopoverTrigger>
           <PopoverContent align="start" className="w-40 p-1">
             {HEADING_LEVELS.map(({ level, label }) => (
-              <button
+              <Button
                 key={level}
                 type="button"
+                variant="ghost"
+                size="sm"
                 onClick={() => {
                   applyFormat({ kind: 'heading', level });
                   setIsHeadingOpen(false);
                 }}
-                className="flex w-full items-center rounded-sm px-2 py-1.5 text-left text-sm text-neutral-700 transition hover:bg-neutral-100"
+                className="w-full justify-start text-sm text-neutral-700"
               >
                 {label}
-              </button>
+              </Button>
             ))}
           </PopoverContent>
         </Popover>
@@ -116,17 +117,18 @@ function EditorHeader() {
             {group.map((item) => {
               const Icon = item.icon;
               return (
-                <button
+                <Button
                   key={item.id}
                   type="button"
+                  variant="ghost"
+                  size="icon-sm"
                   disabled={disabled}
                   onClick={() => applyFormat(item.format)}
-                  className={TOOL_BUTTON}
                   title={item.label}
                   aria-label={item.label}
                 >
-                  <Icon className="h-[18px] w-[18px]" />
-                </button>
+                  <Icon className="h-[18px]! w-[18px]!" />
+                </Button>
               );
             })}
           </div>
@@ -140,15 +142,16 @@ function EditorHeader() {
           onOpenChange={actions.handleEmbedLinkOpenChange}
         >
           <PopoverTrigger asChild>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon-sm"
               disabled={disabled}
-              className={TOOL_BUTTON}
               title="リンク挿入"
               aria-label="リンク挿入"
             >
-              <LinkIcon className="h-[18px] w-[18px]" />
-            </button>
+              <LinkIcon className="h-[18px]! w-[18px]!" />
+            </Button>
           </PopoverTrigger>
           <PopoverContent align="start" className="w-80 p-3">
             <div className="flex items-center gap-2">
@@ -177,16 +180,17 @@ function EditorHeader() {
         </Popover>
 
         {/* 画像挿入（既存機能） */}
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon-sm"
           disabled={disabled}
           onClick={actions.handleImageIconClick}
-          className={TOOL_BUTTON}
           title="画像挿入"
           aria-label="画像挿入"
         >
-          <ImageIcon className="h-[18px] w-[18px]" />
-        </button>
+          <ImageIcon className="h-[18px]! w-[18px]!" />
+        </Button>
         <input
           type="file"
           accept={IMAGE_ACCEPT_FORMATS}
@@ -199,27 +203,35 @@ function EditorHeader() {
 
       {/* 右：下書き保存 / 公開 */}
       <div className="flex items-center gap-2">
-        <button
+        <Button
           type="button"
+          variant="outline"
+          className="gap-1.5 px-3"
+          loading={state.submittingStatus === 'DRAFT'}
+          disabled={state.isSubmitLoading}
           onClick={() => actions.handleSubmit(state, 'DRAFT' as PostStatus)}
-          className="flex h-9 items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-3 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50"
         >
-          <Save className="h-4 w-4" /> 下書き保存
-        </button>
-        <button
+          <Save />
+          {state.submittingStatus === 'DRAFT'
+            ? MESSAGES.loading.saving
+            : '下書き保存'}
+        </Button>
+        <Button
           type="button"
+          className="gap-1.5 px-3"
+          disabled={state.isSubmitLoading}
           onClick={() =>
             actions.handleOpenConfirmModal(
               state.thumbnailUrl ?? '',
               state.title,
               state.tags,
-              state.content
+              state.content,
+              state.slug
             )
           }
-          className="flex h-9 items-center gap-1.5 rounded-md bg-neutral-900 px-3 text-sm font-medium text-white transition hover:bg-neutral-800"
         >
-          <Send className="h-4 w-4" /> 公開
-        </button>
+          <Send /> 公開
+        </Button>
       </div>
     </CardContent>
   );

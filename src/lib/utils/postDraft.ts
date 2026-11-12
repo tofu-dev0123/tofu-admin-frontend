@@ -1,10 +1,12 @@
 /**
  * 新規作成中の記事下書きを localStorage に保全するユーティリティ。
- * テキスト（タイトル・本文・タグ）のみを対象とする。
+ * テキスト（タイトル・slug・本文・タグ）のみを対象とする。
  */
 
 export type PostDraft = {
   title: string;
+  // slug 対応前に保存された下書きには無いため任意
+  slug?: string;
   content: string;
   tags: string[];
   savedAt: string;

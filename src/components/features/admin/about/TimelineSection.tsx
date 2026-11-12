@@ -4,6 +4,7 @@ import { Milestone, Plus, GripVertical, Pencil, Trash2 } from 'lucide-react';
 import type useTimelines from '@/hooks/admin/about/useTimelines';
 import TimelineForm from '@/components/features/admin/about/TimelineForm';
 import { MESSAGES } from '@/constants/messages';
+import { Button } from '@/components/ui/button';
 
 interface TimelineSectionProps {
   timelinesHooks: ReturnType<typeof useTimelines>;
@@ -43,14 +44,15 @@ function TimelineSection({ timelinesHooks }: TimelineSectionProps) {
             <p className="text-xs text-muted-foreground">経歴・出来事</p>
           </div>
         </div>
-        <button
+        <Button
           type="button"
+          variant="outline"
           onClick={startAdd}
           disabled={editingId === 'new'}
-          className="inline-flex h-9 items-center gap-1.5 rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent disabled:opacity-50"
+          className="gap-1.5 px-3"
         >
-          <Plus className="h-4 w-4" /> 年表を追加
-        </button>
+          <Plus /> 年表を追加
+        </Button>
       </div>
 
       {/* 新規追加フォーム */}
@@ -109,22 +111,26 @@ function TimelineSection({ timelinesHooks }: TimelineSectionProps) {
                   )}
                 </div>
                 <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon-sm"
                     onClick={() => startEdit(timeline)}
-                    className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     title="編集"
+                    aria-label="編集"
                   >
-                    <Pencil className="h-4 w-4" />
-                  </button>
-                  <button
+                    <Pencil />
+                  </Button>
+                  <Button
                     type="button"
+                    variant="ghost-destructive"
+                    size="icon-sm"
                     onClick={() => openDelete(timeline.timeline_id)}
-                    className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                     title="削除"
+                    aria-label="削除"
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                    <Trash2 />
+                  </Button>
                 </div>
               </li>
             )

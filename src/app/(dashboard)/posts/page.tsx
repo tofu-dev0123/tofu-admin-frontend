@@ -1,17 +1,12 @@
 import { Suspense } from 'react';
-import PostsSection from '@/components/features/admin/posts/PostsSection';
+import PostListMain from '@/components/features/admin/posts/PostListMain';
 import PostListSkeleton from '@/components/features/admin/posts/PostListSkeleton';
 
-type SearchParams = { [key: string]: string | string[] | undefined };
-
-export default function Page({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}) {
+// 一覧はクライアントで取得する（TanStack Query）。useSearchParams を使うため Suspense で包む
+export default function Page() {
   return (
     <Suspense fallback={<PostListSkeleton />}>
-      <PostsSection searchParamsPromise={searchParams} />
+      <PostListMain />
     </Suspense>
   );
 }

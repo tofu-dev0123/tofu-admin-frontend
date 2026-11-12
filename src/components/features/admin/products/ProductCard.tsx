@@ -8,6 +8,7 @@ import {
   Github,
 } from 'lucide-react';
 import Toggle from '@/components/features/admin/common/Toggle';
+import { Button } from '@/components/ui/button';
 import { Product } from '@/types/api/product';
 import { cn } from '@/lib/utils';
 
@@ -122,22 +123,26 @@ function ProductCard({
           >
             <GripVertical className="h-4 w-4" />
           </span>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-sm"
             onClick={() => onEdit(product)}
-            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             title="編集"
+            aria-label="編集"
           >
-            <Pencil className="h-4 w-4" />
-          </button>
-          <button
+            <Pencil />
+          </Button>
+          <Button
             type="button"
+            variant="ghost-destructive"
+            size="icon-sm"
             onClick={() => onDelete(product.product_id)}
-            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
             title="削除"
+            aria-label="削除"
           >
-            <Trash2 className="h-4 w-4" />
-          </button>
+            <Trash2 />
+          </Button>
         </div>
       </div>
     </div>

@@ -7,6 +7,7 @@ import { usePostEditorContext } from '@/hooks/admin/posts/usePostEditorContext';
 import addGreyIcon from '@/assets/images/add-grey-icon.png';
 import { THUMBNAIL_ACCEPT_FORMATS } from '@/constants/admin/fileFormats';
 import { Spinner } from '@/components/ui/spinner';
+import { Button } from '@/components/ui/button';
 import ThumbnailConfirm from '@/components/features/admin/posts/ThumbnailConfirm';
 
 function Thumbnail() {
@@ -25,28 +26,37 @@ function Thumbnail() {
               className="object-contain rounded-lg"
             />
             {!state.isPreview && (
-              <Image
-                src={addGreyIcon}
-                alt="削除ボタン"
-                width={24}
-                height={24}
-                className="absolute -top-5 -right-5 rotate-45 hover:cursor-pointer hover:opacity-60 duration-200"
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label="サムネイルを削除"
                 onClick={actions.handleDeleteThumbnail}
-              />
+                className="absolute -top-6 -right-6 rounded-full"
+              >
+                <Image
+                  src={addGreyIcon}
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="rotate-45"
+                />
+              </Button>
             )}
           </>
         )}
         {!state.isThumbnailLoading &&
           !state.thumbnailUrl &&
           !state.isPreview && (
-            <Image
-              src={thumbnailIcon}
-              alt="thumbnail"
-              width={40}
-              height={40}
-              className="absolute top-1/2 left-30 -translate-y-1/2 hover:cursor-pointer hover:opacity-60 duration-200"
+            <Button
+              type="button"
+              variant="ghost"
+              aria-label="サムネイルを追加"
               onClick={actions.handleThumbnailClick}
-            />
+              className="absolute top-1/2 left-30 h-12 w-12 -translate-y-1/2 p-0"
+            >
+              <Image src={thumbnailIcon} alt="" width={40} height={40} />
+            </Button>
           )}
         {state.isThumbnailLoading && (
           <div className="absolute inset-0 rounded-lg flex flex-col items-center justify-center z-10">

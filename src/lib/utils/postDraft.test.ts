@@ -9,6 +9,7 @@ import {
 
 const sample: PostDraft = {
   title: 'タイトル',
+  slug: 'my-post',
   content: '本文',
   tags: ['tag1', 'tag2'],
   savedAt: '2026-07-08T00:00:00.000Z',

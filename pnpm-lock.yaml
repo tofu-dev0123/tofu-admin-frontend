@@ -40,6 +40,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.2.4
         version: 1.3.0(@types/react@19.2.17)(react@19.2.3)
+      '@tanstack/react-query':
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.2.17)(react@19.2.3)
       axios:
         specifier: ^1.13.2
         version: 1.18.1
@@ -1839,6 +1842,24 @@ packages:
       }
     peerDependencies:
       tailwindcss: '>=3.0.0 || >=4.0.0 || insiders'
+
+  '@tanstack/query-core@5.107.1':
+    resolution:
+      {
+        integrity: sha512-PSyAik11oQBEVOiVy5hjZWHmoUqOXqK1WYy4v55mcxozEfKaQgpUMsgnXhWjuESzSht8JfzqMS1m6M/9CpNgvg==,
+      }
+
+  '@tanstack/react-query@5.107.1':
+    resolution:
+      {
+        integrity: sha512-udCOOLp3ZAheUrIHLCe+ZZge6nr2ZUrGMSWcCuXsjY1Bf2JeeE09oxst97PILiCY6N8xo/7bIo3Hvz13zh06FA==,
+      }
+    peerDependencies:
+      '@types/react': ^18 || ^19
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   '@testing-library/dom@10.4.1':
     resolution:
@@ -3740,6 +3761,7 @@ packages:
         integrity: sha512-XoMjdBOwe/esVgEvLmNsD3IRHkm7fbKIUGvrleloJXUZgDHig2IPWNniv+GwjyJXzuNqVjlr5+4yVUZjycJwfQ==,
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -7656,6 +7678,15 @@ snapshots:
     dependencies:
       postcss-selector-parser: 6.0.10
       tailwindcss: 4.3.1
+
+  '@tanstack/query-core@5.107.1': {}
+
+  '@tanstack/react-query@5.107.1(@types/react@19.2.17)(react@19.2.3)':
+    dependencies:
+      '@tanstack/query-core': 5.107.1
+      react: 19.2.3
+    optionalDependencies:
+      '@types/react': 19.2.17
 
   '@testing-library/dom@10.4.1':
     dependencies:

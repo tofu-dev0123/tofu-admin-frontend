@@ -4,7 +4,7 @@ import { Pencil, Plus, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
+import { MESSAGES } from '@/constants/messages';
 
 type TimelineField = 'year' | 'title' | 'body' | 'sortOrder';
 
@@ -92,9 +92,9 @@ function TimelineForm({
         <Button variant="ghost" onClick={onCancel} disabled={isSubmitting}>
           キャンセル
         </Button>
-        <Button onClick={onSubmit} disabled={isSubmitting}>
-          {isSubmitting ? <Spinner /> : <Check />}
-          保存
+        <Button onClick={onSubmit} loading={isSubmitting}>
+          <Check />
+          {isSubmitting ? MESSAGES.loading.saving : '保存'}
         </Button>
       </div>
     </div>

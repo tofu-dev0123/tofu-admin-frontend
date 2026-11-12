@@ -5,7 +5,7 @@ import type useProductForm from '@/hooks/admin/products/useProductForm';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
+import { MESSAGES } from '@/constants/messages';
 import Toggle from '@/components/features/admin/common/Toggle';
 import { cn } from '@/lib/utils';
 
@@ -54,14 +54,16 @@ function ProductDrawer({ formHooks }: ProductDrawerProps) {
           <h2 className="text-[15px] font-semibold text-foreground">
             {mode === 'new' ? 'プロダクトを追加' : 'プロダクトを編集'}
           </h2>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-sm"
             onClick={close}
-            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             title="閉じる"
+            aria-label="閉じる"
           >
-            <X className="h-5 w-5" />
-          </button>
+            <X className="size-5!" />
+          </Button>
         </div>
 
         <div className="flex-1 space-y-5 overflow-y-auto px-6 py-6">
@@ -158,14 +160,17 @@ function ProductDrawer({ formHooks }: ProductDrawerProps) {
                   className="inline-flex items-center gap-1 rounded-md bg-muted py-1 pl-2 pr-1 text-xs font-medium text-foreground"
                 >
                   {tag}
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon-xs"
                     onClick={() => removeTag(tag)}
-                    className="text-muted-foreground hover:text-foreground"
                     title="タグを削除"
+                    aria-label={`タグ「${tag}」を削除`}
+                    className="h-4 w-4 [&_svg]:size-3"
                   >
-                    <X className="h-3 w-3" />
-                  </button>
+                    <X />
+                  </Button>
                 </span>
               ))}
               <input
@@ -216,9 +221,9 @@ function ProductDrawer({ formHooks }: ProductDrawerProps) {
           <Button variant="ghost" onClick={close} disabled={isSubmitting}>
             キャンセル
           </Button>
-          <Button onClick={submit} disabled={isSubmitting}>
-            {isSubmitting ? <Spinner /> : <Check />}
-            保存
+          <Button onClick={submit} loading={isSubmitting}>
+            <Check />
+            {isSubmitting ? MESSAGES.loading.saving : '保存'}
           </Button>
         </div>
       </aside>

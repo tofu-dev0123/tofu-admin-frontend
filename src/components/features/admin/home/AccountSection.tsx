@@ -1,20 +1,24 @@
+'use client';
+
 import AccountArea from '@/components/features/admin/home/AccountArea';
 import SectionError from '@/components/features/admin/common/SectionError';
-import { serverFetch } from '@/lib/api/server';
-import type { MeResponse } from '@/types/api/account';
+import useMeQuery from '@/hooks/admin/account/useMeQuery';
 
-async function AccountSection() {
-  let me: MeResponse;
-  try {
-    me = await serverFetch<MeResponse>('/admin/auth/me', {
-      method: 'POST',
-      label: 'アカウント情報取得',
-    });
-  } catch {
-    return <SectionError />;
+function AccountSection() {
+  const { data, isError } = useMeQuery();
+
+  // 表示できるデータが無いときだけスケルトン / エラーにする（再取得失敗では取得済みデータを表示し続ける）
+  if (!data) {
+    return isError ? (
+      <SectionError />
+    ) : (
+      <AccountArea accountName="" username="" isLoading />
+    );
   }
 
-  return <AccountArea accountName={me.account_name} username={me.username} />;
+  return (
+    <AccountArea accountName={data.account_name} username={data.username} />
+  );
 }
 
 export default AccountSection;

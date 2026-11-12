@@ -8,12 +8,12 @@ import useEditPassword from '@/hooks/admin/account/useEditPassword';
 import { MeResponse } from '@/types/api/account';
 
 interface UseAccountMainProps {
-  initialAccount: MeResponse;
+  account: MeResponse;
 }
 
-function useAccountMain({ initialAccount }: UseAccountMainProps) {
+function useAccountMain({ account }: UseAccountMainProps) {
   const errorModalHooks = useErrorModal();
-  const accountMeHooks = useAccountMe({ initial: initialAccount });
+  const accountMeHooks = useAccountMe({ account });
   const editAccountNameHooks = useEditAccountName({
     showError: errorModalHooks.showError,
   });

@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import Image from 'next/image';
 import { Spinner } from '@/components/ui/spinner';
+import { MESSAGES } from '@/constants/messages';
 
 interface AlertProps {
   open: boolean;
@@ -23,6 +24,8 @@ interface AlertProps {
   previewImageUrl?: string | null;
   // 非同期アクションの実行中フラグ。渡された場合、閉じるタイミングは親が open で制御する。
   isActionLoading?: boolean;
+  // 実行中にアクションボタンへ表示する文言
+  loadingText?: string;
 }
 
 function Alert({
@@ -36,15 +39,18 @@ function Alert({
   onAction,
   previewImageUrl,
   isActionLoading,
+  loadingText = MESSAGES.loading.uploading,
 }: AlertProps) {
   const handleCancel = () => {
     onCancel?.();
     onOpenChange(false);
   };
 
-  const handleAction = () => {
+  const handleAction = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // 非同期制御を親に委ねる場合（isActionLoading を渡す）は、
+    // AlertDialogAction の自動クローズを止めて親の open で閉じる（処理中表示を見せるため）
+    if (isActionLoading !== undefined) e.preventDefault();
     onAction?.();
-    // 非同期制御を親に委ねる場合（isActionLoading を渡す）は親の open で閉じる
     if (isActionLoading === undefined) onOpenChange(false);
   };
 
@@ -87,11 +93,12 @@ function Alert({
           <AlertDialogAction
             onClick={handleAction}
             disabled={!!isActionLoading}
+            aria-busy={isActionLoading || undefined}
           >
             {isActionLoading ? (
               <>
-                <Spinner />
-                アップロード中...
+                <Spinner aria-hidden="true" />
+                {loadingText}
               </>
             ) : (
               actionText
