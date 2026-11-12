@@ -26,6 +26,10 @@ export const MESSAGES = {
     product: {
       titleRequired: 'タイトルの入力は必須です',
     },
+    slug: {
+      format: 'スラグは小文字英数字とハイフンで入力してください',
+      maxLength: 'スラグは50文字以内で入力してください',
+    },
   },
   posts: {
     empty: '記事がありません',
