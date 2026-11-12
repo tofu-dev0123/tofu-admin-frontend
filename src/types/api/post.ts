@@ -7,9 +7,9 @@ export type Post = {
   slug: string;
   thumbnail_url: string | null;
   status: PostStatus;
-  publishedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type PostResponse = {

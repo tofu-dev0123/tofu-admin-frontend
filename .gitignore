@@ -50,3 +50,6 @@ next-env.d.ts
 
 # playwright (MCP の作業ログ)
 .playwright-mcp/
+
+# claude: scripts/check.sh の通過記録
+.claude/.last-check

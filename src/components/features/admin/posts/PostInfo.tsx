@@ -57,7 +57,7 @@ function PostInfo({
           </span>
           <span className="inline-flex items-center gap-1 text-gray-400">
             <Calendar className="h-3.5 w-3.5" />
-            {formatDateTime(post.createdAt)}
+            {formatDateTime(post.created_at)}
           </span>
         </div>
       </div>
