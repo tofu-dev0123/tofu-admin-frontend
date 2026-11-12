@@ -33,7 +33,7 @@ function Post({ post, handleClickPost }: PostProps) {
         </p>
         <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
           <Calendar className="h-3 w-3" />
-          {formatDateTime(post.createdAt)}
+          {formatDateTime(post.created_at)}
         </p>
       </div>
     </button>
