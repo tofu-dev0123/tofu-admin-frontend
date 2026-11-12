@@ -6,10 +6,12 @@ import SectionError from '@/components/features/admin/common/SectionError';
 import useMeQuery from '@/hooks/admin/account/useMeQuery';
 
 function AccountSection() {
-  const { data, isPending, isError } = useMeQuery();
+  const { data, isError } = useMeQuery();
 
-  if (isPending) return <AccountMainSkeleton />;
-  if (isError) return <SectionError className="m-4" />;
+  // 表示できるデータが無いときだけスケルトン / エラーにする（再取得失敗では取得済みデータを表示し続ける）
+  if (!data) {
+    return isError ? <SectionError className="m-4" /> : <AccountMainSkeleton />;
+  }
 
   return <AccountMain account={data} />;
 }

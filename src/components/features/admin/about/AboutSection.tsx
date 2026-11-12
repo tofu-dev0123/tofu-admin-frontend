@@ -10,19 +10,18 @@ function AboutSection() {
   const profileQuery = useProfileQuery();
   const timelinesQuery = useTimelinesQuery();
 
-  if (profileQuery.isPending || timelinesQuery.isPending) {
-    return <AboutMainSkeleton />;
-  }
-  if (profileQuery.isError || timelinesQuery.isError) {
-    return <SectionError className="m-4" />;
+  const profile = profileQuery.data;
+  const timelines = timelinesQuery.data;
+
+  // 表示できるデータが無いときだけスケルトン / エラーにする（再取得失敗では取得済みデータを表示し続ける）
+  if (!profile || !timelines) {
+    const isError =
+      (profileQuery.isError && !profile) ||
+      (timelinesQuery.isError && !timelines);
+    return isError ? <SectionError className="m-4" /> : <AboutMainSkeleton />;
   }
 
-  return (
-    <AboutMain
-      initialProfile={profileQuery.data}
-      timelines={timelinesQuery.data.timelines}
-    />
-  );
+  return <AboutMain initialProfile={profile} timelines={timelines.timelines} />;
 }
 
 export default AboutSection;

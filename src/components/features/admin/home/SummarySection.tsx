@@ -5,10 +5,10 @@ import SectionError from '@/components/features/admin/common/SectionError';
 import usePostSummaryQuery from '@/hooks/admin/posts/usePostSummaryQuery';
 
 function SummarySection() {
-  const { data, isPending, isError } = usePostSummaryQuery();
+  const { data, isError } = usePostSummaryQuery();
 
-  if (isPending) return <SummaryArea isLoading />;
-  if (isError) return <SectionError />;
+  // 表示できるデータが無いときだけスケルトン / エラーにする（再取得失敗では取得済みデータを表示し続ける）
+  if (!data) return isError ? <SectionError /> : <SummaryArea isLoading />;
 
   return (
     <SummaryArea

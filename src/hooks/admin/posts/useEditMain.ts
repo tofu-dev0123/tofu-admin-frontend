@@ -10,14 +10,15 @@ export function useEditMain() {
   const errorModalHook = useErrorModal();
   const postDetailQuery = usePostDetailQuery(postId);
 
+  // 不正な ID は取得しないため、待たずに「記事が見つかりません」を出す
+  const isValidId = Number.isFinite(postId) && postId > 0;
   // マウント後の最新取得が終わるまで待つ（古いキャッシュでエディタを初期化しないため）。
-  // 一度表示した後の再取得（更新後の無効化など）ではエディタを差し替えない。
-  const isLoading = !postDetailQuery.isFetchedAfterMount;
-  const postData = postDetailQuery.isError ? null : postDetailQuery.data;
+  // 一度表示した後の再取得（更新後の無効化など）ではエディタを差し替えず、失敗しても取得済みデータを使う。
+  const isLoading = isValidId && !postDetailQuery.isFetchedAfterMount;
 
   return {
     postId,
-    postData: postData ?? null,
+    postData: postDetailQuery.data ?? null,
     isLoading,
     errorModalHook,
   };

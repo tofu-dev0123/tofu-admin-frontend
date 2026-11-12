@@ -5,13 +5,19 @@ import SectionError from '@/components/features/admin/common/SectionError';
 import usePostsQuery from '@/hooks/admin/posts/usePostsQuery';
 
 function RecentPostsSection() {
-  const { data, isPending, isError } = usePostsQuery({
+  const { data, isError } = usePostsQuery({
     limit: 3,
     status: 'PUBLISHED',
   });
 
-  if (isPending) return <RecentPostsArea postList={[]} isLoading />;
-  if (isError) return <SectionError />;
+  // 表示できるデータが無いときだけスケルトン / エラーにする（再取得失敗では取得済みデータを表示し続ける）
+  if (!data) {
+    return isError ? (
+      <SectionError />
+    ) : (
+      <RecentPostsArea postList={[]} isLoading />
+    );
+  }
 
   return <RecentPostsArea postList={data.posts} />;
 }

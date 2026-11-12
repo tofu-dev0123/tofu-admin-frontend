@@ -7,7 +7,7 @@ import { queryKeys, type PostListParams } from '@/lib/api/queryKeys';
 import type { PostResponse } from '@/types/api/post';
 
 // 記事一覧のクエリ文字列を組み立てる
-export function buildPostListQuery(params: PostListParams): string {
+function buildPostListQuery(params: PostListParams): string {
   const query = new URLSearchParams();
   if (params.offset) query.append('offset', String(params.offset));
   if (params.limit) query.append('limit', String(params.limit));
