@@ -44,7 +44,7 @@ function AccountInfoColumn({
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm text-gray-500">{value}</p>
             <Button
-              className="h-8 w-25 py-0 cursor-pointer shadow-none"
+              className="h-8 w-25 py-0 shadow-none"
               variant="outline"
               onClick={onEdit}
             >
@@ -96,7 +96,7 @@ function AccountInfoColumn({
                   )}
                 </div>
                 <Button
-                  className="h-8 w-25 py-0 cursor-pointer shadow-none"
+                  className="h-8 w-25 py-0 shadow-none"
                   onClick={onSubmit}
                 >
                   変更

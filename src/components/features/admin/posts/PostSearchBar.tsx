@@ -5,6 +5,7 @@ import { PostStatus } from '@/types/api/post';
 import { cn } from '@/lib/utils';
 import useSearchPost from '@/hooks/admin/posts/useSearchPost';
 import useStatus from '@/hooks/admin/posts/useStatus';
+import { Button } from '@/components/ui/button';
 
 interface PostSearchBarProps {
   searchPost: ReturnType<typeof useSearchPost>;
@@ -44,14 +45,16 @@ function PostSearchBar({
           className="flex-1 bg-transparent text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none"
         />
         {hasKeyword && (
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-xs"
             aria-label="検索キーワードをクリア"
             onClick={searchPost.handleClear}
-            className="grid h-5 w-5 shrink-0 cursor-pointer place-items-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 duration-200"
+            className="shrink-0 rounded-full text-gray-400"
           >
-            <X className="h-3.5 w-3.5" strokeWidth={2.5} />
-          </button>
+            <X strokeWidth={2.5} />
+          </Button>
         )}
       </div>
 

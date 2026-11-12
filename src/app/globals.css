@@ -130,6 +130,19 @@ body {
   margin: 0;
 }
 
+/* Tailwind v4 では button の既定カーソルが default のため、クリック可能な要素を pointer に統一する */
+@layer base {
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [role='button'][aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+}
+
 /* CodeMirrorエディタのフォントを標準フォントに統一 */
 .cm-editor,
 .cm-editor * {

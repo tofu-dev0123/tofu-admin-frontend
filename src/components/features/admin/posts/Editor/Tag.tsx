@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import addGreyIcon from '@/assets/images/add-grey-icon.png';
 import { usePostEditorContext } from '@/hooks/admin/posts/usePostEditorContext';
+import { Button } from '@/components/ui/button';
 
 function Tag() {
   const { state, actions } = usePostEditorContext();
@@ -11,17 +12,16 @@ function Tag() {
     <>
       <div className="w-full min-h-10 flex">
         {!state.isPreview && (
-          <button
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="タグを追加"
             onClick={actions.addTag}
-            className="w-10 h-10 hover:cursor-pointer hover:opacity-60 duration-200 flex items-center justify-center"
+            className="h-10 w-10"
           >
-            <Image
-              src={addGreyIcon}
-              alt="add grey icon"
-              width={16}
-              height={16}
-            />
-          </button>
+            <Image src={addGreyIcon} alt="" width={16} height={16} />
+          </Button>
         )}
         <input
           type="text"
@@ -41,14 +41,22 @@ function Tag() {
           >
             <span className="text-sm font-bold">{tag}</span>
             {!state.isPreview && (
-              <Image
-                src={addGreyIcon}
-                alt="remove tag icon"
-                width={15}
-                height={15}
-                className="absolute rotate-45 -top-1.5 -right-1.5 hover:cursor-pointer hover:opacity-60 duration-200"
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                aria-label={`タグ「${tag}」を削除`}
                 onClick={() => actions.removeTag(tag)}
-              />
+                className="absolute -top-2.5 -right-2.5 rounded-full"
+              >
+                <Image
+                  src={addGreyIcon}
+                  alt=""
+                  width={15}
+                  height={15}
+                  className="rotate-45"
+                />
+              </Button>
             )}
           </div>
         ))}

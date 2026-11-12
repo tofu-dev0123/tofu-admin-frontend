@@ -44,12 +44,7 @@ function ErrorModal({
           </ul>
         </AlertDescription>
         <div className="flex justify-end mt-4">
-          <Button
-            variant="outline"
-            size="sm"
-            className="cursor-pointer"
-            onClick={handleClose}
-          >
+          <Button variant="outline" size="sm" onClick={handleClose}>
             閉じる
           </Button>
         </div>

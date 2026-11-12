@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import confirmIcon from '@/assets/images/confirm-icon.png';
 import Image from 'next/image';
+import { Send } from 'lucide-react';
 import { usePostEditorContext } from '@/hooks/admin/posts/usePostEditorContext';
 import { PostStatus } from '@/types/api/post';
 
@@ -61,20 +62,15 @@ function ConfirmModal({ isOpen, onClose, title, tags }: ConfirmModalProps) {
           </div>
         </CardContent>
         <CardFooter className="w-full flex items-center justify-end gap-4">
-          <Button
-            variant="outline"
-            className="w-30 rounded-full cursor-pointer shadow-none"
-            onClick={handleClose}
-          >
+          <Button variant="ghost" onClick={handleClose}>
             戻る
           </Button>
           <Button
-            className="w-30 rounded-full bg-admin-main text-white cursor-pointer shadow-none hover:bg-admin-main/90 hover:text-white"
             onClick={() =>
               actions.handleSubmit(state, 'PUBLISHED' as PostStatus)
             }
           >
-            公開
+            <Send /> 公開
           </Button>
         </CardFooter>
       </Card>
