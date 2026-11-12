@@ -51,7 +51,7 @@ describe('Button', () => {
   it('asChild + loading ではスピナーを出さず aria-busy のみ付く', () => {
     render(
       <Button asChild loading>
-        <a href="/">ホーム</a>
+        <a href="https://example.com">ホーム</a>
       </Button>
     );
     expect(screen.getByRole('link', { name: 'ホーム' })).toHaveAttribute(
