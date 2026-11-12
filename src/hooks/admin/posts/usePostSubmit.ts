@@ -13,6 +13,7 @@ import { logger } from '@/lib/logger';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/api/queryKeys';
 import { POST_SAVE_TIMEOUT_MS } from '@/constants/admin/apiTimeout';
+import { validateSlug } from '@/services/admin/posts/validateSlug';
 
 interface UsePostSubmitProps {
   showError: (message: string[]) => void;
@@ -29,6 +30,13 @@ function usePostSubmit({ showError }: UsePostSubmitProps) {
 
   const onSubmit = useCallback(
     async (state: PostEditorState, status: PostStatus) => {
+      // 下書き保存でも slug の形式はチェックする（公開時は確認モーダルでも検証済み）
+      const slugErrors = validateSlug(state.slug);
+      if (slugErrors.length > 0) {
+        showError(slugErrors);
+        return;
+      }
+
       setSubmittingStatus(status);
       // 画像URLを抽出（下書き送信時のみ実行、公開時は確認モーダルで既に設定済み）
       const attachedImages =
@@ -66,6 +74,8 @@ function usePostSubmit({ showError }: UsePostSubmitProps) {
       // リクエストデータを作成
       const request: PostRequest = {
         title: state.title,
+        // 未入力なら送らず、バックエンドの自動生成に任せる
+        ...(state.slug !== '' && { slug: state.slug }),
         content_md: state.content,
         thumbnail_url: state.thumbnailUrl,
         status: status,

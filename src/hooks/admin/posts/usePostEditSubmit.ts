@@ -12,13 +12,20 @@ import { logger } from '@/lib/logger';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/api/queryKeys';
 import { POST_SAVE_TIMEOUT_MS } from '@/constants/admin/apiTimeout';
+import { validateSlug } from '@/services/admin/posts/validateSlug';
 
 interface UsePostEditSubmitProps {
   showError: (message: string[]) => void;
   postId: number;
+  // 編集開始時の slug（変更有無の判定に使用）
+  initialSlug: string;
 }
 
-function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
+function usePostEditSubmit({
+  showError,
+  postId,
+  initialSlug,
+}: UsePostEditSubmitProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   // 送信中のステータス（どのボタンが押されたかを表示側で判別するため保持）
@@ -29,6 +36,15 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
 
   const onSubmit = useCallback(
     async (state: PostEditorState, status: PostStatus) => {
+      // 下書き保存でも slug の形式はチェックする（公開時は確認モーダルでも検証済み）
+      // 未変更の slug は送らないため検証しない（既存データが現行形式に合わなくても保存できる）
+      const isSlugChanged = state.slug !== initialSlug;
+      const slugErrors = isSlugChanged ? validateSlug(state.slug) : [];
+      if (slugErrors.length > 0) {
+        showError(slugErrors);
+        return;
+      }
+
       setSubmittingStatus(status);
       // 画像URLを抽出（下書き送信時のみ実行、公開時は確認モーダルで既に設定済み）
       const attachedImages =
@@ -79,6 +95,9 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
       // リクエストデータを作成
       const request: PostPutRequest = {
         title: state.title,
+        // 変更時のみ送る。省略すると現状維持（draft slug は公開時に振り直される）、
+        // 空文字はタイトルから再生成になる
+        ...(isSlugChanged && { slug: state.slug }),
         content_md: state.content,
         thumbnail_url: state.thumbnailUrl,
         thumbnail_delete_flag: state.thumbnailDeleteFlag,
@@ -117,7 +136,7 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
         setSubmittingStatus(null);
       }
     },
-    [router, showError, postId, queryClient]
+    [router, showError, postId, initialSlug, queryClient]
   );
 
   return {

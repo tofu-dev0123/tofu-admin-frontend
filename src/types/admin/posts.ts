@@ -14,7 +14,11 @@ export interface PostEditorState {
   isDirty: boolean;
   // 基本情報
   title: string;
+  // 空ならバックエンドがタイトルから自動生成する
+  slug: string;
   content: string;
+  // 公開済み記事の編集中か（slug 変更時の注意表示に使用）
+  isPublished: boolean;
 
   // サムネイル情報
   thumbnailUrl: string | null;
@@ -53,6 +57,7 @@ export interface PostEditorState {
 export interface PostEditorActions {
   // 基本情報関連
   setTitle: (title: string) => void;
+  setSlug: (slug: string) => void;
   setContent: (content: string) => void;
   // Markdown ツールバー（書式の付与/解除）
   applyFormat: (format: MarkdownFormat) => void;
@@ -90,7 +95,8 @@ export interface PostEditorActions {
     thumbnailUrl: string,
     title: string,
     tags: string[],
-    content: string
+    content: string,
+    slug: string
   ) => void;
   handleCloseConfirmModal: () => void;
   // 投稿送信関連

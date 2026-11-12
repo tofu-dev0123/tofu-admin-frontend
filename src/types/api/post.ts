@@ -20,6 +20,8 @@ export type PostResponse = {
 
 export type PostRequest = {
   title: string;
+  // 未指定ならバックエンドがタイトルから自動生成する
+  slug?: string;
   content_md: string;
   thumbnail_url: string | null;
   status: PostStatus;
@@ -70,6 +72,8 @@ export type PostDetail = {
 
 export type PostPutRequest = {
   title: string;
+  // 省略: 現状維持 / 空文字: タイトルから再生成 / 指定: その値を採用
+  slug?: string;
   content_md: string;
   thumbnail_url: string | null;
   thumbnail_delete_flag?: boolean;
