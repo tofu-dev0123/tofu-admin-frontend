@@ -24,17 +24,20 @@ describe('Button', () => {
 
   it('loading 時は無効化され、aria-busy とスピナーが付く', () => {
     render(<Button loading>保存</Button>);
-    const button = screen.getByRole('button', { name: /保存/ });
+    // スピナーは aria-hidden のため、アクセシブルな名前は文言のみ
+    const button = screen.getByRole('button', { name: '保存' });
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute('aria-busy', 'true');
-    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByRole('status', { hidden: true })).toBeInTheDocument();
   });
 
   it('通常時は aria-busy もスピナーも付かない', () => {
     render(<Button>保存</Button>);
     const button = screen.getByRole('button', { name: '保存' });
     expect(button).not.toHaveAttribute('aria-busy');
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('status', { hidden: true })
+    ).not.toBeInTheDocument();
   });
 
   it('loading 中はクリックしても onClick が呼ばれない', () => {
@@ -44,7 +47,7 @@ describe('Button', () => {
         保存
       </Button>
     );
-    fireEvent.click(screen.getByRole('button', { name: /保存/ }));
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
     expect(onClick).not.toHaveBeenCalled();
   });
 
@@ -58,6 +61,8 @@ describe('Button', () => {
       'aria-busy',
       'true'
     );
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('status', { hidden: true })
+    ).not.toBeInTheDocument();
   });
 });

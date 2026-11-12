@@ -7,7 +7,7 @@ import { Spinner } from '@/components/ui/spinner';
 
 // 全 variant 共通: カーソル・ホバー/押下トランジション・フォーカスリング・無効表示を統一する
 const buttonVariants = cva(
-  'inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97] active:duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 aria-busy:cursor-progress aria-busy:opacity-80 aria-busy:[&>svg:not([role=status])]:hidden [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  'inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,background-color,border-color,box-shadow,scale] duration-150 ease-out active:scale-[0.97] active:duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 aria-busy:cursor-progress aria-busy:opacity-80 aria-busy:[&>svg:not([role=status])]:hidden [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -69,13 +69,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        disabled={disabled || loading}
-        aria-busy={loading || undefined}
         {...props}
+        disabled={disabled || loading}
+        aria-busy={loading || props['aria-busy'] || undefined}
       >
         {loading && !asChild ? (
           <>
-            <Spinner />
+            {/* 状態は aria-busy で伝えるため、スピナーは読み上げ対象外にする */}
+            <Spinner aria-hidden="true" />
             {children}
           </>
         ) : (
