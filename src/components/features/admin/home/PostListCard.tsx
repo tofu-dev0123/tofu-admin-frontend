@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 import Post from '@/components/features/admin/common/Post';
 import type { Post as PostType } from '@/types/api/post';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 
 interface PostListCardProps {
   title: string;
@@ -29,14 +30,16 @@ function PostListCard({
           {title}
         </h2>
         {postList.length > 0 && (
-          <button
+          <Button
             type="button"
+            variant="link"
+            size="sm"
             onClick={handleClickViewAll}
-            className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="h-auto gap-1 px-0 text-muted-foreground hover:text-foreground"
           >
             すべて見る
-            <ChevronRight className="h-3.5 w-3.5" />
-          </button>
+            <ChevronRight className="size-3.5!" />
+          </Button>
         )}
       </div>
       {isLoading ? (
