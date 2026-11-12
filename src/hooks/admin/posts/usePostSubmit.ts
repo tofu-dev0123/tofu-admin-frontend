@@ -10,6 +10,8 @@ import { useToastStore } from '@/stores/toastStore';
 import { extractImageUrls } from '@/services/admin/posts/extractImageUrls';
 import { clearDraft } from '@/lib/utils/postDraft';
 import { logger } from '@/lib/logger';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/api/queryKeys';
 import { POST_SAVE_TIMEOUT_MS } from '@/constants/admin/apiTimeout';
 
 interface UsePostSubmitProps {
@@ -18,6 +20,7 @@ interface UsePostSubmitProps {
 
 function usePostSubmit({ showError }: UsePostSubmitProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   // 送信中のステータス（どのボタンが押されたかを表示側で判別するため保持）
   const [submittingStatus, setSubmittingStatus] = useState<PostStatus | null>(
     null
@@ -78,6 +81,9 @@ function usePostSubmit({ showError }: UsePostSubmitProps) {
         });
         logger.info('[posts] 投稿を作成しました', { status });
 
+        // 一覧・サマリ等のキャッシュを無効化し、遷移先で最新を取得させる
+        void queryClient.invalidateQueries({ queryKey: queryKeys.posts.all });
+
         // 保存済みの下書きをクリア
         clearDraft();
 
@@ -99,7 +105,7 @@ function usePostSubmit({ showError }: UsePostSubmitProps) {
         setSubmittingStatus(null);
       }
     },
-    [router, showError]
+    [router, showError, queryClient]
   );
 
   return {

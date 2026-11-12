@@ -1,22 +1,19 @@
+'use client';
+
 import RecentPostsArea from '@/components/features/admin/home/RecentPostsArea';
 import SectionError from '@/components/features/admin/common/SectionError';
-import { serverGet } from '@/lib/api/server';
-import type { PostResponse } from '@/types/api/post';
+import usePostsQuery from '@/hooks/admin/posts/usePostsQuery';
 
-async function RecentPostsSection() {
-  let res: PostResponse;
-  try {
-    const params = new URLSearchParams({ limit: '3', status: 'PUBLISHED' });
-    res = await serverGet<PostResponse>(
-      '/admin/posts/',
-      params,
-      '最近の投稿取得'
-    );
-  } catch {
-    return <SectionError />;
-  }
+function RecentPostsSection() {
+  const { data, isPending, isError } = usePostsQuery({
+    limit: 3,
+    status: 'PUBLISHED',
+  });
 
-  return <RecentPostsArea postList={res.posts} />;
+  if (isPending) return <RecentPostsArea postList={[]} isLoading />;
+  if (isError) return <SectionError />;
+
+  return <RecentPostsArea postList={data.posts} />;
 }
 
 export default RecentPostsSection;

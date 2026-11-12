@@ -5,6 +5,8 @@ import { put, del } from '@/lib/api/http';
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
 import { POST_SAVE_TIMEOUT_MS } from '@/constants/admin/apiTimeout';
+import { queryKeys } from '@/lib/api/queryKeys';
+import { createQueryWrapper } from '@/test/queryWrapper';
 import type { PostEditorState } from '@/types/admin/posts';
 
 const push = vi.fn();
@@ -30,6 +32,17 @@ const state = {
   attachedImages: [],
 } as unknown as PostEditorState;
 
+// QueryClient 付きでフックを描画し、invalidateQueries を監視する
+const setup = (showError = vi.fn()) => {
+  const { wrapper, queryClient } = createQueryWrapper();
+  const invalidate = vi.spyOn(queryClient, 'invalidateQueries');
+  const { result } = renderHook(
+    () => usePostEditSubmit({ showError, postId: 1 }),
+    { wrapper }
+  );
+  return { result, showError, invalidate };
+};
+
 describe('usePostEditSubmit', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -38,10 +51,7 @@ describe('usePostEditSubmit', () => {
 
   it('更新リクエストに延長したタイムアウトを指定する', async () => {
     vi.mocked(put).mockResolvedValue({});
-    const showError = vi.fn();
-    const { result } = renderHook(() =>
-      usePostEditSubmit({ showError, postId: 1 })
-    );
+    const { result } = setup();
 
     await act(() => result.current.onSubmit(state, 'DRAFT'));
 
@@ -52,12 +62,9 @@ describe('usePostEditSubmit', () => {
     );
   });
 
-  it('成功時は下書き更新トーストを表示してホームへ遷移する', async () => {
+  it('成功時は下書き更新トーストを表示し、記事キャッシュを無効化してホームへ遷移する', async () => {
     vi.mocked(put).mockResolvedValue({});
-    const showError = vi.fn();
-    const { result } = renderHook(() =>
-      usePostEditSubmit({ showError, postId: 1 })
-    );
+    const { result, showError, invalidate } = setup();
 
     await act(() => result.current.onSubmit(state, 'DRAFT'));
 
@@ -67,6 +74,9 @@ describe('usePostEditSubmit', () => {
         message: '下書きを更新しました',
       }),
     ]);
+    expect(invalidate).toHaveBeenCalledWith({
+      queryKey: queryKeys.posts.all,
+    });
     expect(push).toHaveBeenCalledWith('/');
     expect(showError).not.toHaveBeenCalled();
   });
@@ -78,10 +88,7 @@ describe('usePostEditSubmit', () => {
         resolvePut = resolve;
       })
     );
-    const showError = vi.fn();
-    const { result } = renderHook(() =>
-      usePostEditSubmit({ showError, postId: 1 })
-    );
+    const { result } = setup();
 
     let submitting: Promise<void> = Promise.resolve();
     act(() => {
@@ -103,10 +110,7 @@ describe('usePostEditSubmit', () => {
   it('追加画像の削除に失敗したらエラーを通知し、送信中を解除して更新しない', async () => {
     const error = new Error('delete failed');
     vi.mocked(del).mockRejectedValue(error);
-    const showError = vi.fn();
-    const { result } = renderHook(() =>
-      usePostEditSubmit({ showError, postId: 1 })
-    );
+    const { result, showError } = setup();
 
     // 本文で使われていない追加画像があると削除対象になる
     const stateWithUnusedImage = {
@@ -121,17 +125,15 @@ describe('usePostEditSubmit', () => {
     expect(put).not.toHaveBeenCalled();
   });
 
-  it('API エラー時はエラーを通知し、遷移しない', async () => {
+  it('API エラー時はエラーを通知し、無効化も遷移もしない', async () => {
     const error = new Error('timeout');
     vi.mocked(put).mockRejectedValue(error);
-    const showError = vi.fn();
-    const { result } = renderHook(() =>
-      usePostEditSubmit({ showError, postId: 1 })
-    );
+    const { result, showError, invalidate } = setup();
 
     await act(() => result.current.onSubmit(state, 'DRAFT'));
 
     expect(exceptErrorHandling).toHaveBeenCalledWith(error, showError);
+    expect(invalidate).not.toHaveBeenCalled();
     expect(push).not.toHaveBeenCalled();
     expect(result.current.isLoading).toBe(false);
   });

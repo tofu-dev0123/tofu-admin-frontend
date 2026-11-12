@@ -5,6 +5,8 @@ import { post, del } from '@/lib/api/http';
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
 import { POST_SAVE_TIMEOUT_MS } from '@/constants/admin/apiTimeout';
+import { queryKeys } from '@/lib/api/queryKeys';
+import { createQueryWrapper } from '@/test/queryWrapper';
 import type { PostEditorState } from '@/types/admin/posts';
 
 const push = vi.fn();
@@ -31,6 +33,16 @@ const state = {
   attachedImages: [],
 } as unknown as PostEditorState;
 
+// QueryClient 付きでフックを描画し、invalidateQueries を監視する
+const setup = (showError = vi.fn()) => {
+  const { wrapper, queryClient } = createQueryWrapper();
+  const invalidate = vi.spyOn(queryClient, 'invalidateQueries');
+  const { result } = renderHook(() => usePostSubmit({ showError }), {
+    wrapper,
+  });
+  return { result, showError, invalidate };
+};
+
 describe('usePostSubmit', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -39,8 +51,7 @@ describe('usePostSubmit', () => {
 
   it('作成リクエストに延長したタイムアウトを指定する', async () => {
     vi.mocked(post).mockResolvedValue({});
-    const showError = vi.fn();
-    const { result } = renderHook(() => usePostSubmit({ showError }));
+    const { result } = setup();
 
     await act(() => result.current.onSubmit(state, 'DRAFT'));
 
@@ -51,10 +62,9 @@ describe('usePostSubmit', () => {
     );
   });
 
-  it('成功時は公開トーストを表示してホームへ遷移する', async () => {
+  it('成功時は公開トーストを表示し、記事キャッシュを無効化してホームへ遷移する', async () => {
     vi.mocked(post).mockResolvedValue({});
-    const showError = vi.fn();
-    const { result } = renderHook(() => usePostSubmit({ showError }));
+    const { result, showError, invalidate } = setup();
 
     await act(() => result.current.onSubmit(state, 'PUBLISHED'));
 
@@ -64,6 +74,9 @@ describe('usePostSubmit', () => {
         message: '記事を公開しました',
       }),
     ]);
+    expect(invalidate).toHaveBeenCalledWith({
+      queryKey: queryKeys.posts.all,
+    });
     expect(push).toHaveBeenCalledWith('/');
     expect(showError).not.toHaveBeenCalled();
   });
@@ -75,8 +88,7 @@ describe('usePostSubmit', () => {
         resolvePost = resolve;
       })
     );
-    const showError = vi.fn();
-    const { result } = renderHook(() => usePostSubmit({ showError }));
+    const { result } = setup();
 
     let submitting: Promise<void> = Promise.resolve();
     act(() => {
@@ -99,8 +111,7 @@ describe('usePostSubmit', () => {
   it('不要画像の削除に失敗したらエラーを通知し、送信中を解除して投稿しない', async () => {
     const error = new Error('delete failed');
     vi.mocked(del).mockRejectedValue(error);
-    const showError = vi.fn();
-    const { result } = renderHook(() => usePostSubmit({ showError }));
+    const { result, showError } = setup();
 
     // 本文で使われていない画像があると削除対象になる
     const stateWithUnusedImage = {
@@ -115,15 +126,15 @@ describe('usePostSubmit', () => {
     expect(post).not.toHaveBeenCalled();
   });
 
-  it('API エラー時はエラーを通知し、遷移しない', async () => {
+  it('API エラー時はエラーを通知し、無効化も遷移もしない', async () => {
     const error = new Error('timeout');
     vi.mocked(post).mockRejectedValue(error);
-    const showError = vi.fn();
-    const { result } = renderHook(() => usePostSubmit({ showError }));
+    const { result, showError, invalidate } = setup();
 
     await act(() => result.current.onSubmit(state, 'DRAFT'));
 
     expect(exceptErrorHandling).toHaveBeenCalledWith(error, showError);
+    expect(invalidate).not.toHaveBeenCalled();
     expect(push).not.toHaveBeenCalled();
     expect(result.current.isLoading).toBe(false);
     expect(result.current.submittingStatus).toBeNull();
