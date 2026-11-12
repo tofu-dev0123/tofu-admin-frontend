@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ボタン UI/UX 統一 モック</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@0.460.0"></script>
+    <style>
+      body {
+        font-family:
+          ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+          'Hiragino Sans', 'Noto Sans JP', sans-serif;
+      }
+      /* 統一トランジション（実装時は buttonVariants の base に入れる想定） */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.375rem;
+        white-space: nowrap;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        height: 2.25rem;
+        padding: 0 1rem;
+        cursor: pointer;
+        transition:
+          color 150ms ease-out,
+          background-color 150ms ease-out,
+          border-color 150ms ease-out,
+          box-shadow 150ms ease-out,
+          transform 100ms ease-out;
+        outline: none;
+      }
+      .btn:active:not(:disabled),
+      .btn.is-active {
+        transform: scale(0.97);
+      }
+      .btn:focus-visible,
+      .btn.is-focus {
+        box-shadow:
+          0 0 0 2px #fff,
+          0 0 0 4px #a3a3a3;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn[aria-busy='true'] {
+        cursor: progress;
+        opacity: 0.8;
+      }
+      .btn svg {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+      }
+      .btn-icon {
+        width: 2.25rem;
+        padding: 0;
+      }
+      .btn-sm-icon {
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+      }
+      /* variant */
+      .v-default {
+        background: #171717;
+        color: #fff;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+      }
+      .v-default:hover:not(:disabled),
+      .v-default.is-hover {
+        background: #262626;
+      }
+      .v-default:active:not(:disabled),
+      .v-default.is-active {
+        background: #404040;
+      }
+      .v-outline {
+        background: #fff;
+        color: #404040;
+        border: 1px solid #d4d4d4;
+      }
+      .v-outline:hover:not(:disabled),
+      .v-outline.is-hover {
+        background: #f5f5f5;
+        border-color: #a3a3a3;
+        color: #171717;
+      }
+      .v-outline:active:not(:disabled),
+      .v-outline.is-active {
+        background: #e5e5e5;
+      }
+      .v-secondary {
+        background: #f5f5f5;
+        color: #171717;
+      }
+      .v-secondary:hover:not(:disabled),
+      .v-secondary.is-hover {
+        background: #e5e5e5;
+      }
+      .v-secondary:active:not(:disabled),
+      .v-secondary.is-active {
+        background: #d4d4d4;
+      }
+      .v-ghost {
+        background: transparent;
+        color: #525252;
+      }
+      .v-ghost:hover:not(:disabled),
+      .v-ghost.is-hover {
+        background: #f5f5f5;
+        color: #171717;
+      }
+      .v-ghost:active:not(:disabled),
+      .v-ghost.is-active {
+        background: #e5e5e5;
+      }
+      .v-destructive {
+        background: #dc2626;
+        color: #fff;
+      }
+      .v-destructive:hover:not(:disabled),
+      .v-destructive.is-hover {
+        background: #b91c1c;
+      }
+      .v-destructive:active:not(:disabled),
+      .v-destructive.is-active {
+        background: #991b1b;
+      }
+      .v-link {
+        background: transparent;
+        color: #171717;
+        padding: 0 0.25rem;
+        text-underline-offset: 4px;
+      }
+      .v-link:hover:not(:disabled),
+      .v-link.is-hover {
+        text-decoration: underline;
+      }
+      .v-link:active:not(:disabled),
+      .v-link.is-active {
+        transform: none;
+        color: #404040;
+      }
+      .spin {
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-neutral-100 text-neutral-900">
+    <div class="mx-auto max-w-6xl px-6 py-8">
+      <header class="mb-6">
+        <h1 class="text-xl font-bold">ボタン UI/UX 統一 — たたき台</h1>
+        <p class="mt-1 text-sm text-neutral-500">
+          すべてのボタンを共通 <code class="rounded bg-neutral-200 px-1">Button</code>
+          に集約し、カーソル・ホバー・押下・フォーカス・無効・処理中の見え方を統一する。
+          （下の「状態一覧」は静的表示のため各状態を固定表示。実際に触れるデモは最下部）
+        </p>
+      </header>
+
+      <!-- 統一ルール -->
+      <section class="mb-6 rounded-xl border border-neutral-200 bg-white p-5">
+        <h2 class="mb-3 text-sm font-semibold">統一ルール（全 variant 共通）</h2>
+        <div class="grid grid-cols-1 gap-3 text-sm md:grid-cols-3">
+          <div class="rounded-lg bg-neutral-50 p-3">
+            <div class="mb-1 flex items-center gap-1.5 font-medium">
+              <i data-lucide="mouse-pointer-click" class="h-4 w-4"></i>カーソル
+            </div>
+            <ul class="list-disc pl-5 text-neutral-600">
+              <li>通常: <code>pointer</code></li>
+              <li>disabled: <code>not-allowed</code></li>
+              <li>loading: <code>progress</code></li>
+            </ul>
+          </div>
+          <div class="rounded-lg bg-neutral-50 p-3">
+            <div class="mb-1 flex items-center gap-1.5 font-medium">
+              <i data-lucide="sparkles" class="h-4 w-4"></i>アニメーション
+            </div>
+            <ul class="list-disc pl-5 text-neutral-600">
+              <li>ホバー: 背景色を 1 段濃く（150ms ease-out）</li>
+              <li>押下: <code>scale(0.97)</code> + さらに 1 段濃く（100ms）</li>
+              <li>フォーカス: 2px のリング（キーボード操作時のみ）</li>
+            </ul>
+          </div>
+          <div class="rounded-lg bg-neutral-50 p-3">
+            <div class="mb-1 flex items-center gap-1.5 font-medium">
+              <i data-lucide="loader-circle" class="h-4 w-4"></i>処理中（loading）
+            </div>
+            <ul class="list-disc pl-5 text-neutral-600">
+              <li>先頭アイコンをスピナーに置換、文言は維持</li>
+              <li>クリック不可（二重送信防止）、<code>aria-busy</code></li>
+              <li>幅が変わらないようアイコン枠を共有</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 状態一覧 -->
+      <section class="mb-6 overflow-x-auto rounded-xl border border-neutral-200 bg-white p-5">
+        <h2 class="mb-3 text-sm font-semibold">状態一覧（variant × state）</h2>
+        <table class="w-full min-w-[860px] text-sm">
+          <thead>
+            <tr class="text-left text-xs text-neutral-500">
+              <th class="w-28 pb-3 font-medium">variant</th>
+              <th class="pb-3 font-medium">通常</th>
+              <th class="pb-3 font-medium">ホバー</th>
+              <th class="pb-3 font-medium">押下</th>
+              <th class="pb-3 font-medium">フォーカス</th>
+              <th class="pb-3 font-medium">disabled</th>
+              <th class="pb-3 font-medium">loading</th>
+            </tr>
+          </thead>
+          <tbody id="matrix" class="divide-y divide-neutral-100"></tbody>
+        </table>
+      </section>
+
+      <!-- 実例 -->
+      <section class="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <!-- エディタヘッダー -->
+        <div class="rounded-xl border border-neutral-200 bg-white p-5 lg:col-span-2">
+          <h2 class="mb-3 text-sm font-semibold">実例: エディタヘッダー（通常 / 保存中）</h2>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between rounded-lg border border-neutral-200 px-3 py-2">
+              <div class="flex items-center gap-0.5">
+                <button class="btn v-ghost btn-sm-icon" title="太字"><i data-lucide="bold"></i></button>
+                <button class="btn v-ghost btn-sm-icon is-hover" title="斜体（ホバー）"><i data-lucide="italic"></i></button>
+                <button class="btn v-ghost btn-sm-icon" title="取り消し線"><i data-lucide="strikethrough"></i></button>
+                <span class="mx-1 h-5 w-px bg-neutral-200"></span>
+                <button class="btn v-ghost btn-sm-icon" title="リンク"><i data-lucide="link"></i></button>
+                <button class="btn v-ghost btn-sm-icon" title="画像"><i data-lucide="image"></i></button>
+                <button class="btn v-ghost btn-sm-icon" title="コード"><i data-lucide="code"></i></button>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="btn v-outline"><i data-lucide="save"></i>下書き保存</button>
+                <button class="btn v-default"><i data-lucide="send"></i>公開</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between rounded-lg border border-neutral-200 px-3 py-2">
+              <div class="flex items-center gap-0.5">
+                <button class="btn v-ghost btn-sm-icon" disabled><i data-lucide="bold"></i></button>
+                <button class="btn v-ghost btn-sm-icon" disabled><i data-lucide="italic"></i></button>
+                <button class="btn v-ghost btn-sm-icon" disabled><i data-lucide="strikethrough"></i></button>
+                <span class="mx-1 h-5 w-px bg-neutral-200"></span>
+                <button class="btn v-ghost btn-sm-icon" disabled><i data-lucide="link"></i></button>
+                <button class="btn v-ghost btn-sm-icon" disabled><i data-lucide="image"></i></button>
+                <button class="btn v-ghost btn-sm-icon" disabled><i data-lucide="code"></i></button>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="btn v-outline" aria-busy="true" disabled style="opacity: 0.8; cursor: progress">
+                  <i data-lucide="loader-circle" class="spin"></i>保存中…
+                </button>
+                <button class="btn v-default" disabled><i data-lucide="send"></i>公開</button>
+              </div>
+            </div>
+            <p class="text-xs text-neutral-500">
+              保存中は押したボタンだけスピナー + 文言変更、もう一方とツールバーは disabled。
+            </p>
+          </div>
+        </div>
+
+        <!-- 確認モーダル -->
+        <div class="rounded-xl border border-neutral-200 bg-white p-5">
+          <h2 class="mb-3 text-sm font-semibold">実例: 公開確認モーダルのフッター</h2>
+          <div class="rounded-lg border border-neutral-200">
+            <div class="px-4 py-3 text-sm text-neutral-600">この内容で記事を公開しますか？</div>
+            <div class="flex justify-end gap-2 border-t border-neutral-100 px-4 py-3">
+              <button class="btn v-ghost">戻る</button>
+              <button class="btn v-default"><i data-lucide="send"></i>公開</button>
+            </div>
+            <div class="flex justify-end gap-2 border-t border-neutral-100 px-4 py-3">
+              <button class="btn v-ghost" disabled>戻る</button>
+              <button class="btn v-default" aria-busy="true" disabled style="opacity: 0.8; cursor: progress">
+                <i data-lucide="loader-circle" class="spin"></i>公開中…
+              </button>
+            </div>
+          </div>
+          <p class="mt-2 text-xs text-neutral-500">
+            現状の丸型（rounded-full）・admin-main 色の独自装飾は廃止し、共通 variant に揃える。
+          </p>
+        </div>
+
+        <!-- 削除確認 -->
+        <div class="rounded-xl border border-neutral-200 bg-white p-5">
+          <h2 class="mb-3 text-sm font-semibold">実例: 削除確認ダイアログ</h2>
+          <div class="rounded-lg border border-neutral-200">
+            <div class="px-4 py-3 text-sm text-neutral-600">記事「サンプル記事」を削除します。元に戻せません。</div>
+            <div class="flex justify-end gap-2 border-t border-neutral-100 px-4 py-3">
+              <button class="btn v-outline">キャンセル</button>
+              <button class="btn v-destructive"><i data-lucide="trash-2"></i>削除</button>
+            </div>
+            <div class="flex justify-end gap-2 border-t border-neutral-100 px-4 py-3">
+              <button class="btn v-outline" disabled>キャンセル</button>
+              <button class="btn v-destructive" aria-busy="true" disabled style="opacity: 0.8; cursor: progress">
+                <i data-lucide="loader-circle" class="spin"></i>削除中…
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- インタラクティブデモ -->
+      <section class="rounded-xl border border-neutral-200 bg-white p-5">
+        <h2 class="mb-1 text-sm font-semibold">触れるデモ</h2>
+        <p class="mb-3 text-xs text-neutral-500">
+          ホバー・押下・Tab フォーカスを実際に確認できる。「保存」を押すと 1.5 秒 loading になる。
+        </p>
+        <div class="flex flex-wrap items-center gap-3">
+          <button class="btn v-default" id="demo-save"><i data-lucide="save"></i><span>保存</span></button>
+          <button class="btn v-outline"><i data-lucide="pencil"></i>編集</button>
+          <button class="btn v-secondary">セカンダリ</button>
+          <button class="btn v-ghost">ゴースト</button>
+          <button class="btn v-destructive"><i data-lucide="trash-2"></i>削除</button>
+          <button class="btn v-link">リンク</button>
+          <button class="btn v-outline btn-icon" title="設定"><i data-lucide="settings"></i></button>
+          <button class="btn v-default" disabled>無効</button>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const variants = [
+        { key: 'default', label: 'default', text: '公開', icon: 'send' },
+        { key: 'outline', label: 'outline', text: '下書き保存', icon: 'save' },
+        { key: 'secondary', label: 'secondary', text: 'キャンセル', icon: null },
+        { key: 'ghost', label: 'ghost', text: '戻る', icon: null },
+        { key: 'destructive', label: 'destructive', text: '削除', icon: 'trash-2' },
+        { key: 'link', label: 'link', text: 'すべて見る', icon: null },
+        { key: 'ghost', label: 'icon (ghost)', text: '', icon: 'bold', iconOnly: true },
+      ];
+      const states = ['normal', 'hover', 'active', 'focus', 'disabled', 'loading'];
+      const tbody = document.getElementById('matrix');
+      for (const v of variants) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="py-3 pr-2 font-mono text-xs text-neutral-500">${v.label}</td>`;
+        for (const s of states) {
+          const td = document.createElement('td');
+          td.className = 'py-3 pr-2';
+          const b = document.createElement('button');
+          b.className = `btn v-${v.key}` + (v.iconOnly ? ' btn-icon' : '');
+          if (s === 'hover') b.classList.add('is-hover');
+          if (s === 'active') b.classList.add('is-active');
+          if (s === 'focus') b.classList.add('is-focus');
+          if (s === 'disabled') b.disabled = true;
+          if (s === 'loading') {
+            b.disabled = true;
+            b.setAttribute('aria-busy', 'true');
+            b.style.opacity = '0.8';
+            b.style.cursor = 'progress';
+          }
+          const icon = s === 'loading' ? 'loader-circle' : v.icon;
+          const iconHtml = icon
+            ? `<i data-lucide="${icon}" class="${s === 'loading' ? 'spin' : ''}"></i>`
+            : '';
+          b.innerHTML = iconHtml + (v.iconOnly ? '' : v.text);
+          td.appendChild(b);
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      }
+
+      lucide.createIcons();
+
+      // デモ: 保存ボタンの loading 切り替え
+      const save = document.getElementById('demo-save');
+      save.addEventListener('click', () => {
+        save.disabled = true;
+        save.setAttribute('aria-busy', 'true');
+        save.innerHTML = '<i data-lucide="loader-circle" class="spin"></i><span>保存中…</span>';
+        lucide.createIcons();
+        setTimeout(() => {
+          save.disabled = false;
+          save.removeAttribute('aria-busy');
+          save.innerHTML = '<i data-lucide="save"></i><span>保存</span>';
+          lucide.createIcons();
+        }, 1500);
+      });
+    </script>
+  </body>
+</html>
