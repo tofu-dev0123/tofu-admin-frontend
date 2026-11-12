@@ -1,25 +1,34 @@
 'use client';
 
-import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import Link, { useLinkStatus } from 'next/link';
 import { LogOut, Menu, X } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 import {
   NAVIGATION_GROUPS,
   isNavItemActive,
 } from '@/constants/admin/navigationItem';
 import { cn } from '@/lib/utils';
+import useNavigationDrawer from '@/hooks/admin/common/useNavigationDrawer';
 
 interface NavigationProps {
   handleClickLogout?: () => void;
+  isLoggingOut?: boolean;
+}
+
+// 遷移中（Link の pending 中）だけ表示するインジケーター。Link の子孫で使う必要がある
+function NavPendingIndicator() {
+  const { pending } = useLinkStatus();
+  if (!pending) return null;
+  return <Spinner aria-hidden="true" className="ml-auto size-3.5" />;
 }
 
 // ロゴ（白背景の T + サービス名）
-function Logo({ onClick }: { onClick?: () => void }) {
+function Logo({ onNavigate }: { onNavigate?: (path: string) => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex cursor-pointer items-center gap-2.5"
+    <Link
+      href="/"
+      onClick={() => onNavigate?.('/')}
+      className="flex items-center gap-2.5"
     >
       <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-sm font-bold text-neutral-950">
         T
@@ -27,7 +36,7 @@ function Logo({ onClick }: { onClick?: () => void }) {
       <span className="text-[15px] font-semibold tracking-tight text-white">
         Tofu Admin
       </span>
-    </button>
+    </Link>
   );
 }
 
@@ -50,10 +59,11 @@ function NavGroups({
             const Icon = item.icon;
             const isActive = isNavItemActive(item.path, pathname);
             return (
-              <button
+              <Link
                 key={item.path}
-                type="button"
+                href={item.path}
                 onClick={() => onNavigate(item.path)}
+                aria-current={isActive ? 'page' : undefined}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                   isActive
@@ -63,7 +73,8 @@ function NavGroups({
               >
                 <Icon className="h-[18px] w-[18px]" />
                 {item.label}
-              </button>
+                <NavPendingIndicator />
+              </Link>
             );
           })}
         </div>
@@ -73,7 +84,13 @@ function NavGroups({
 }
 
 // ユーザーチップ + ログアウト（デスクトップ／モバイルドロワー共用）
-function UserFooter({ onClickLogout }: { onClickLogout?: () => void }) {
+function UserFooter({
+  onClickLogout,
+  isLoggingOut,
+}: {
+  onClickLogout?: () => void;
+  isLoggingOut?: boolean;
+}) {
   return (
     <div className="border-t border-neutral-800 p-3">
       <div className="flex items-center gap-3 rounded-lg px-2 py-2">
@@ -87,51 +104,53 @@ function UserFooter({ onClickLogout }: { onClickLogout?: () => void }) {
         <button
           type="button"
           onClick={onClickLogout}
-          className="rounded-md p-1.5 text-neutral-500 transition-colors hover:bg-neutral-900 hover:text-white"
+          disabled={isLoggingOut}
+          aria-busy={isLoggingOut || undefined}
+          className="rounded-md p-1.5 text-neutral-500 transition-colors hover:bg-neutral-900 hover:text-white disabled:opacity-60"
           title="ログアウト"
+          aria-label="ログアウト"
         >
-          <LogOut className="h-[18px] w-[18px]" />
+          {isLoggingOut ? (
+            <Spinner aria-hidden="true" className="h-[18px] w-[18px]" />
+          ) : (
+            <LogOut className="h-[18px] w-[18px]" />
+          )}
         </button>
       </div>
     </div>
   );
 }
 
-function Navigation({ handleClickLogout }: NavigationProps) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  // ナビゲーション遷移（モバイルドロワーは併せて閉じる）
-  const handleClickItem = (path: string) => {
-    setIsDrawerOpen(false);
-    router.push(path);
-  };
-
-  const closeDrawer = () => setIsDrawerOpen(false);
+function Navigation({ handleClickLogout, isLoggingOut }: NavigationProps) {
+  // 遷移は Link が行う（プリフェッチ有効）。ドロワーは遷移完了で閉じる
+  const { pathname, isDrawerOpen, openDrawer, closeDrawer, handleNavigate } =
+    useNavigationDrawer();
 
   return (
     <>
       {/* デスクトップ: 左固定ダークサイドバー */}
       <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col bg-neutral-950 text-neutral-300 lg:flex">
         <div className="flex h-16 items-center px-5">
-          <Logo onClick={() => handleClickItem('/')} />
+          <Logo onNavigate={handleNavigate} />
         </div>
-        <NavGroups pathname={pathname} onNavigate={handleClickItem} />
-        <UserFooter onClickLogout={handleClickLogout} />
+        <NavGroups pathname={pathname} onNavigate={handleNavigate} />
+        <UserFooter
+          onClickLogout={handleClickLogout}
+          isLoggingOut={isLoggingOut}
+        />
       </aside>
 
       {/* モバイル: 上部ヘッダー（ハンバーガー + ロゴ） */}
       <header className="fixed inset-x-0 top-0 z-40 flex h-14 items-center gap-3 bg-neutral-950 px-4 lg:hidden">
         <button
           type="button"
-          onClick={() => setIsDrawerOpen(true)}
+          onClick={openDrawer}
           className="-ml-1 rounded-md p-1.5 text-neutral-300 transition-colors hover:bg-neutral-900 hover:text-white"
           aria-label="メニューを開く"
         >
           <Menu className="h-6 w-6" />
         </button>
-        <Logo onClick={() => handleClickItem('/')} />
+        <Logo onNavigate={handleNavigate} />
       </header>
 
       {/* モバイル: ドロワー用スクリム */}
@@ -152,7 +171,7 @@ function Navigation({ handleClickLogout }: NavigationProps) {
         aria-hidden={!isDrawerOpen}
       >
         <div className="flex h-14 items-center justify-between px-4">
-          <Logo onClick={() => handleClickItem('/')} />
+          <Logo onNavigate={handleNavigate} />
           <button
             type="button"
             onClick={closeDrawer}
@@ -162,8 +181,11 @@ function Navigation({ handleClickLogout }: NavigationProps) {
             <X className="h-5 w-5" />
           </button>
         </div>
-        <NavGroups pathname={pathname} onNavigate={handleClickItem} />
-        <UserFooter onClickLogout={handleClickLogout} />
+        <NavGroups pathname={pathname} onNavigate={handleNavigate} />
+        <UserFooter
+          onClickLogout={handleClickLogout}
+          isLoggingOut={isLoggingOut}
+        />
       </aside>
     </>
   );

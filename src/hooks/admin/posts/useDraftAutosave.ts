@@ -5,9 +5,11 @@ import { saveDraft, loadDraft, clearDraft } from '@/lib/utils/postDraft';
 
 interface UseDraftAutosaveProps {
   title: string;
+  slug: string;
   content: string;
   tags: string[];
   setTitle: (title: string) => void;
+  setSlug: (slug: string) => void;
   setContent: (content: string) => void;
   setTags: (tags: string[]) => void;
 }
@@ -20,9 +22,11 @@ const AUTOSAVE_DEBOUNCE_MS = 800;
  */
 function useDraftAutosave({
   title,
+  slug,
   content,
   tags,
   setTitle,
+  setSlug,
   setContent,
   setTags,
 }: UseDraftAutosaveProps) {
@@ -32,12 +36,16 @@ function useDraftAutosave({
   // 入力の debounce 保存
   useEffect(() => {
     const isEmpty =
-      title.trim() === '' && content.trim() === '' && tags.length === 0;
+      title.trim() === '' &&
+      slug.trim() === '' &&
+      content.trim() === '' &&
+      tags.length === 0;
     if (isEmpty) return;
 
     const timer = setTimeout(() => {
       saveDraft({
         title,
+        slug,
         content,
         tags,
         savedAt: new Date().toISOString(),
@@ -45,17 +53,19 @@ function useDraftAutosave({
     }, AUTOSAVE_DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [title, content, tags]);
+  }, [title, slug, content, tags]);
 
   const restore = useCallback(() => {
     const draft = loadDraft();
     if (draft) {
       setTitle(draft.title);
+      // slug 対応前の下書きは未入力として復元する
+      setSlug(draft.slug ?? '');
       setContent(draft.content);
       setTags(draft.tags);
     }
     setHasDraft(false);
-  }, [setTitle, setContent, setTags]);
+  }, [setTitle, setSlug, setContent, setTags]);
 
   const discard = useCallback(() => {
     clearDraft();

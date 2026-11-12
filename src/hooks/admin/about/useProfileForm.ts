@@ -11,6 +11,8 @@ import {
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
 import { logger } from '@/lib/logger';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/api/queryKeys';
 
 interface UseProfileFormProps {
   initial: ProfileResponse;
@@ -19,7 +21,7 @@ interface UseProfileFormProps {
 
 /**
  * プロフィール（シングルトン）の編集フォーム。
- * 初期値は RSC で取得したものを props で受け取り、保存は PUT /admin/profile。
+ * 初期値はクエリ（useProfileQuery）で取得したものを props で受け取り、保存は PUT /admin/profile。
  */
 function useProfileForm({ initial, showError }: UseProfileFormProps) {
   const [headline, setHeadline] = useState(initial.headline);
@@ -28,6 +30,7 @@ function useProfileForm({ initial, showError }: UseProfileFormProps) {
     initial.site_description
   );
   const [isSaving, setIsSaving] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleHeadlineChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setHeadline(e.target.value);
@@ -54,6 +57,7 @@ function useProfileForm({ initial, showError }: UseProfileFormProps) {
         request
       );
       logger.info('[about] プロフィールを更新しました');
+      void queryClient.invalidateQueries({ queryKey: queryKeys.profile });
       useToastStore.getState().show({
         type: 'success',
         message: response.message,
@@ -63,7 +67,7 @@ function useProfileForm({ initial, showError }: UseProfileFormProps) {
     } finally {
       setIsSaving(false);
     }
-  }, [headline, bio, siteDescription, showError]);
+  }, [headline, bio, siteDescription, showError, queryClient]);
 
   return {
     headline,

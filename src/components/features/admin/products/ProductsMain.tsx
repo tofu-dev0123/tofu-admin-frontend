@@ -12,12 +12,12 @@ import { Product } from '@/types/api/product';
 import { MESSAGES } from '@/constants/messages';
 
 interface ProductsMainProps {
-  initialProducts: Product[];
+  products: Product[];
 }
 
-function ProductsMain({ initialProducts }: ProductsMainProps) {
+function ProductsMain({ products }: ProductsMainProps) {
   const { listHooks, formHooks, errorModalHooks, stats } = useProductsMain({
-    initialProducts,
+    products,
   });
 
   return (
@@ -63,6 +63,8 @@ function ProductsMain({ initialProducts }: ProductsMainProps) {
         description={MESSAGES.confirm.deleteProduct.description}
         actionText="削除"
         onAction={listHooks.confirmDelete}
+        isActionLoading={listHooks.isDeleting}
+        loadingText={MESSAGES.loading.deleting}
       />
     </div>
   );

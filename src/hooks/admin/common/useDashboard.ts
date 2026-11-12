@@ -11,6 +11,8 @@ import useErrorModal from './useErrorModal';
 
 function useDashboard() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // ログアウト処理中フラグ（成功時は遷移まで維持する）
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const router = useRouter();
 
@@ -26,10 +28,12 @@ function useDashboard() {
     try {
       const result = await confirm('ログアウトしますか？');
       if (result) {
+        setIsLoggingOut(true);
         await postToNextApi<{ ok: boolean }>(API_ENDPOINTS.logout.post);
         router.push('/login');
       }
     } catch (error) {
+      setIsLoggingOut(false);
       if (axios.isAxiosError(error) && error.response) {
         // APIからエラーレスポンスが返ってきた場合
         const errorMessage = getErrorMessage(error.response.data);
@@ -44,6 +48,7 @@ function useDashboard() {
     isMenuOpen,
     handleClickMenu,
     handleClickLogout,
+    isLoggingOut,
     errorModalHook,
   };
 }

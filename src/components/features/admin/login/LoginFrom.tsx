@@ -82,10 +82,7 @@ function LoginFrom() {
                 </div>
               </CardContent>
               <CardFooter className="flex-col">
-                <Button
-                  type="submit"
-                  className="w-full rounded-full cursor-pointer"
-                >
+                <Button type="submit" className="w-full rounded-full">
                   Login
                 </Button>
               </CardFooter>

@@ -10,13 +10,13 @@ import { MESSAGES } from '@/constants/messages';
 
 interface AboutMainProps {
   initialProfile: ProfileResponse;
-  initialTimelines: Timeline[];
+  timelines: Timeline[];
 }
 
-function AboutMain({ initialProfile, initialTimelines }: AboutMainProps) {
+function AboutMain({ initialProfile, timelines }: AboutMainProps) {
   const { profileHooks, timelinesHooks, errorModalHooks } = useAboutMain({
     initialProfile,
-    initialTimelines,
+    timelines,
   });
 
   return (
@@ -49,6 +49,8 @@ function AboutMain({ initialProfile, initialTimelines }: AboutMainProps) {
         description={MESSAGES.confirm.deleteTimeline.description}
         actionText="削除"
         onAction={timelinesHooks.confirmDelete}
+        isActionLoading={timelinesHooks.isDeleting}
+        loadingText={MESSAGES.loading.deleting}
       />
     </div>
   );

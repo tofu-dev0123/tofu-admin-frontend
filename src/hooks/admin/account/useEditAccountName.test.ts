@@ -3,6 +3,8 @@ import { renderHook, act } from '@testing-library/react';
 import type { ChangeEvent } from 'react';
 import useEditAccountName from '@/hooks/admin/account/useEditAccountName';
 import { patch } from '@/lib/api/http';
+import { queryKeys } from '@/lib/api/queryKeys';
+import { createQueryWrapper } from '@/test/queryWrapper';
 
 vi.mock('@/lib/api/http', () => ({ patch: vi.fn() }));
 vi.mock('@/lib/logger', () => ({
@@ -11,33 +13,34 @@ vi.mock('@/lib/logger', () => ({
 
 const mockedPatch = vi.mocked(patch);
 
-// updateAccountName 成功時に呼ばれる window.location.reload を差し替える
-const reloadMock = vi.fn();
-
 beforeEach(() => {
   vi.clearAllMocks();
-  Object.defineProperty(window, 'location', {
-    configurable: true,
-    writable: true,
-    value: { reload: reloadMock },
-  });
 });
 
 function changeEvent(value: string): ChangeEvent<HTMLInputElement> {
   return { target: { value } } as ChangeEvent<HTMLInputElement>;
 }
 
+// QueryClient 付きでフックを描画し、invalidateQueries を監視する
+const setup = (showError = vi.fn()) => {
+  const { wrapper, queryClient } = createQueryWrapper();
+  const invalidate = vi.spyOn(queryClient, 'invalidateQueries');
+  const { result } = renderHook(() => useEditAccountName({ showError }), {
+    wrapper,
+  });
+  return { result, showError, invalidate };
+};
+
 describe('useEditAccountName', () => {
-  it('入力したアカウント名で更新APIを呼ぶ', async () => {
+  it('入力したアカウント名で更新し、アカウント情報を無効化して編集欄を閉じる', async () => {
     mockedPatch.mockResolvedValue({
       message: '更新しました',
       user_id: 1,
       account_name: 'はなこ',
     });
-    const showError = vi.fn();
+    const { result, showError, invalidate } = setup();
 
-    const { result } = renderHook(() => useEditAccountName({ showError }));
-
+    act(() => result.current.handleAccountNameEdit());
     act(() => result.current.handleAccountNameChange(changeEvent('はなこ')));
     await act(async () => {
       await result.current.updateAccountName();
@@ -46,15 +49,15 @@ describe('useEditAccountName', () => {
     expect(mockedPatch).toHaveBeenCalledWith('/api/admin/account', {
       account_name: 'はなこ',
     });
-    expect(reloadMock).toHaveBeenCalled();
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: queryKeys.me });
+    expect(result.current.editFlag).toBe(false);
+    expect(result.current.editAccountName).toBe('');
     expect(showError).not.toHaveBeenCalled();
   });
 
-  it('更新失敗時は showError を呼ぶ', async () => {
+  it('更新失敗時は showError を呼び、無効化しない', async () => {
     mockedPatch.mockRejectedValue(new Error('boom'));
-    const showError = vi.fn();
-
-    const { result } = renderHook(() => useEditAccountName({ showError }));
+    const { result, showError, invalidate } = setup();
 
     act(() => result.current.handleAccountNameChange(changeEvent('はなこ')));
     await act(async () => {
@@ -62,6 +65,6 @@ describe('useEditAccountName', () => {
     });
 
     expect(showError).toHaveBeenCalled();
-    expect(reloadMock).not.toHaveBeenCalled();
+    expect(invalidate).not.toHaveBeenCalled();
   });
 });

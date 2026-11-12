@@ -1,11 +1,6 @@
-import { Suspense } from 'react';
 import AboutSection from '@/components/features/admin/about/AboutSection';
-import AboutMainSkeleton from '@/components/features/admin/about/AboutMainSkeleton';
 
+// 取得はクライアントで行う（TanStack Query）。取得中のスケルトンは AboutSection が出す
 export default function Page() {
-  return (
-    <Suspense fallback={<AboutMainSkeleton />}>
-      <AboutSection />
-    </Suspense>
-  );
+  return <AboutSection />;
 }

@@ -14,7 +14,7 @@
 - React 19 / TypeScript（strict）
 - Tailwind CSS 4
 - shadcn/ui（style: new-york / baseColor: neutral / icon: lucide-react）+ Radix UI
-- 状態管理: zustand（グローバル）/ React Context（画面ローカル）
+- 状態管理: zustand（グローバル）/ React Context（画面ローカル）/ TanStack Query（サーバー状態のキャッシュ）
 - フォーム: react-hook-form
 - HTTP: axios（`src/lib/api` のラッパ経由）
 - Markdown: react-markdown / remark-gfm / rehype-highlight、エディタは CodeMirror、図は mermaid

@@ -26,6 +26,10 @@ export const MESSAGES = {
     product: {
       titleRequired: 'タイトルの入力は必須です',
     },
+    slug: {
+      format: 'スラグは小文字英数字とハイフンで入力してください',
+      maxLength: 'スラグは50文字以内で入力してください',
+    },
   },
   posts: {
     empty: '記事がありません',
@@ -49,6 +53,15 @@ export const MESSAGES = {
       title: 'プロダクトを削除しますか？',
       description: 'この操作は取り消せません。',
     },
+  },
+  // 処理中ボタンの文言
+  loading: {
+    saving: '保存中…',
+    publishing: '公開中…',
+    deleting: '削除中…',
+    unpublishing: '解除中…',
+    changing: '変更中…',
+    uploading: 'アップロード中…',
   },
   draft: {
     restore: {

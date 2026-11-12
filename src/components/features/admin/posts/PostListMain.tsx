@@ -3,24 +3,22 @@
 import PostSearchBar from '@/components/features/admin/posts/PostSearchBar';
 import PostList from '@/components/features/admin/posts/PostList';
 import usePostList from '@/hooks/admin/posts/usePostList';
-import type { PostResponse } from '@/types/api/post';
 
-interface PostListMainProps {
-  initialData: PostResponse;
-}
-
-function PostListMain({ initialData }: PostListMainProps) {
+function PostListMain() {
   const {
     searchPost,
     status: statusHook,
     deleteAlert,
     patchStatusAlert,
+    postList,
+    totalCount,
     displayedKeyword,
     handleClickEdit,
     isRefetching,
     isColdLoading,
+    isError,
     isEmpty,
-  } = usePostList({ initialData });
+  } = usePostList();
   return (
     <div className="w-full lg:w-6xl flex flex-col mx-auto p-4 lg:px-0 lg:py-8">
       <div className="w-full lg:w-200 lg:mx-auto">
@@ -29,17 +27,18 @@ function PostListMain({ initialData }: PostListMainProps) {
           <PostSearchBar
             searchPost={searchPost}
             status={statusHook}
-            totalCount={searchPost.totalCount}
+            totalCount={totalCount}
             isRefetching={isRefetching}
           />
           <PostList
-            searchPost={searchPost}
+            postList={postList}
             deleteAlert={deleteAlert}
             patchStatusAlert={patchStatusAlert}
             handleClickEdit={handleClickEdit}
             displayedKeyword={displayedKeyword}
             isRefetching={isRefetching}
             isColdLoading={isColdLoading}
+            isError={isError}
             isEmpty={isEmpty}
           />
         </div>

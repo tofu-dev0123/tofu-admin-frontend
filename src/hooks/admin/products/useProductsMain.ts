@@ -7,13 +7,13 @@ import useProductForm from '@/hooks/admin/products/useProductForm';
 import { Product } from '@/types/api/product';
 
 interface UseProductsMainProps {
-  initialProducts: Product[];
+  products: Product[];
 }
 
-function useProductsMain({ initialProducts }: UseProductsMainProps) {
+function useProductsMain({ products }: UseProductsMainProps) {
   const errorModalHooks = useErrorModal();
   const listHooks = useProductList({
-    initial: initialProducts,
+    products,
     showError: errorModalHooks.showError,
   });
   const formHooks = useProductForm({

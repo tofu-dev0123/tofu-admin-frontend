@@ -11,13 +11,20 @@ function useConfirmModal({ showError }: UseConfirmModalProps) {
   const [attachedImages, setAttachedImages] = useState<string[]>([]);
 
   const onOpen = useCallback(
-    (thumbnailUrl: string, title: string, tags: string[], content: string) => {
+    (
+      thumbnailUrl: string,
+      title: string,
+      tags: string[],
+      content: string,
+      slug: string
+    ) => {
       // バリデーションチェック
       const errorMessage = validatePostSubmission(
         thumbnailUrl,
         title,
         tags,
-        content
+        content,
+        slug
       );
       if (errorMessage.length > 0) {
         showError(errorMessage);

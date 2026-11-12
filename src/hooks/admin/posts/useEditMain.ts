@@ -1,21 +1,24 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { usePostData } from './usePostData';
+import usePostDetailQuery from '@/hooks/admin/posts/usePostDetailQuery';
 import useErrorModal from '@/hooks/admin/common/useErrorModal';
 
 export function useEditMain() {
   const params = useParams();
   const postId = Number(params.id);
   const errorModalHook = useErrorModal();
-  const { postData, isLoading } = usePostData({
-    postId,
-    showError: errorModalHook.showError,
-  });
+  const postDetailQuery = usePostDetailQuery(postId);
+
+  // 不正な ID は取得しないため、待たずに「記事が見つかりません」を出す
+  const isValidId = Number.isFinite(postId) && postId > 0;
+  // マウント後の最新取得が終わるまで待つ（古いキャッシュでエディタを初期化しないため）。
+  // 一度表示した後の再取得（更新後の無効化など）ではエディタを差し替えず、失敗しても取得済みデータを使う。
+  const isLoading = isValidId && !postDetailQuery.isFetchedAfterMount;
 
   return {
     postId,
-    postData,
+    postData: postDetailQuery.data ?? null,
     isLoading,
     errorModalHook,
   };
