@@ -38,6 +38,7 @@ function useProductList({ initial, showError }: UseProductListProps) {
   const [products, setProducts] = useState<Product[]>(initial);
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
   const [togglingId, setTogglingId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const refetch = useCallback(async () => {
     const response = await get<ProductListResponse>(API_ENDPOINTS.products.get);
@@ -49,6 +50,7 @@ function useProductList({ initial, showError }: UseProductListProps) {
 
   const confirmDelete = useCallback(async () => {
     if (deleteTarget === null) return;
+    setIsDeleting(true);
     try {
       const response = await del<ProductDeleteResponse>(
         API_ENDPOINTS.products.delete(deleteTarget)
@@ -64,6 +66,7 @@ function useProductList({ initial, showError }: UseProductListProps) {
     } catch (error) {
       exceptErrorHandling(error, showError);
     } finally {
+      setIsDeleting(false);
       setDeleteTarget(null);
     }
   }, [deleteTarget, refetch, showError]);
@@ -98,6 +101,7 @@ function useProductList({ initial, showError }: UseProductListProps) {
   return {
     products,
     deleteTarget,
+    isDeleting,
     togglingId,
     refetch,
     openDelete,

@@ -15,6 +15,8 @@ interface UsePostDeleteAlertProps {
 function usePostDeleteAlert({ showError }: UsePostDeleteAlertProps) {
   const [open, setOpen] = useState(false);
   const [postId, setPostId] = useState<number | null>(null);
+  // 削除処理中フラグ（成功時はリロードまで維持する）
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleOpen = (id: number) => {
     setOpen(true);
@@ -28,6 +30,7 @@ function usePostDeleteAlert({ showError }: UsePostDeleteAlertProps) {
 
   const handleDelete = async () => {
     if (!postId) return;
+    setIsProcessing(true);
     try {
       const response = await del<PostDeleteResponse>(
         API_ENDPOINTS.posts.delete(postId)
@@ -44,12 +47,14 @@ function usePostDeleteAlert({ showError }: UsePostDeleteAlertProps) {
       }, 1500);
     } catch (error) {
       exceptErrorHandling(error, showError);
+      setIsProcessing(false);
       handleClose();
     }
   };
 
   return {
     open,
+    isProcessing,
     handleOpen,
     handleClose,
     handleDelete,

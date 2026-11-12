@@ -47,6 +47,7 @@ function useTimelines({ initial, showError }: UseTimelinesProps) {
   const [form, setForm] = useState<TimelineFormState>(EMPTY_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const refetch = useCallback(async () => {
     const response = await get<TimelineListResponse>(
@@ -132,6 +133,7 @@ function useTimelines({ initial, showError }: UseTimelinesProps) {
 
   const confirmDelete = useCallback(async () => {
     if (deleteTarget === null) return;
+    setIsDeleting(true);
     try {
       const response = await del<TimelineDeleteResponse>(
         API_ENDPOINTS.timelines.delete(deleteTarget)
@@ -145,6 +147,7 @@ function useTimelines({ initial, showError }: UseTimelinesProps) {
     } catch (error) {
       exceptErrorHandling(error, showError);
     } finally {
+      setIsDeleting(false);
       setDeleteTarget(null);
     }
   }, [deleteTarget, refetch, showError]);
@@ -155,6 +158,7 @@ function useTimelines({ initial, showError }: UseTimelinesProps) {
     form,
     isSubmitting,
     deleteTarget,
+    isDeleting,
     startAdd,
     startEdit,
     cancelEdit,

@@ -63,6 +63,8 @@ function ProductsMain({ initialProducts }: ProductsMainProps) {
         description={MESSAGES.confirm.deleteProduct.description}
         actionText="削除"
         onAction={listHooks.confirmDelete}
+        isActionLoading={listHooks.isDeleting}
+        loadingText={MESSAGES.loading.deleting}
       />
     </div>
   );
