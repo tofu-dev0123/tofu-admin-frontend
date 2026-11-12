@@ -12,9 +12,11 @@ export function DraftAutosave() {
   const { state, actions } = usePostEditorContext();
   const { hasDraft, restore, discard } = useDraftAutosave({
     title: state.title,
+    slug: state.slug,
     content: state.content,
     tags: state.tags,
     setTitle: actions.setTitle,
+    setSlug: actions.setSlug,
     setContent: actions.setContent,
     setTags: actions.setTags,
   });
