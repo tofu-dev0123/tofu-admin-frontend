@@ -8,6 +8,8 @@ export interface PostEditorState {
   // UI状態
   isPreview: boolean;
   isSubmitLoading: boolean;
+  // 送信中のステータス（押されたボタンの判別用）。未送信時は null
+  submittingStatus: PostStatus | null;
   // 未保存の変更があるか（離脱警告に使用）
   isDirty: boolean;
   // 基本情報

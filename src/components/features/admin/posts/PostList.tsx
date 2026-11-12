@@ -93,6 +93,8 @@ function PostList({
         actionText="削除"
         onCancel={deleteAlert.handleClose}
         onAction={deleteAlert.handleDelete}
+        isActionLoading={deleteAlert.isProcessing}
+        loadingText={MESSAGES.loading.deleting}
       />
       <Alert
         open={patchStatusAlert.open}
@@ -102,6 +104,8 @@ function PostList({
         actionText="公開を解除"
         onCancel={patchStatusAlert.handleClose}
         onAction={patchStatusAlert.handlePatchStatus}
+        isActionLoading={patchStatusAlert.isProcessing}
+        loadingText={MESSAGES.loading.unpublishing}
       />
     </div>
   );

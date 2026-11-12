@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { Send } from 'lucide-react';
 import { usePostEditorContext } from '@/hooks/admin/posts/usePostEditorContext';
 import { PostStatus } from '@/types/api/post';
+import { MESSAGES } from '@/constants/messages';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -23,7 +24,11 @@ function ConfirmModal({ isOpen, onClose, title, tags }: ConfirmModalProps) {
   const { actions, state } = usePostEditorContext();
   if (!isOpen) return null;
 
+  const isPublishing = state.submittingStatus === 'PUBLISHED';
+
   const handleClose = () => {
+    // 送信中は閉じさせない
+    if (state.isSubmitLoading) return;
     if (onClose) {
       onClose();
     }
@@ -62,15 +67,22 @@ function ConfirmModal({ isOpen, onClose, title, tags }: ConfirmModalProps) {
           </div>
         </CardContent>
         <CardFooter className="w-full flex items-center justify-end gap-4">
-          <Button variant="ghost" onClick={handleClose}>
+          <Button
+            variant="ghost"
+            onClick={handleClose}
+            disabled={state.isSubmitLoading}
+          >
             戻る
           </Button>
           <Button
+            loading={isPublishing}
+            disabled={state.isSubmitLoading}
             onClick={() =>
               actions.handleSubmit(state, 'PUBLISHED' as PostStatus)
             }
           >
-            <Send /> 公開
+            <Send />
+            {isPublishing ? MESSAGES.loading.publishing : '公開'}
           </Button>
         </CardFooter>
       </Card>

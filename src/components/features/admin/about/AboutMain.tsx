@@ -49,6 +49,8 @@ function AboutMain({ initialProfile, initialTimelines }: AboutMainProps) {
         description={MESSAGES.confirm.deleteTimeline.description}
         actionText="削除"
         onAction={timelinesHooks.confirmDelete}
+        isActionLoading={timelinesHooks.isDeleting}
+        loadingText={MESSAGES.loading.deleting}
       />
     </div>
   );

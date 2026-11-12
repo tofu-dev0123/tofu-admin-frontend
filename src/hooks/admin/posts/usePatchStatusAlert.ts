@@ -20,6 +20,8 @@ function usePatchStatusAlert({ showError }: UsePatchStatusAlertProps) {
   const [open, setOpen] = useState(false);
   const [postId, setPostId] = useState<number | null>(null);
   const [status, setStatus] = useState<PostStatus | null>(null);
+  // 変更処理中フラグ（成功時はリロードまで維持する）
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleOpen = (id: number, status: PostStatus) => {
     setOpen(true);
@@ -38,6 +40,7 @@ function usePatchStatusAlert({ showError }: UsePatchStatusAlertProps) {
     const request: PostStatusPatchRequest = {
       status,
     };
+    setIsProcessing(true);
     try {
       const response = await patch<PostStatusPatchResponse>(
         API_ENDPOINTS.posts.patchStatus(postId),
@@ -56,12 +59,14 @@ function usePatchStatusAlert({ showError }: UsePatchStatusAlertProps) {
       }, 1500);
     } catch (error) {
       exceptErrorHandling(error, showError);
+      setIsProcessing(false);
       handleClose();
     }
   };
 
   return {
     open,
+    isProcessing,
     handleOpen,
     handleClose,
     handlePatchStatus,

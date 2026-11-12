@@ -34,6 +34,7 @@ function AccountMain({ initialAccount }: AccountMainProps) {
               onEdit={editAccountNameHooks.handleAccountNameEdit}
               editFlag={editAccountNameHooks.editFlag}
               onSubmit={editAccountNameHooks.updateAccountName}
+              isSubmitting={editAccountNameHooks.isLoading}
             />
             {/* ユーザー名 */}
             <AccountInfoColumn
@@ -51,6 +52,7 @@ function AccountMain({ initialAccount }: AccountMainProps) {
               requiredPassword={true}
               passwordValue={editUsernameHooks.password}
               onPasswordChange={editUsernameHooks.handlePasswordChange}
+              isSubmitting={editUsernameHooks.isLoading}
             />
             {/* パスワード */}
             <AccountInfoColumn
@@ -68,6 +70,7 @@ function AccountMain({ initialAccount }: AccountMainProps) {
               requiredPassword={true}
               passwordValue={editPasswordHooks.currentPassword}
               onPasswordChange={editPasswordHooks.handleCurrentPasswordChange}
+              isSubmitting={editPasswordHooks.isLoading}
             />
           </CardContent>
         </Card>

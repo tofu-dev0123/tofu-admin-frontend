@@ -50,6 +50,15 @@ export const MESSAGES = {
       description: 'この操作は取り消せません。',
     },
   },
+  // 処理中ボタンの文言
+  loading: {
+    saving: '保存中…',
+    publishing: '公開中…',
+    deleting: '削除中…',
+    unpublishing: '解除中…',
+    changing: '変更中…',
+    uploading: 'アップロード中…',
+  },
   draft: {
     restore: {
       title: '下書きを復元しますか？',

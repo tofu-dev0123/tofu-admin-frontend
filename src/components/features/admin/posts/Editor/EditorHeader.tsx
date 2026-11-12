@@ -27,6 +27,7 @@ import {
 } from '@/components/features/admin/posts/Editor/markdownToolbarItems';
 import { PostStatus } from '@/types/api/post';
 import { cn } from '@/lib/utils';
+import { MESSAGES } from '@/constants/messages';
 
 function EditorHeader() {
   const { state, actions, ui } = usePostEditorContext();
@@ -34,8 +35,8 @@ function EditorHeader() {
   // 見出しドロップダウンの開閉（表示専用の状態）
   const [isHeadingOpen, setIsHeadingOpen] = useState(false);
 
-  // プレビュー中はエディタが無く書式適用できないため無効化する
-  const disabled = state.isPreview;
+  // プレビュー中はエディタが無く書式適用できないため、送信中は内容を変えさせないため無効化する
+  const disabled = state.isPreview || state.isSubmitLoading;
 
   return (
     <CardContent className="flex w-full flex-wrap items-center justify-between gap-3 border-b border-neutral-200 px-2 py-3 lg:px-6">
@@ -206,13 +207,19 @@ function EditorHeader() {
           type="button"
           variant="outline"
           className="gap-1.5 px-3"
+          loading={state.submittingStatus === 'DRAFT'}
+          disabled={state.isSubmitLoading}
           onClick={() => actions.handleSubmit(state, 'DRAFT' as PostStatus)}
         >
-          <Save /> 下書き保存
+          <Save />
+          {state.submittingStatus === 'DRAFT'
+            ? MESSAGES.loading.saving
+            : '下書き保存'}
         </Button>
         <Button
           type="button"
           className="gap-1.5 px-3"
+          disabled={state.isSubmitLoading}
           onClick={() =>
             actions.handleOpenConfirmModal(
               state.thumbnailUrl ?? '',
