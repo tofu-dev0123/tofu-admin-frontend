@@ -4,7 +4,7 @@ import { IdCard, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
+import { MESSAGES } from '@/constants/messages';
 import type useProfileForm from '@/hooks/admin/about/useProfileForm';
 
 interface ProfileCardProps {
@@ -40,9 +40,9 @@ function ProfileCard({ profileHooks }: ProfileCardProps) {
             </p>
           </div>
         </div>
-        <Button onClick={save} disabled={isSaving}>
-          {isSaving ? <Spinner /> : <Check />}
-          保存
+        <Button onClick={save} loading={isSaving}>
+          <Check />
+          {isSaving ? MESSAGES.loading.saving : '保存'}
         </Button>
       </div>
 

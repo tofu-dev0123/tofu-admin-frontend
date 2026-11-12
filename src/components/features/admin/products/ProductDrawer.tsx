@@ -5,7 +5,7 @@ import type useProductForm from '@/hooks/admin/products/useProductForm';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
+import { MESSAGES } from '@/constants/messages';
 import Toggle from '@/components/features/admin/common/Toggle';
 import { cn } from '@/lib/utils';
 
@@ -221,9 +221,9 @@ function ProductDrawer({ formHooks }: ProductDrawerProps) {
           <Button variant="ghost" onClick={close} disabled={isSubmitting}>
             キャンセル
           </Button>
-          <Button onClick={submit} disabled={isSubmitting}>
-            {isSubmitting ? <Spinner /> : <Check />}
-            保存
+          <Button onClick={submit} loading={isSubmitting}>
+            <Check />
+            {isSubmitting ? MESSAGES.loading.saving : '保存'}
           </Button>
         </div>
       </aside>
