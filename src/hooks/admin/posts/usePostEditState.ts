@@ -84,6 +84,7 @@ export function usePostEditState({
       // UI状態
       isPreview: onClickPreviewHooks.isPreview,
       isSubmitLoading: postSubmitHooks.isLoading,
+      submittingStatus: postSubmitHooks.submittingStatus,
       isDirty,
       // 基本情報
       title: postTitleHooks.title,
@@ -119,6 +120,7 @@ export function usePostEditState({
     [
       onClickPreviewHooks.isPreview,
       postSubmitHooks.isLoading,
+      postSubmitHooks.submittingStatus,
       isDirty,
       postTitleHooks.title,
       postContentHooks.content,

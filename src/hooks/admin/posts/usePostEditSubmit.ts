@@ -18,11 +18,15 @@ interface UsePostEditSubmitProps {
 
 function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  // 送信中のステータス（どのボタンが押されたかを表示側で判別するため保持）
+  const [submittingStatus, setSubmittingStatus] = useState<PostStatus | null>(
+    null
+  );
+  const isLoading = submittingStatus !== null;
 
   const onSubmit = useCallback(
     async (state: PostEditorState, status: PostStatus) => {
-      setIsLoading(true);
+      setSubmittingStatus(status);
       // 画像URLを抽出（下書き送信時のみ実行、公開時は確認モーダルで既に設定済み）
       const attachedImages =
         state.attachedImages.length > 0
@@ -52,8 +56,15 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
 
       // 削除する画像IDがある場合、削除する
       if (deleteImages.length > 0) {
-        for (const id of deleteImages) {
-          await del<ImagesDeleteResponse>(API_ENDPOINTS.images.delete(id));
+        try {
+          for (const id of deleteImages) {
+            await del<ImagesDeleteResponse>(API_ENDPOINTS.images.delete(id));
+          }
+        } catch (error) {
+          // 失敗時も送信中表示を解除し、ボタンが押せないまま固まらないようにする
+          exceptErrorHandling(error, showError);
+          setSubmittingStatus(null);
+          return;
         }
       }
 
@@ -97,7 +108,7 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
       } catch (error) {
         exceptErrorHandling(error, showError);
       } finally {
-        setIsLoading(false);
+        setSubmittingStatus(null);
       }
     },
     [router, showError, postId]
@@ -105,6 +116,7 @@ function usePostEditSubmit({ showError, postId }: UsePostEditSubmitProps) {
 
   return {
     isLoading,
+    submittingStatus,
     onSubmit,
   };
 }

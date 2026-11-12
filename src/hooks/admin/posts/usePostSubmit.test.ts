@@ -68,6 +68,33 @@ describe('usePostSubmit', () => {
     expect(showError).not.toHaveBeenCalled();
   });
 
+  it('送信中は押されたステータスを保持し、完了で解除する', async () => {
+    let resolvePost: (value: unknown) => void = () => {};
+    vi.mocked(post).mockReturnValue(
+      new Promise((resolve) => {
+        resolvePost = resolve;
+      })
+    );
+    const showError = vi.fn();
+    const { result } = renderHook(() => usePostSubmit({ showError }));
+
+    let submitting: Promise<void> = Promise.resolve();
+    act(() => {
+      submitting = result.current.onSubmit(state, 'DRAFT');
+    });
+
+    expect(result.current.submittingStatus).toBe('DRAFT');
+    expect(result.current.isLoading).toBe(true);
+
+    await act(async () => {
+      resolvePost({});
+      await submitting;
+    });
+
+    expect(result.current.submittingStatus).toBeNull();
+    expect(result.current.isLoading).toBe(false);
+  });
+
   it('API エラー時はエラーを通知し、遷移しない', async () => {
     const error = new Error('timeout');
     vi.mocked(post).mockRejectedValue(error);
@@ -79,5 +106,6 @@ describe('usePostSubmit', () => {
     expect(exceptErrorHandling).toHaveBeenCalledWith(error, showError);
     expect(push).not.toHaveBeenCalled();
     expect(result.current.isLoading).toBe(false);
+    expect(result.current.submittingStatus).toBeNull();
   });
 });

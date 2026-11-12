@@ -71,6 +71,33 @@ describe('usePostEditSubmit', () => {
     expect(showError).not.toHaveBeenCalled();
   });
 
+  it('送信中は押されたステータスを保持し、完了で解除する', async () => {
+    let resolvePut: (value: unknown) => void = () => {};
+    vi.mocked(put).mockReturnValue(
+      new Promise((resolve) => {
+        resolvePut = resolve;
+      })
+    );
+    const showError = vi.fn();
+    const { result } = renderHook(() =>
+      usePostEditSubmit({ showError, postId: 1 })
+    );
+
+    let submitting: Promise<void> = Promise.resolve();
+    act(() => {
+      submitting = result.current.onSubmit(state, 'PUBLISHED');
+    });
+
+    expect(result.current.submittingStatus).toBe('PUBLISHED');
+
+    await act(async () => {
+      resolvePut({});
+      await submitting;
+    });
+
+    expect(result.current.submittingStatus).toBeNull();
+  });
+
   it('API エラー時はエラーを通知し、遷移しない', async () => {
     const error = new Error('timeout');
     vi.mocked(put).mockRejectedValue(error);
