@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import usePostSubmit from '@/hooks/admin/posts/usePostSubmit';
-import { post } from '@/lib/api/http';
+import { post, del } from '@/lib/api/http';
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
 import { POST_SAVE_TIMEOUT_MS } from '@/constants/admin/apiTimeout';
@@ -68,7 +68,7 @@ describe('usePostSubmit', () => {
     expect(showError).not.toHaveBeenCalled();
   });
 
-  it('送信中は押されたステータスを保持し、完了で解除する', async () => {
+  it('送信中は押されたステータスを保持し、成功時は遷移まで維持する', async () => {
     let resolvePost: (value: unknown) => void = () => {};
     vi.mocked(post).mockReturnValue(
       new Promise((resolve) => {
@@ -91,8 +91,28 @@ describe('usePostSubmit', () => {
       await submitting;
     });
 
+    // 遷移中の再送信を防ぐため、成功後も解除しない
+    expect(push).toHaveBeenCalledWith('/');
+    expect(result.current.submittingStatus).toBe('DRAFT');
+  });
+
+  it('不要画像の削除に失敗したらエラーを通知し、送信中を解除して投稿しない', async () => {
+    const error = new Error('delete failed');
+    vi.mocked(del).mockRejectedValue(error);
+    const showError = vi.fn();
+    const { result } = renderHook(() => usePostSubmit({ showError }));
+
+    // 本文で使われていない画像があると削除対象になる
+    const stateWithUnusedImage = {
+      ...state,
+      images: [{ imageId: 10, url: 'https://example.com/unused.png' }],
+    } as unknown as PostEditorState;
+
+    await act(() => result.current.onSubmit(stateWithUnusedImage, 'DRAFT'));
+
+    expect(exceptErrorHandling).toHaveBeenCalledWith(error, showError);
     expect(result.current.submittingStatus).toBeNull();
-    expect(result.current.isLoading).toBe(false);
+    expect(post).not.toHaveBeenCalled();
   });
 
   it('API エラー時はエラーを通知し、遷移しない', async () => {

@@ -92,10 +92,10 @@ function usePostSubmit({ showError }: UsePostSubmitProps) {
         });
 
         // 投稿を作成したら、ホームにリダイレクト
+        // 成功時は遷移完了まで送信中表示を維持する（遷移中の再送信を防ぐ）
         router.push('/');
       } catch (error) {
         exceptErrorHandling(error, showError);
-      } finally {
         setSubmittingStatus(null);
       }
     },

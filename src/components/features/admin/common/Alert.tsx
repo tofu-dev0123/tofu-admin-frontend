@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import Image from 'next/image';
 import { Spinner } from '@/components/ui/spinner';
+import { MESSAGES } from '@/constants/messages';
 
 interface AlertProps {
   open: boolean;
@@ -38,7 +39,7 @@ function Alert({
   onAction,
   previewImageUrl,
   isActionLoading,
-  loadingText = 'アップロード中...',
+  loadingText = MESSAGES.loading.uploading,
 }: AlertProps) {
   const handleCancel = () => {
     onCancel?.();

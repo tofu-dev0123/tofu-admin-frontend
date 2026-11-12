@@ -57,6 +57,7 @@ export const MESSAGES = {
     deleting: '削除中…',
     unpublishing: '解除中…',
     changing: '変更中…',
+    uploading: 'アップロード中…',
   },
   draft: {
     restore: {
