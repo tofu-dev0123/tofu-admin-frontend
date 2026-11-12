@@ -160,7 +160,6 @@ export function usePostEditState({
     ]
   );
 
-  // 編集画面用のリセット処理（初期データに戻す）
   const onOpenConfirmModal = confirmModalHooks.onOpen;
   // 公開前の検証。未変更の slug は送らないため、空として扱い検証対象から外す
   const handleOpenConfirmModal = useCallback(
@@ -182,6 +181,7 @@ export function usePostEditState({
     [onOpenConfirmModal, initialData.slug]
   );
 
+  // 編集画面用のリセット処理（初期データに戻す）
   const reset = useCallback(() => {
     postTitleHooks.setTitle(initialData.title);
     postSlugHooks.setSlug(initialData.slug);
