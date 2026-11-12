@@ -10,6 +10,7 @@ import { useToastStore } from '@/stores/toastStore';
 import { extractImageUrls } from '@/services/admin/posts/extractImageUrls';
 import { clearDraft } from '@/lib/utils/postDraft';
 import { logger } from '@/lib/logger';
+import { POST_SAVE_TIMEOUT_MS } from '@/constants/admin/apiTimeout';
 
 interface UsePostSubmitProps {
   showError: (message: string[]) => void;
@@ -60,7 +61,10 @@ function usePostSubmit({ showError }: UsePostSubmitProps) {
 
       try {
         // 投稿を作成
-        await post<PostResponse>(API_ENDPOINTS.posts.post, request);
+        // slug 生成でバックエンドの応答が遅くなるため、タイムアウトを延長する
+        await post<PostResponse>(API_ENDPOINTS.posts.post, request, {
+          timeout: POST_SAVE_TIMEOUT_MS,
+        });
         logger.info('[posts] 投稿を作成しました', { status });
 
         // 保存済みの下書きをクリア
