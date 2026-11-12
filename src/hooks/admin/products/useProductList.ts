@@ -1,11 +1,10 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { get, put, del } from '@/lib/api/http';
+import { put, del } from '@/lib/api/http';
 import { API_ENDPOINTS } from '@/lib/api/endpoint';
 import {
   Product,
-  ProductListResponse,
   ProductRequest,
   ProductResponse,
   ProductDeleteResponse,
@@ -13,9 +12,12 @@ import {
 import { exceptErrorHandling } from '@/lib/utils/exceptErrorHandling';
 import { useToastStore } from '@/stores/toastStore';
 import { logger } from '@/lib/logger';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/api/queryKeys';
 
 interface UseProductListProps {
-  initial: Product[];
+  // クエリで取得済みの一覧（キャッシュ更新で最新に差し替わる）
+  products: Product[];
   showError: (message: string[]) => void;
 }
 
@@ -32,18 +34,18 @@ const toRequest = (product: Product): ProductRequest => ({
 
 /**
  * プロダクト一覧の状態管理。
- * 変更後は GET /admin/products で再取得して同期する。
+ * 一覧はクエリ（useProductsQuery）のデータを使い、変更後はキャッシュを無効化して再取得する。
  */
-function useProductList({ initial, showError }: UseProductListProps) {
-  const [products, setProducts] = useState<Product[]>(initial);
+function useProductList({ products, showError }: UseProductListProps) {
+  const queryClient = useQueryClient();
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // 一覧のキャッシュを無効化して再取得する（完了まで待つ）
   const refetch = useCallback(async () => {
-    const response = await get<ProductListResponse>(API_ENDPOINTS.products.get);
-    setProducts(response.products);
-  }, []);
+    await queryClient.invalidateQueries({ queryKey: queryKeys.products });
+  }, [queryClient]);
 
   const openDelete = (id: number) => setDeleteTarget(id);
   const closeDelete = () => setDeleteTarget(null);

@@ -7,17 +7,17 @@ import { ProfileResponse, Timeline } from '@/types/api/about';
 
 interface UseAboutMainProps {
   initialProfile: ProfileResponse;
-  initialTimelines: Timeline[];
+  timelines: Timeline[];
 }
 
-function useAboutMain({ initialProfile, initialTimelines }: UseAboutMainProps) {
+function useAboutMain({ initialProfile, timelines }: UseAboutMainProps) {
   const errorModalHooks = useErrorModal();
   const profileHooks = useProfileForm({
     initial: initialProfile,
     showError: errorModalHooks.showError,
   });
   const timelinesHooks = useTimelines({
-    initial: initialTimelines,
+    timelines,
     showError: errorModalHooks.showError,
   });
 

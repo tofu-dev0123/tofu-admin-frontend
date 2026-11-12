@@ -1,19 +1,17 @@
+'use client';
+
 import ProductsMain from '@/components/features/admin/products/ProductsMain';
+import ProductsMainSkeleton from '@/components/features/admin/products/ProductsMainSkeleton';
 import SectionError from '@/components/features/admin/common/SectionError';
-import { serverFetch } from '@/lib/api/server';
-import type { ProductListResponse } from '@/types/api/product';
+import useProductsQuery from '@/hooks/admin/products/useProductsQuery';
 
-async function ProductsSection() {
-  let products: ProductListResponse;
-  try {
-    products = await serverFetch<ProductListResponse>('/admin/products', {
-      label: 'プロダクト一覧取得',
-    });
-  } catch {
-    return <SectionError className="m-4" />;
-  }
+function ProductsSection() {
+  const { data, isPending, isError } = useProductsQuery();
 
-  return <ProductsMain initialProducts={products.products} />;
+  if (isPending) return <ProductsMainSkeleton />;
+  if (isError) return <SectionError className="m-4" />;
+
+  return <ProductsMain products={data.products} />;
 }
 
 export default ProductsSection;

@@ -12,12 +12,12 @@ import { Product } from '@/types/api/product';
 import { MESSAGES } from '@/constants/messages';
 
 interface ProductsMainProps {
-  initialProducts: Product[];
+  products: Product[];
 }
 
-function ProductsMain({ initialProducts }: ProductsMainProps) {
+function ProductsMain({ products }: ProductsMainProps) {
   const { listHooks, formHooks, errorModalHooks, stats } = useProductsMain({
-    initialProducts,
+    products,
   });
 
   return (
