@@ -7,12 +7,15 @@ import Navigation from '@/components/features/admin/common/Navigation';
 import Topbar from '@/components/features/admin/common/Topbar';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  const { handleClickLogout, errorModalHook } = useDashboard();
+  const { handleClickLogout, isLoggingOut, errorModalHook } = useDashboard();
 
   return (
     <div className="w-full min-h-screen bg-background">
       {/* ナビゲーション（PC: 左ダークサイドバー / スマホ: 上部ヘッダー + 下部タブ） */}
-      <Navigation handleClickLogout={handleClickLogout} />
+      <Navigation
+        handleClickLogout={handleClickLogout}
+        isLoggingOut={isLoggingOut}
+      />
       {/* メインコンテンツ（サイドバー幅・モバイルバー分の余白を確保） */}
       <div className="w-full pt-14 lg:pl-64 lg:pt-0">
         <Topbar />
