@@ -189,4 +189,22 @@ describe('usePostEditSubmit', () => {
     expect(put).not.toHaveBeenCalled();
     expect(result.current.submittingStatus).toBeNull();
   });
+
+  it('初期値が形式違反でも、未変更なら検証せずに送信する', async () => {
+    vi.mocked(put).mockResolvedValue({});
+    const { wrapper } = createQueryWrapper();
+    const showError = vi.fn();
+    const { result } = renderHook(
+      () =>
+        usePostEditSubmit({ showError, postId: 1, initialSlug: 'Legacy_Slug' }),
+      { wrapper }
+    );
+
+    await act(() =>
+      result.current.onSubmit({ ...state, slug: 'Legacy_Slug' }, 'DRAFT')
+    );
+
+    expect(showError).not.toHaveBeenCalled();
+    expect(vi.mocked(put).mock.calls[0][1]).not.toHaveProperty('slug');
+  });
 });

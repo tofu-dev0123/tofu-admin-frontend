@@ -37,7 +37,9 @@ function usePostEditSubmit({
   const onSubmit = useCallback(
     async (state: PostEditorState, status: PostStatus) => {
       // 下書き保存でも slug の形式はチェックする（公開時は確認モーダルでも検証済み）
-      const slugErrors = validateSlug(state.slug);
+      // 未変更の slug は送らないため検証しない（既存データが現行形式に合わなくても保存できる）
+      const isSlugChanged = state.slug !== initialSlug;
+      const slugErrors = isSlugChanged ? validateSlug(state.slug) : [];
       if (slugErrors.length > 0) {
         showError(slugErrors);
         return;
@@ -95,7 +97,7 @@ function usePostEditSubmit({
         title: state.title,
         // 変更時のみ送る。省略すると現状維持（draft slug は公開時に振り直される）、
         // 空文字はタイトルから再生成になる
-        ...(state.slug !== initialSlug && { slug: state.slug }),
+        ...(isSlugChanged && { slug: state.slug }),
         content_md: state.content,
         thumbnail_url: state.thumbnailUrl,
         thumbnail_delete_flag: state.thumbnailDeleteFlag,

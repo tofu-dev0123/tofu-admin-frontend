@@ -161,6 +161,27 @@ export function usePostEditState({
   );
 
   // 編集画面用のリセット処理（初期データに戻す）
+  const onOpenConfirmModal = confirmModalHooks.onOpen;
+  // 公開前の検証。未変更の slug は送らないため、空として扱い検証対象から外す
+  const handleOpenConfirmModal = useCallback(
+    (
+      thumbnailUrl: string,
+      title: string,
+      tags: string[],
+      content: string,
+      slug: string
+    ) => {
+      onOpenConfirmModal(
+        thumbnailUrl,
+        title,
+        tags,
+        content,
+        slug === initialData.slug ? '' : slug
+      );
+    },
+    [onOpenConfirmModal, initialData.slug]
+  );
+
   const reset = useCallback(() => {
     postTitleHooks.setTitle(initialData.title);
     postSlugHooks.setSlug(initialData.slug);
@@ -216,7 +237,7 @@ export function usePostEditState({
       handleInputChange: embedLinkHooks.handleInputChange,
       handleInsert: embedLinkHooks.handleInsert,
       // 確認モーダル関連
-      handleOpenConfirmModal: confirmModalHooks.onOpen,
+      handleOpenConfirmModal,
       handleCloseConfirmModal: confirmModalHooks.onClose,
       // 投稿送信関連
       handleSubmit: postSubmitHooks.onSubmit,
@@ -252,7 +273,7 @@ export function usePostEditState({
       embedLinkHooks.handleOpenChange,
       embedLinkHooks.handleInputChange,
       embedLinkHooks.handleInsert,
-      confirmModalHooks.onOpen,
+      handleOpenConfirmModal,
       confirmModalHooks.onClose,
       postSubmitHooks.onSubmit,
     ]
